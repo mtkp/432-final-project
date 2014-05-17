@@ -15,3 +15,13 @@
 
 Game server port: 7307
 
+
+
+
+
+
+
+### Misc Info
+
+[Setting ssh](https://help.github.com/articles/generating-ssh-keys)
+
