@@ -1,6 +1,6 @@
 432-final-project
 =================
-Greg
+
 432 Final Project - Network Game
 
 [Assignment Description](https://canvas.uw.edu/courses/895740/assignments/2435056)
@@ -11,4 +11,7 @@ Greg
 
 [Program Arcade Games tutorial](http://programarcadegames.com)
 
+
+
+Game server port: 7307
 
