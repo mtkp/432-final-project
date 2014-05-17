@@ -3,6 +3,9 @@
 import sys
 import pygame
 
+FRAMERATE = 30
+clock = pygame.time.Clock()
+
 size = width, height = 320, 240
 speed = [2, 2]
 red = 100, 0, 0
@@ -15,7 +18,7 @@ ballrect = ball.get_rect()
 
 
 while True:
-
+    clock.tick(FRAMERATE)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
