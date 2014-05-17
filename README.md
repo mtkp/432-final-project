@@ -1,18 +1,24 @@
 432-final-project
 =================
 
-432 Final Project - Network Game
+432 Final Project - [Network Game](https://canvas.uw.edu/courses/895740/assignments/2435056)
 
 Game server port: `7307`
 
-
 ### Links
-- [Setting ssh](https://help.github.com/articles/generating-ssh-keys)
-- [Python sockets](https://docs.python.org/2/howto/sockets.html#socket-howto)
-- [Assignment Description](https://canvas.uw.edu/courses/895740/assignments/2435056)
+##### Backend
+- [Python socket library](https://docs.python.org/2/library/socket.html)
+- [Python sockets HOWTO](https://docs.python.org/2/howto/sockets.html#socket-howto)
+- [Python thread library](https://docs.python.org/2/library/threading.html)
+- [Threading tutorial](http://www.tutorialspoint.com/python/python_multithreading.htm)
+
+##### Frontend
 - [Pygame](http://www.pygame.org/news.html)
 - [Pygame's own tutorial](http://www.pygame.org/docs/tut/tom/MakeGames.html)
 - [Program Arcade Games tutorial](http://programarcadegames.com)
+
+##### Misc.
+- [Setting up ssh for GitHub (Linux/Mac)](https://help.github.com/articles/generating-ssh-keys) (or just use Windows & the GitHub app)
 
 ---
 
