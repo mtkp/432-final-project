@@ -38,9 +38,8 @@ class ConnThread(threading.Thread):
         print "<user {} connected>".format(name)
 
         # add user to list of users
-        users_lock.acquire()
-        users.append(name)
-        users_lock.release()
+        with users_lock:
+            users.append(name)
 
         command = ''
         while command != "exit" and command != "quit":
@@ -52,9 +51,8 @@ class ConnThread(threading.Thread):
             if command == "hello":
                 response = " - Hello, world!"
             elif command == "list" or command == "who":
-                users_lock.acquire()
-                response = '\n'.join([" - " + u for u in users])
-                users_lock.release()
+                with users_lock:
+                    response = '\n'.join([" - " + u for u in users])
             elif command == "exit" or command == "quit":
                 response = " - server is closing connection"
             else:
@@ -63,9 +61,8 @@ class ConnThread(threading.Thread):
             message.send_msg(self.conn, response)
 
         # remove user on signout
-        users_lock.acquire()
-        users.remove(name)
-        users_lock.release()
+        with users_lock:
+            users.remove(name)
 
         conn.close()
 
