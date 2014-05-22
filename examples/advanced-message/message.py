@@ -1,22 +1,28 @@
 # some code taken from https://docs.python.org/2/howto/sockets.html#socket-howto
 
-SIZE_FIELD = 4
-MSG_FORMAT = "{{0:0{}d}}".format(SIZE_FIELD)
-MAX_LEN = (10 ** SIZE_FIELD) - 1
+import cPickle as pickle
 
-class MessageToLarge(Exception):
+
+size_field  = 4
+max_msg_len = (10 ** size_field) - 1
+size_header = "{{0:0{}d}}".format(size_field)
+
+
+class MessageTooLarge(Exception):
     def __init__(self, size):
         self.size = size
     def __str__(self):
-        return repr("{} exceeds limit of {}".format(self.size, MAX_LEN))
+        return repr("{} exceeds limit of {}".format(self.size, max_msg_len))
+
 
 # send a message over the connection
-def send(conn, msg):
+def send(conn, data):
+    msg = pickle.dumps(data)
     msg_len = len(msg)
-    if msg_len > MAX_LEN:
-        raise MessageToLarge(msg_len)
+    if msg_len > max_msg_len:
+        raise MessageTooLarge(msg_len)
 
-    msg = MSG_FORMAT.format(msg_len) + msg
+    msg = size_header.format(msg_len) + msg
     totalsent = 0
     while totalsent < len(msg):
         sent = conn.send(msg[totalsent:])
@@ -27,8 +33,9 @@ def send(conn, msg):
 
 # receive a message from the connection
 def recv(conn):
-    length = int(_recv_str(conn, SIZE_FIELD))
-    return _recv_str(conn, length)
+    length = int(_recv_str(conn, size_field))
+    msg = _recv_str(conn, length)
+    return pickle.loads(msg)
 
 
 # receive a string of specified length

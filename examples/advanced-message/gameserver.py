@@ -11,21 +11,17 @@ import message
 HOST = ''
 PORT = 29717
 LISTEN_QUEUE = 5
+reserved = ["", "server", "exit", "who"]
+
 
 # connection threads
 # - listen to connected user for commands
-# - available commands are
-#   hello
-#   who/list
-#   exit/quit
 class ConnThread(threading.Thread):
     def __init__(self, conn):
         threading.Thread.__init__(self)
         self.conn = conn
 
     def run(self):
-        print "<starting thread>"
-
         # connect to user
         name = ''
         response = ''
@@ -34,18 +30,13 @@ class ConnThread(threading.Thread):
 
             # make sure name is unique
             with users_lock:
-                if name in users:
+                if name in users or name in reserved:
                     response = 'error'
                 else:
                     response = 'success'
                     users.append(name)
             message.send(self.conn, response)
 
-        print "<user {} connected>".format(name)
-
-
-        command = ''
-        response = ''
         while True:
             command = message.recv(self.conn)
             print "<{}: {}>".format(name, command)
@@ -57,7 +48,7 @@ class ConnThread(threading.Thread):
                 response = "Hello, world!"
             elif command == "who":
                 with users_lock:
-                    response = '\n'.join(users)
+                    response = users
             else:
                 response = "unknown command '{}'".format(command)
 
