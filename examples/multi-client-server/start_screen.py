@@ -1,8 +1,9 @@
 #! /usr/bin/python
 
+import socket
+
 from Tkinter import *
 import message
-import socket
 
 SERVER_PORT = 29717
 
@@ -10,6 +11,8 @@ class startwindow:
 
     def __init__(self, master):
         
+        self.title_bar = Label( master, text="Game Title" )
+
         # buttons
         self.quit_button = Button( master, text="QUIT", command=master.quit )
         self.quit_button.grid(row=5, column=1)
@@ -37,6 +40,8 @@ class startwindow:
     # get server name from user and connect to it
     def register(self):
         server = self.server_entry.get()
+        server = str(server)
+        server += "\n"
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # now connect to the web server on port SERVER_PORT
@@ -45,11 +50,14 @@ class startwindow:
     # send username to server
     def send_username(self):
         self.username = self.user_entry.get()
+        self.user_name += "\n"
         message.send_msg(conn, self.username)
 
     # send commands and receive response
     def list_users(self):
-        print "TODO: implement list users"
+        message.send_msg(conn, "list")
+        # receive list of users and print them out
+        print message.recv_msg(conn)
 
     def join_game(self):
         print "TODO: implement join game"
