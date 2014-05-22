@@ -3,12 +3,48 @@
 
 # python libs
 import socket
+import Tkinter as Tk
 
 # our libs
 import message
-
+#import start_screen
 
 SERVER_PORT = 29717
+
+# event handler for register button
+#def register():
+#        print "TODO: implement register"
+
+# event handler for list user button
+#def list_users(self):
+#        print "TODO: implement list users"
+
+# event handler for join game button
+#def join_game(self):
+#        print "TODO: implement join game"
+
+# the root of the Tk window
+#root = Tk.Tk()
+
+# a frame groups "widgets" like buttons and stuff
+#frame = Tk.Frame(root)
+
+# buttons for tk window
+#title_label = Tk.Label(root, text="Game Title")
+#title_label.pack()
+
+#Quit_button = Tk.Button( frame, text="QUIT", command=frame.quit )
+#Quit_button.pack()
+
+#ListUsr_button = Tk.Button(frame, text="List Users", command=list_users)
+#ListUsr_button.pack()
+
+#Register_button = Tk.Button( frame, text="Register", command=register )
+#Register_button.pack()
+
+
+# start up the Tk window
+#root. mainloop()
 
 
 # get server name from user
@@ -31,4 +67,14 @@ while command != "exit" and command != "quit":
     print message.recv_msg(conn)
 
 conn.close()
+
+
+
+
+
+
+
+
+
+
 
