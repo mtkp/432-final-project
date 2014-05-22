@@ -2,19 +2,52 @@
 
 import pygame
 import inputbox
-from pygame.locals import *
+from pygame.locals import *    
+
+def print_error(message, fontObj, screenObj):
+    label = fontObj.render(message, 1, (255,255,255))
+    screenObj.blit(label, (100, 100))
 
 def main():
+
+    #client = GameClient()
+
     # Initialise screen
     pygame.init()
     screen = pygame.display.set_mode((300, 300))
     pygame.display.set_caption('Basic Pygame program')
 
-    server = inputbox.ask(screen, 'server')
-    print "joining server {}".format(server)
+    # setup text for error message
+    myfont = pygame.font.SysFont("monospace", 15)   
+    
+    # get input, make connection
+    while 1:
+        server = inputbox.ask(screen, 'server')
+        # check client side formatting
+        print "joining server {}".format(server)
+          
+        username = inputbox.ask(screen, 'username')
+        # check clientside formatting
+        print "username {}".format(username)
+        
+        print_error("error message", myfont, screen)
+        
+        #try:
+        #    client.register(username, server, screen)
+        #except :
+        #    print out error
+        #    print_error("invalid usrname format", myfont, screen)
+        #    continue
+        #except :
+        #    print out error
+        #    print_error("user name taken", myfont, screen)
+        #    continue
+        #except :
+        #    print out error
+        #    print_error("server not found", myfont)
+        #    continue
 
-    username = inputbox.ask(screen, 'username')
-    print "username {}".format(username)
+        #break
 
     # Fill background
     background = pygame.Surface(screen.get_size())
