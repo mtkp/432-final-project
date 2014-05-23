@@ -2,6 +2,7 @@
 
 import pygame
 import inputbox
+#import listbox
 from pygame.locals import *    
 
 def print_error(message, fontObj, screenObj):
@@ -17,6 +18,9 @@ def main():
     screen = pygame.display.set_mode((300, 300))
     pygame.display.set_caption('Basic Pygame program')
 
+    # make a rect for listbox to use
+    # 
+
     # setup text for error message
     myfont = pygame.font.SysFont("monospace", 15)   
     
@@ -30,24 +34,25 @@ def main():
         # check clientside formatting
         print "username {}".format(username)
         
+        # take this out after importing gameclient
         print_error("error message", myfont, screen)
         
         #try:
         #    client.register(username, server, screen)
+        #    break
         #except :
         #    print out error
         #    print_error("invalid usrname format", myfont, screen)
-        #    continue
+
         #except :
         #    print out error
         #    print_error("user name taken", myfont, screen)
-        #    continue
+
         #except :
         #    print out error
         #    print_error("server not found", myfont)
-        #    continue
-
-        #break
+  
+        # uncomment break after importing gameclient
 
     # Fill background
     background = pygame.Surface(screen.get_size())
