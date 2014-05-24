@@ -34,6 +34,10 @@ class GameClient(object):
     def recv(self):
         return message.recv(self.conn)
 
+#    def get_users(self):
+#       return collection of active users
+#       do we want to send any information associated with each user in the list?
+
     def _join_server(self, server):
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:

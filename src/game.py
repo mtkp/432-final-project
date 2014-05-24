@@ -1,25 +1,28 @@
 #!/usr/bin/python
 
+# python libs
 import pygame, sys
+
+# our libs
 import inputbox
-#import gameclient
+import gameclient
 
 from pygame.locals import *    
 
-# 
+
 def print_error(message, fontObj, screenObj):
-    label = fontObj.render(message, 1, (255,255,255))
+    label = fontObj.render(message, 1, (255,0,0))
     screenObj.blit(label, (100, 100))
 
 def main():
-    #client = GameClient()
+    client = gameclient.GameClient()
 
     # list of users eventually gotten from server
     users = ["Matt", "Greg", "Killroy", "Root"]
 
-    # Initialise screen
+    # Initialize screen
     pygame.init()
-    screen = pygame.display.set_mode((500, 700))
+    screen = pygame.display.set_mode((350, 600))
     pygame.display.set_caption('Basic Pygame program')
 
     # setup text for error message
@@ -30,42 +33,33 @@ def main():
     # get input, make connection
     while 1:
         server = inputbox.ask(screen, 'server')
-        # check client side formatting
+        # TODO: check client side formatting of input here
         print "joining server {}".format(server)
           
         username = inputbox.ask(screen, 'username')
-        # check clientside formatting
-        print "username {}".format(username)
-        break        
-
-        # take this out after importing gameclient
-        print_error("error message", error_font, screen)
+        # TODO: check clientside formatting
+        print "username {}".format(username)        
         
-        #try:
-        #    client.register(username, server, screen)
-        #    break
-        #except :
-        #    print out error
-        #    print_error("invalid usrname format", myfont, screen)
-
-        #except :
-        #    print out error
-        #    print_error("user name taken", myfont, screen)
-
-        #except :
-        #    print out error
-        #    print_error("server not found", myfont)
+        try:
+            client.register(username, server)
+            break
+        except gameclient.InvalidFormat:
+            print_error("invalid usrname format", error_font, screen)
+        except gameclient.UsernameUnavailable:
+            print_error("user name taken", error_font, screen)
+        except gameclient.ServerNotFound:
+            print_error("server not found", error_font, screen)
 
 
 #------------------------------set up start screen----------------------------
-    
+
     # Fill main background with color
     background = pygame.Surface(screen.get_size())
     background = background.convert()
     background.fill((195, 195, 195))
 
     # Display greeting text at top of window
-    greeting = label_font.render("Hello There, User", 1, (10, 10, 10))
+    greeting = label_font.render("Hello There", 1, (10, 10, 10))
     greeting_pos = greeting.get_rect()
     greeting_pos.left = background.get_rect().left
     background.blit(greeting, greeting_pos)
@@ -86,6 +80,7 @@ def main():
     background.blit(title_text, title_text_pos)
         
     # display users in users_box
+    #users = client.get_users()
     user_names = []
     user_pos = []
     for i, name in enumerate(users):
@@ -100,15 +95,22 @@ def main():
     for a, b in user_tups:      
         background.blit(a, b)
             
-
     # display everything to the screen
     screen.blit(background, (0, 0))
     pygame.display.flip()
 
-    # Event loop
-    while 1:
+
+    # Loop until the user clicks the close button.
+    done = False
+
+    # Used to manage how fast the screen updates
+    clock = pygame.time.Clock()
+
+    # -------- Main Program Loop -----------
+    while not done:
+        # --- Main event loop
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 pos = pygame.mouse.get_pos()
@@ -117,9 +119,18 @@ def main():
                     if xy.collidepoint(pos):
                         print "you clicked on a name"
 
+        # --- Game logic should go here
+
+        # --- Drawing code should go here
+
         screen.blit(background, (0, 0))
         pygame.display.flip()
 
+         # Limit to 20 frames per second
+        clock.tick(30)
+
+    # close window and quit    
+    pygame.quit()
 
 if __name__ == '__main__': main()
 
