@@ -13,12 +13,6 @@ PORT           = 29717
 LISTEN_QUEUE   = 5
 reserved_names = ["admin"]
 
-# dummy list of games
-game_list = [
-    ("game 1", 3, 5),
-    ("game 2", 1, 4),
-    ("game 3", 3, 7)
-]
 
 # connection threads
 # - listen to connected user for commands
@@ -46,8 +40,6 @@ class ConnThread(threading.Thread):
         self.send(response)
 
         if response == 'success':
-            self.send(game_list)
-
             self._talk_to_user(name)
 
             # remove user on signout
@@ -61,21 +53,27 @@ class ConnThread(threading.Thread):
     def _talk_to_user(self, name):
         while True:
             response = {
-                'exit':  'exit',
-                'hello': 'Hello, world!',
-                'who':   user_list(),
-                'games': game_list
+                'exit': 'exit',
+                'users': get_users(),
+                'games': get_games()
             }.get(self.recv(), "unknown command")
+
             if response == 'exit':
                 return
             else:
                 self.send(response)
 
 
-def user_list():
+def get_users():
     copy = None
     with users_lock:
         copy = list(users)
+    return copy
+
+def get_games():
+    copy = None
+    with games_lock:
+        copy = list(games)
     return copy
 
 
@@ -84,9 +82,17 @@ if __name__ == "__main__":
     # - accepts new connections
     # - creates new thread for that connection
 
-    # lock for shared user list
+    # lock for shared users list
     users_lock = threading.Lock()
     users = []
+
+    # lock for shared games list
+    games_lock = threading.Lock()
+    games = [
+        ("game 1", 3, 5),
+        ("game 2", 1, 4),
+        ("game 3", 3, 7)
+    ]
 
     # set up the server
     print "<starting server on port {}>".format(PORT)

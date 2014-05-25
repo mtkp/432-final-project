@@ -10,33 +10,53 @@ import message
 
 
 class InvalidFormat(Exception):
+    """This exception is raised if the given username format is invalid.
+    """
     pass
 
 class UsernameUnavailable(Exception):
+    """This exception is raised if the given server rejects the username.
+    """
     pass
 
 class ServerNotFound(Exception):
+    """This exception is raised if unable to connect to the given server.
+    """
     pass
 
 class GameClient(object):
     def register(self, username, server):
+        """Register to a server by username.
+        Exceptions: ServerNotFound, InvalidFormat, UsernameUnavailable
+        """
         self._join_server(server)
         self._login(username)
-        self.game_list = self.recv()
 
     def unregister(self):
-        message.send(self.conn, "exit")
-        self.conn.close()
+        try:
+            self._send("exit")
+        except:
+            pass
+        try:
+            self.conn.close()
+        except:
+            pass
 
-    def send(self, msg):
+    def get_users(self):
+        self._send("users")
+        return self._recv()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.unregister()
+
+    def _send(self, msg):
         message.send(self.conn, msg)
 
-    def recv(self):
+    def _recv(self):
         return message.recv(self.conn)
-
-#    def get_users(self):
-#       return collection of active users
-#       do we want to send any information associated with each user in the list?
 
     def _join_server(self, server):
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,7 +69,7 @@ class GameClient(object):
     def _login(self, username):
         if len(username) == 0:
             raise InvalidFormat
-        self.send(username)
-        if self.recv() == 'error':
+        self._send(username)
+        if self._recv() == 'error':
             self.conn.close()
             raise UsernameUnavailable
