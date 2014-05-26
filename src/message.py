@@ -16,6 +16,9 @@ class MessageTooLarge(Exception):
         return repr("{} exceeds limit of {}".format(self.size, max_msg_len))
 
 
+class ClosedConnection(Exception):
+    pass
+
 # send a message over the connection
 def send(conn, data):
     msg = pickle.dumps(data)
@@ -42,10 +45,13 @@ def recv(conn):
 
 # receive a string of specified length
 def _recv_str(conn, length):
-    msg = ''
-    while len(msg) < length:
-        chunk = conn.recv(length - len(msg))
-        if chunk == '':
-            raise RuntimeError("socket connection broken")
-        msg = msg + chunk
-    return msg
+    msg = conn.recv(length)
+    if msg:
+        while len(msg) < length:
+            chunk = conn.recv(length - len(msg))
+            if chunk == '':
+                raise RuntimeError("socket connection broken")
+            msg = msg + chunk
+        return msg
+    else:
+        raise ClosedConnection
