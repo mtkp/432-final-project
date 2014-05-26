@@ -42,8 +42,10 @@ class GameClient(object):
         self._send("games")
         return self._recv()
 
-    def create_game(self, name):
-        self._send("create", name)
+    def create_game(self, game_name):
+        if len(game_name) == 0:
+            return False
+        self._send("create", game_name)
         return self._recv()
 
     def join_game(self, game_id):
@@ -54,6 +56,11 @@ class GameClient(object):
         self._send("exit", game_id)
         return self._recv()
 
+    def update_positions(self, position):
+        # send position to other game players
+        self._send("bcast", position)
+        return self._recv() # server returns tuple of latest positions of others
+
     def __enter__(self):
         return self
 
@@ -61,7 +68,6 @@ class GameClient(object):
         self.unregister()
 
     def _send(self, *msg):
-        print msg
         message.send(self.conn, msg)
 
     def _recv(self):
@@ -76,7 +82,7 @@ class GameClient(object):
             raise ServerNotFound
 
     def _login(self, username):
-        if len(username) == 0:
+        if len(username) < 2:
             raise InvalidFormat
         self._send("login", username)
         success = self._recv()
