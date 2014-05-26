@@ -5,13 +5,9 @@
 import gameclient
 
 def print_users(user_list):
-    print "Users"
-    print "-----"
     print '\n'.join(" - {}".format(user) for user in user_list)
 
 def print_games(game_list):
-    print "Game list"
-    print "---------"
     print '\n'.join(
         "'{}' [{}] ({}/{})".format(game[0], game[1], len(game[2]), game[3])
         for game in game_list)
@@ -44,23 +40,26 @@ with gameclient.GameClient() as client:
         command = raw_input("command: ")
         if command == 'games':
             games = client.get_games()
-            print_games(games)
+            if games:
+                print_games(games)
         elif command == 'users':
             users = client.get_users()
-            print_users(users)
+            if users:
+                print_users(users)
         elif command == 'create game':
             result = client.create_game(raw_input("game name: "))
-            print_game(result)
-            current_game = result[1]
+            if result:
+                print_game(result)
+                current_game = result[1]
         elif command == 'join game':
             result = client.join_game(int(raw_input("game id: ")))
             if result:
                 current_game = result[1]
-                print "success!"
+                print "success! joined {}".format(result[0])
             else:
-                print "fail....."
+                print "unable to join game"
         elif command == 'exit game':
-            client.exit_game(current_game)
-
-
+            result = client.exit_game(current_game)
+            if result:
+                print "exited game"
 
