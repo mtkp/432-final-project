@@ -28,7 +28,6 @@ class ConnThread(threading.Thread):
         return message.recv(self.conn)
 
     def run(self):
-        global users, users_lock
         # connect to user
         name = self._recv()
 
@@ -59,7 +58,6 @@ class ConnThread(threading.Thread):
         self.conn.close()
 
 def get_users():
-    global users, users_lock
     copy = None
     with users_lock:
         copy = list(users)
@@ -67,7 +65,6 @@ def get_users():
 
 
 if __name__ == "__main__":
-    global users, users_lock
     # main thread
     # - accepts new connections
     # - creates new thread for that connection
