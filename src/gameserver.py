@@ -2,30 +2,33 @@
 # multithreaded game server
 
 # python libs
-import Queue
+import collections
 import select
 import socket
 
 # our libs
 import message
 
-HOST           = ''
-PORT           = 7307
-LISTEN_QUEUE   = 5
+HOST         = ''
+PORT         = 7307
+LISTEN_QUEUE = 5
 
 
 class Client(object):
     def __init__(self, conn):
-        self.conn = conn
+        self.conn     = conn
         self.username = None
-        self.inbox = Queue.Queue()
-        self.outbox = Queue.Queue()
+        self.inbox    = collections.deque()
+        self.outbox   = collections.deque()
+
+    def has_messages(self):
+        return len(self.inbox) > 0
 
     def recv(self):
-        return self.inbox.get_nowait()
+        return self.inbox.popleft()
 
     def send(self, msg):
-        self.outbox.put_nowait(msg)
+        self.outbox.append(msg)
 
 
 class GameServer(object):
@@ -54,7 +57,7 @@ class GameServer(object):
         recv_list.append(self.server)
         send_list = [
             c.conn for c in self.clients()
-            if not c.outbox.empty()
+            if len(c.outbox) > 0
         ]
 
         recv_list, send_list, exception_list = \
@@ -79,12 +82,12 @@ class GameServer(object):
             try:
                 data = message.recv(conn) # what if we want more than 1024?
                 print "<got '{}'>".format(data)
-                self._clients[conn].inbox.put_nowait(data)
+                self._clients[conn].inbox.append(data)
             except message.ClosedConnection:
                 self._close(conn)
 
     def _send(self, conn):
-        response = self._clients[conn].outbox.get_nowait()
+        response = self._clients[conn].outbox.popleft()
         print "<sending '{}'>".format(response)
         message.send(conn, response)
 

@@ -42,13 +42,26 @@ class GameClient(object):
         self._send("games")
         return self._recv()
 
+    def create_game(self, name):
+        self._send("create", name)
+        return self._recv()
+
+    def join_game(self, game_id):
+        self._send("join", game_id)
+        return self._recv()
+
+    def exit_game(self, game_id):
+        self._send("exit", game_id)
+        return self._recv()
+
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
         self.unregister()
 
-    def _send(self, msg):
+    def _send(self, *msg):
+        print msg
         message.send(self.conn, msg)
 
     def _recv(self):
@@ -65,7 +78,7 @@ class GameClient(object):
     def _login(self, username):
         if len(username) == 0:
             raise InvalidFormat
-        self._send(username)
+        self._send("login", username)
         success = self._recv()
         if not success:
             self.conn.close()
