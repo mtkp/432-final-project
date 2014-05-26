@@ -18,18 +18,45 @@ class Game(object):
         self.client = gameclient.GameClient()
         self.users = []   
     
-    def setup(self):
+    def setup_fonts(self):
         self.error_font = pygame.font.SysFont("monospace", 15)
         self.label_font = pygame.font.Font(None, 36)
         self.user_font  = pygame.font.SysFont(None, 24)
-              
+
+    # setup for the lobby window
+    def setup_main_window(self):
+        self.screen = pygame.display.set_mode((640, 480))
+        pygame.display.set_caption('CSS 432 Final Project')
+
+        # Fill main background with color
+        self.background = pygame.Surface(self.screen.get_size())
+        self.background = self.background.convert()
+        self.background.fill(GRAY)
+        
+        # Display greeting text at top of window
+        self.greeting = self.label_font.render("Hello There", 1, (10, 10, 10))
+        self.greeting_pos = self.greeting.get_rect()
+        self.greeting_pos.left = self.background.get_rect().left
+        self.background.blit(self.greeting, self.greeting_pos)
+
+        user_box = 
+
+    # display red error message if something goes wrong w/ server or username
     def _print_error(self, message):
         label = self.error_font.render(message, 1, RED)
         self.screen.blit(label, (100, 100))
 
     # diplay the username and server input boxes, get input
     def get_input(self):
-        
+        # get input for server, username
+        while 1:
+            self.server = inputbox.ask(screen, 'server')
+            # TODO: check client side formatting of input here
+            print "joining server {}".format(server)
+              
+            self.username = inputbox.ask(screen, 'username')
+            # TODO: check clientside formatting
+            print "username {}".format(username)        
     
     # use the username and servername to try to register w/ the server
     def try_register(self):
@@ -43,40 +70,21 @@ class Game(object):
         except gameclient.ServerNotFound:
             print_error("server not found")
 
+    # run the program
     def run(self):
         # strt pygame
-        pygame.init()
-        self.screen = pygame.display.set_mode((640, 480))
-        pygame.display.set_caption('CSS 432 Final Project')
-    
-    
-        # get input, make connection
-        while 1:
-            server = inputbox.ask(screen, 'server')
-            # TODO: check client side formatting of input here
-            print "joining server {}".format(server)
-              
-            username = inputbox.ask(screen, 'username')
-            # TODO: check clientside formatting
-            print "username {}".format(username)        
+        pygame.init()  
+        setup_main_window()
+        setup_fonts()
+        #get_input()
+        #try_register     
 
 
 #------------------------------set up start screen----------------------------
 
-    # Fill main background with color
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill((195, 195, 195))
-
-    # Display greeting text at top of window
-    greeting = label_font.render("Hello There", 1, (10, 10, 10))
-    greeting_pos = greeting.get_rect()
-    greeting_pos.left = background.get_rect().left
-    background.blit(greeting, greeting_pos)
-
     # make a box to display users in
     user_box = pygame.Surface((250, 400))
-    user_box.fill((255,255,255))
+    user_box.fill(WHITE)
     user_box_pos = user_box.get_rect()
     user_box_pos.left = (background.get_rect().left + 20)
     user_box_pos.centery = background.get_rect().centery
