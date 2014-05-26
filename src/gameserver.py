@@ -21,54 +21,49 @@ class ConnThread(threading.Thread):
         threading.Thread.__init__(self)
         self.conn = conn
 
-    def send(self, msg):
+    def _send(self, msg):
         message.send(self.conn, msg)
 
-    def recv(self):
+    def _recv(self):
         return message.recv(self.conn)
 
     def run(self):
+        global users, users_lock
         # connect to user
-        name = self.recv()
-        response = ''
+        name = self._recv()
+        login = False
         with users_lock:
-            if name in users or name in reserved_names:
-                response = 'error'
-            else:
-                response = 'success'
+            if name not in users and name not in reserved_names:
+                login = True
                 users.append(name)
-        self.send(response)
+        self._send(login)
 
-        if response == 'success':
-            self._talk_to_user(name)
+        if login:
+            while True:
+                request = self._recv()
+                if request == "exit":
+                    break
+                elif request == "users":
+                    self._send(get_users())
+                else:
+                    self._send("unknown cmd")
 
             # remove user on signout
+            print "<user {} disconnected>".format(name)
             with users_lock:
                 users.remove(name)
-            print "<user {} disconnected>".format(name)
 
         print "<thread is terminating connection>"
         conn.close()
 
-    def _talk_to_user(self, name):
-        while True:
-            response = {
-                'exit': 'exit',
-                'users': get_users(),
-                'games': get_games()
-            }.get(self.recv(), "unknown command")
-
-            if response == 'exit':
-                return
-            else:
-                self.send(response)
-
 
 def get_users():
+    global users, users_lock
     copy = None
     with users_lock:
         copy = list(users)
     return copy
+
 
 def get_games():
     copy = None
@@ -84,7 +79,7 @@ if __name__ == "__main__":
 
     # lock for shared users list
     users_lock = threading.Lock()
-    users = []
+    users = ["admin"]
 
     # lock for shared games list
     games_lock = threading.Lock()

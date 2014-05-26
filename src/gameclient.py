@@ -8,7 +8,6 @@ import socket
 import gameserver
 import message
 
-
 class InvalidFormat(Exception):
     """This exception is raised if the given username format is invalid.
     """
@@ -33,14 +32,8 @@ class GameClient(object):
         self._login(username)
 
     def unregister(self):
-        try:
-            self._send("exit")
-        except:
-            pass
-        try:
-            self.conn.close()
-        except:
-            pass
+        self._send("exit")
+        self.conn.close()
 
     def get_users(self):
         self._send("users")
@@ -70,6 +63,6 @@ class GameClient(object):
         if len(username) == 0:
             raise InvalidFormat
         self._send(username)
-        if self._recv() == 'error':
+        if not self._recv():
             self.conn.close()
             raise UsernameUnavailable

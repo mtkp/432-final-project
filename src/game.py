@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-# libs
+# public libs
 import pygame
-from pygame.locals import *
 import inputbox
 
 # our libs
@@ -23,7 +22,7 @@ def main():
     # fonts
     error_font = pygame.font.SysFont("monospace", 15)
     label_font = pygame.font.Font(None, 36)
-    user_font  = pygame.font.SysFont(None, 20)
+    user_font  = pygame.font.SysFont(None, 24)
 
     with gameclient.GameClient() as client:
 
@@ -47,6 +46,9 @@ def main():
             except gameclient.ServerNotFound:
                 print_error("server not found", error_font, screen)
 
+
+        # get initial user list
+        user_names = client.get_users()
 
         # ---------------------- start screen ---------------------------
         # Fill main background with color
@@ -75,31 +77,19 @@ def main():
         title_text_pos.left = (background.get_rect().left + 20)
         background.blit(title_text, title_text_pos)
 
-        # display users in users_box
-        users = client.get_users()
-        user_names = []
-        user_pos = []
-        for i, name in enumerate(users):
-            user_text = user_font.render(name, True, (10, 10, 10), user_box.get_at((0,0)))
-            user_text_pos = user_text.get_rect()
-            user_text_pos.left = (user_box_pos.left + 5)
-            user_text_pos.top = user_box_pos.top + (i * (user_text_pos.height) + 2)
-            user_names.append(user_text)
-            user_pos.append(user_text_pos)
-
-        user_tups = zip(users, user_names, user_pos)
-        for _, box, position in user_tups:
-            background.blit(box, position)
-
-        # display everything to the screen
-        screen.blit(background, (0, 0))
-        pygame.display.flip()
+        # Display greeting text at top of window
+        refresh = label_font.render("refresh", True, (10, 10, 10))
+        refresh_pos = refresh.get_rect()
+        refresh_pos.top = user_box_pos.bottom
+        background.blit(refresh, refresh_pos)
 
         # Loop until the user clicks the close button.
         done = False
 
         # Used to manage how fast the screen updates
         clock = pygame.time.Clock()
+
+        user_tups = []
 
         # -------- Main Program Loop -----------
         while not done:
@@ -108,18 +98,37 @@ def main():
                 if event.type == pygame.QUIT:
                     done = True
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse = pygame.mouse.get_pos()
                     for user in user_tups:
-                        if user[2].collidepoint(pygame.mouse.get_pos()):
+                        if user[2].collidepoint(mouse):
                             print "you clicked on {}".format(user[0])
+                    if refresh_pos.collidepoint(mouse):
+                        user_names = client.get_users()
 
             # --- Game logic should go here
 
             # --- Drawing code should go here
+            background.blit(user_box, user_box_pos)
+
+            # display users in users_box
+            user_boxes = []
+            user_pos = []
+            for i, name in enumerate(user_names):
+                user_text = user_font.render(name, True, (10, 10, 10), user_box.get_at((0,0)))
+                user_text_pos = user_text.get_rect()
+                user_text_pos.left = (user_box_pos.left + 5)
+                user_text_pos.top = user_box_pos.top + (i * (user_text_pos.height) + 2)
+                user_boxes.append(user_text)
+                user_pos.append(user_text_pos)
+
+            user_tups = zip(user_names, user_boxes, user_pos)
+            for _, box, position in user_tups:
+                background.blit(box, position)
 
             screen.blit(background, (0, 0))
             pygame.display.flip()
 
-             # Limit to 20 frames per second
+             # Limit to 30 frames per second
             clock.tick(30)
 
         # close window and quit
