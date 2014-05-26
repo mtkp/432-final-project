@@ -20,8 +20,6 @@ def print_game(game):
 # get server name from user
 with gameclient.GameClient() as client:
 
-    current_game = None
-
     while True:
         username = raw_input("username: ")
         server = "localhost" # raw_input("server: ")
@@ -30,36 +28,39 @@ with gameclient.GameClient() as client:
             client.register(username, server)
             break
         except gameclient.InvalidFormat:
-            print "format was bad"
+            print "format is bad"
         except gameclient.UsernameUnavailable:
-            print "user name is taken"
+            print "username is taken"
         except gameclient.ServerNotFound:
             print "server was not found"
 
     while True:
         command = raw_input("command: ")
+
         if command == 'games':
             games = client.get_games()
             if games:
                 print_games(games)
+
         elif command == 'users':
             users = client.get_users()
             if users:
                 print_users(users)
+
         elif command == 'create game':
             result = client.create_game(raw_input("game name: "))
             if result:
                 print_game(result)
-                current_game = result[1]
+
         elif command == 'join game':
-            result = client.join_game(int(raw_input("game id: ")))
+            result = client.join_game(raw_input("game id: "))
             if result:
-                current_game = result[1]
                 print "success! joined {}".format(result[0])
             else:
                 print "unable to join game"
+
         elif command == 'exit game':
-            result = client.exit_game(current_game)
+            result = client.exit_game()
             if result:
                 print "exited game"
 

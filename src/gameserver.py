@@ -8,23 +8,21 @@ PORT = 7307
 
 class Game(object):
     def __init__(self, name, size):
-        self.players = []
+        self.users = []
         self.name = name
         self.size = size
 
     def add_user(self, user):
         user.game = self
-        self.players.append(user)
+        self.users.append(user)
 
     def remove_user(self, user):
-        if user in self.players:
-            self.players.remove(user)
+        if user in self.users:
+            self.users.remove(user)
             user.game = None
-            return True
-        return False
 
     def usernames(self):
-        return [user.name for user in self.players]
+        return [user.name for user in self.users]
 
     def compact(self):
         return (self.name, id(self), self.usernames(), self.size)
@@ -59,7 +57,7 @@ class GameServer(object):
         elif cmd == "join":
             game_id = msg[1]
             for game in self.games:
-                if id(game) == game_id:
+                if id(game) == game_id and len(game.users) < game.size:
                     game.add_user(user)
                     user.send(game.compact())
                     break
@@ -69,29 +67,30 @@ class GameServer(object):
             user.send(False)
 
     def in_game(self, user):
+        game = user.game
         msg = user.recv()
         cmd = msg[0]
         if cmd == "users":
-            user.send(user.game.usernames())
+            user.send(game.usernames())
         elif cmd == "exit":
-            game_id = msg[1]
-            for game in self.games:
-                if id(game) == game_id:
-                    user.send(game.remove_user(user))
-                    break
-            else:
-                user.send(False)
+            game.remove_user(user)
+            user.send(True)
         else:
             user.send(False)
 
     def serve_forever(self):
         while True:
             self.server.update()
-            self.games = filter(lambda g: len(g.players) > 0, self.games)
+
+            # clean up games
+            self.games = filter(lambda game: len(game.users) > 0, self.games)
+
+            # get list of usernames
             self.usernames = [
                 user.name for user in self.server.users() if user.name
             ]
 
+            # handle requests
             for user in self.server.users():
                 while user.has_messages():
                     if user.name is None:

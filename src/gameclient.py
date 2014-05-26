@@ -49,13 +49,18 @@ class GameClient(object):
         return self._recv()
 
     def join_game(self, game_id):
-        self._send("join", game_id)
+        try:
+            game_id = int(game_id)
+            self._send("join", game_id)
+            return self._recv()
+        except ValueError:
+            return False
+
+    def exit_game(self):
+        self._send("exit")
         return self._recv()
 
-    def exit_game(self, game_id):
-        self._send("exit", game_id)
-        return self._recv()
-
+    # TODO
     def update_positions(self, position):
         # send position to other game players
         self._send("bcast", position)
