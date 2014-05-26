@@ -44,6 +44,7 @@ class ConnThread(threading.Thread):
                 if request == "exit":
                     break
                 elif request == "users":
+                    print "<{} is getting new list>".format(name)
                     self._send(get_users())
                 else:
                     self._send("unknown cmd")
@@ -61,6 +62,7 @@ def get_users():
     global users, users_lock
     copy = None
     with users_lock:
+        print "<copying user list, len is {}>".format(len(users))
         copy = list(users)
     return copy
 

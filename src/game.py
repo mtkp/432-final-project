@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 # public libs
 import pygame
@@ -104,8 +104,13 @@ def main():
                             print "you clicked on {}".format(user[0])
                     if refresh_pos.collidepoint(mouse):
                         user_names = client.get_users()
+                        print "updated user list"
 
             # --- Game logic should go here
+
+
+            # --- Network logic.. ?
+
 
             # --- Drawing code should go here
             background.blit(user_box, user_box_pos)
