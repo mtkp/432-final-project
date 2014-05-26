@@ -2,6 +2,7 @@
 
 import cPickle as pickle
 
+
 # maximum message length
 header_size = 4
 max_msg_len = (10 ** header_size) - 1
@@ -42,11 +43,9 @@ def recv(conn):
 # receive a string of specified length
 def _recv_str(conn, length):
     msg = ''
-
     while len(msg) < length:
         chunk = conn.recv(length - len(msg))
         if chunk == '':
             raise RuntimeError("socket connection broken")
         msg = msg + chunk
-
     return msg

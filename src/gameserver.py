@@ -31,6 +31,7 @@ class ConnThread(threading.Thread):
         global users, users_lock
         # connect to user
         name = self._recv()
+
         login = False
         with users_lock:
             if name not in users and name not in reserved_names:
@@ -55,26 +56,18 @@ class ConnThread(threading.Thread):
                 users.remove(name)
 
         print "<thread is terminating connection>"
-        conn.close()
-
+        self.conn.close()
 
 def get_users():
     global users, users_lock
     copy = None
     with users_lock:
-        print "<copying user list, len is {}>".format(len(users))
         copy = list(users)
     return copy
 
 
-def get_games():
-    copy = None
-    with games_lock:
-        copy = list(games)
-    return copy
-
-
 if __name__ == "__main__":
+    global users, users_lock
     # main thread
     # - accepts new connections
     # - creates new thread for that connection

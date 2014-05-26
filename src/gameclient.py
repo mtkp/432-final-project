@@ -63,6 +63,7 @@ class GameClient(object):
         if len(username) == 0:
             raise InvalidFormat
         self._send(username)
-        if not self._recv():
+        success = self._recv()
+        if not success:
             self.conn.close()
             raise UsernameUnavailable

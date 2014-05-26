@@ -56,8 +56,10 @@ def main():
         background = background.convert()
         background.fill((195, 195, 195))
 
+        greeting_str = "Hello There, {}".format(username)
+
         # Display greeting text at top of window
-        greeting = label_font.render("Hello There", True, (10, 10, 10))
+        greeting = label_font.render(greeting_str, True, (10, 10, 10))
         greeting_pos = greeting.get_rect()
         greeting_pos.left = background.get_rect().left
         background.blit(greeting, greeting_pos)
