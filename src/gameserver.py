@@ -22,11 +22,7 @@ class Client(object):
         self.outbox = Queue.Queue()
 
     def recv(self):
-        try:
-            msg = self.inbox.get_nowait()
-        except Queue.Empty:
-            msg = None
-        return msg
+        return self.inbox.get_nowait()
 
     def send(self, msg):
         self.outbox.put_nowait(msg)
@@ -76,21 +72,20 @@ class GameServer(object):
 
     def _recv(self, conn):
         if conn is self.server:
-
             new_conn, addr = self.server.accept()
             new_conn.setblocking(0)
             self._clients[new_conn] = Client(new_conn)
         else:
             try:
                 data = message.recv(conn) # what if we want more than 1024?
-                print "<got {}>".format(data)
+                print "<got '{}'>".format(data)
                 self._clients[conn].inbox.put_nowait(data)
             except message.ClosedConnection:
                 self._close(conn)
 
     def _send(self, conn):
         response = self._clients[conn].outbox.get_nowait()
-        print "<sending {}>".format(response)
+        print "<sending '{}'>".format(response)
         message.send(conn, response)
 
     def _close(self, conn):

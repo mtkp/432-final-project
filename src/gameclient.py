@@ -32,11 +32,14 @@ class GameClient(object):
         self._login(username)
 
     def unregister(self):
-        # self._send("exit")
         self.conn.close()
 
     def get_users(self):
         self._send("users")
+        return self._recv()
+
+    def get_games(self):
+        self._send("games")
         return self._recv()
 
     def __enter__(self):
