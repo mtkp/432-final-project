@@ -18,7 +18,9 @@ from pygame.locals import *
 def get_key():
   while 1:
     event = pygame.event.poll()
-    if event.type == KEYDOWN:
+    if event.type == pygame.QUIT:
+        pygame.quit()
+    elif event.type == KEYDOWN:
       return event.key
     else:
       pass

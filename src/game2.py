@@ -1,8 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 import pygame, sys
-import inputbox
-import user
+import listbox
 import gameclient
 
 from pygame.locals import *    
@@ -16,11 +15,12 @@ GRAY  = (195, 195, 195)
 
 LIST_BOX_DIMS = (250, 400)
 
-class Game():
+class Game2(object):
     def __init__(self):
         self.client = gameclient.GameClient()
-        self.users = []   
+        self.users  = []
     
+
     # setup different font objects 
     def setup_fonts(self):
         "setup some different fonts for later use"
@@ -46,17 +46,19 @@ class Game():
         self.greeting_pos.left = self.background.get_rect().left
         self.background.blit(self.greeting, self.greeting_pos)
 
-        self.LEFT_EDGE = self.background.left
+        self.TOP_EDGE  = self.background.get_rect().top
+        self.LEFT_EDGE = self.background.get_rect().left
 
 
     def setup_listboxes(self):
         "instantiate a listbox for active users and games to join"
         # make two listboxes, one for users and one for games
-        user_box = ListBox(self.background, WHITE, 
+        
+        self.user_box = listbox.ListBox(self.background, WHITE, 
                             LIST_BOX_DIMS[0], LIST_BOX_DIMS[1],
                             self.LEFT_EDGE + 5, self.TOP_EDGE + 100)
 
-        game_box = ListBox(self.background, WHITE, 
+        self.game_box = listbox.ListBox(self.background, WHITE, 
                             LIST_BOX_DIMS[0], LIST_BOX_DIMS[1], 
                             self.LEFT_EDGE + LIST_BOX_DIMS[0], 
                             self.TOP_EDGE + 100)
@@ -103,9 +105,9 @@ class Game():
         "Run the program to display the lobby screen."
         # strt pygame
         pygame.init()  
-        setup_fonts()
-        setup_main_window()
-        setup_ListBoxes();
+        self.setup_fonts()
+        self.setup_main_window()
+        self.setup_listboxes();
         #get_input()
         #try_register   
 
@@ -117,7 +119,7 @@ class Game():
         #background.blit(title_text, title_text_pos)
                 
         # display everything to the screen
-        screen.blit(background, (0, 0))
+        self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
 
         # Used to manage how fast the screen updates
@@ -131,15 +133,13 @@ class Game():
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     print "You pressed the left mouse button at (%d, %d)" % event.pos
-                    for xy in user_pos:
-                        if xy.collidepoint(pos):
-                            print "you clicked on a name"
+                    #for xy in self.user_pos:
+                    #    if xy.collidepoint(pos):
+                    #        print "you clicked on a name"
 
-            screen.blit(background, (0, 0))
+            self.screen.blit(self.background, (0, 0))
             pygame.display.flip()
 
              # Limit to 20 frames per second
             clock.tick(20)
-
-#if __name__ == '__main__': main()
 

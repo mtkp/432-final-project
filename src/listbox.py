@@ -1,4 +1,4 @@
-#! /usr/bin/python2.7
+#!/usr/bin/python2.7
 
 import pygame
 
@@ -7,16 +7,14 @@ class ListBox():
     # colortup  - color to fill box. ex: (255,255,255)
     # x & y     - coordinates to draw the box at
     # height & width - dimensions of the rect
-    def __init__(self, screenObj, colortup, width, height, x, y, left, top):
+    def __init__(self, screenObj, colortup, width, height, left, top):
         # make a box to display text items in
-        self.name = name
         self.user_box = pygame.Surface((250, 400))
         self.user_box.fill(colortup)
-        self.user_box_pos = user_box.get_rect()
+        self.user_box_pos = self.user_box.get_rect()
         self.user_box_pos.left = left
         self.user_box_pos.top = top
         screenObj.blit(self.user_box, self.user_box_pos)
-        return (self.user_box, self.user_box_pos)
 
     # renders list of users in users box, returns tup of user text/ rect
     def display_items(self, items, screenObj):
