@@ -10,6 +10,9 @@ packet      = "{{0:0{}d}}{{1}}".format(header_size)
 
 
 class MessageTooLarge(Exception):
+    """This exception is raised if the message exceeds the maximum allowed
+    by the header size.
+    """
     def __init__(self, size):
         self.size = size
     def __str__(self):
@@ -17,6 +20,9 @@ class MessageTooLarge(Exception):
 
 
 class ClosedConnection(Exception):
+    """This exception is thrown if trying to read from a socket when the
+    connection has been closed.
+    """
     pass
 
 # send a message over the connection
