@@ -18,49 +18,50 @@ def print_game(game):
     print "####"
 
 # get server name from user
-with gameclient.GameClient() as client:
 
-    while True:
-        username = raw_input("username: ")
-        server = "localhost" # raw_input("server: ")
+client = gameclient.GameClient()
 
-        try:
-            client.register(username, server)
-            break
-        except gameclient.InvalidFormat:
-            print "format is bad"
-        except gameclient.UsernameUnavailable:
-            print "username is taken"
-        except gameclient.ServerNotFound:
-            print "server was not found"
+while True:
+    username = raw_input("username: ")
+    server = "localhost" # raw_input("server: ")
 
-    while True:
-        command = raw_input("command: ")
+    try:
+        client.register(username, server)
+        break
+    except gameclient.InvalidFormat:
+        print "format is bad"
+    except gameclient.UsernameUnavailable:
+        print "username is taken"
+    except gameclient.ServerNotFound:
+        print "server was not found"
 
-        if command == 'games':
-            games = client.get_games()
-            if games:
-                print_games(games)
+while True:
+    command = raw_input("command: ")
 
-        elif command == 'users':
-            users = client.get_users()
-            if users:
-                print_users(users)
+    if command == 'games':
+        games = client.get_games()
+        if games:
+            print_games(games)
 
-        elif command == 'create game':
-            result = client.create_game(raw_input("game name: "))
-            if result:
-                print_game(result)
+    elif command == 'users':
+        users = client.get_users()
+        if users:
+            print_users(users)
 
-        elif command == 'join game':
-            result = client.join_game(raw_input("game id: "))
-            if result:
-                print "success! joined {}".format(result[0])
-            else:
-                print "unable to join game"
+    elif command == 'create game':
+        result = client.create_game(raw_input("game name: "))
+        if result:
+            print_game(result)
 
-        elif command == 'exit game':
-            result = client.exit_game()
-            if result:
-                print "exited game"
+    elif command == 'join game':
+        result = client.join_game(raw_input("game id: "))
+        if result:
+            print "success! joined {}".format(result[0])
+        else:
+            print "unable to join game"
+
+    elif command == 'exit game':
+        result = client.exit_game()
+        if result:
+            print "exited game"
 

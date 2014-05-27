@@ -9,18 +9,15 @@ import gameserver
 import message
 
 class InvalidFormat(Exception):
-    """This exception is raised if the given username format is invalid.
-    """
+    """The given username formatting is invalid."""
     pass
 
 class UsernameUnavailable(Exception):
-    """This exception is raised if the given server rejects the username.
-    """
+    """The server rejected the username."""
     pass
 
 class ServerNotFound(Exception):
-    """This exception is raised if unable to connect to the given server.
-    """
+    """Unable to connect to the given server."""
     pass
 
 class GameClient(object):
@@ -32,45 +29,44 @@ class GameClient(object):
         self._login(username)
 
     def unregister(self):
+        """Gracefully unregister from server."""
         self.conn.close()
 
     def get_users(self):
+        """Get a list of connected users."""
         self._send("users")
         return self._recv()
 
     def get_games(self):
+        """Get a list of game tuples (game name, id, list of users, size)."""
         self._send("games")
         return self._recv()
 
     def create_game(self, game_name):
+        """Create a game on the server."""
         if len(game_name) == 0:
             return False
         self._send("create", game_name)
         return self._recv()
 
     def join_game(self, game_id):
-        try:
-            game_id = int(game_id)
-            self._send("join", game_id)
-            return self._recv()
-        except ValueError:
-            return False
+        """Join a game using the game id (provided in the tuple)."""
+        self._send("join", game_id)
+        return self._recv()
 
     def exit_game(self):
+        """Exit the game that the user is currently in."""
         self._send("exit")
         return self._recv()
 
-    # TODO
+    # TODO ... will likely change a lot
     def update_positions(self, position):
         # send position to other game players
         self._send("bcast", position)
         return self._recv() # server returns tuple of latest positions of others
 
-    def __enter__(self):
-        return self
 
-    def __exit__(self, type, value, traceback):
-        self.unregister()
+    # -- private --
 
     def _send(self, *msg):
         message.send(self.conn, msg)
