@@ -1,7 +1,9 @@
 #!/usr/bin/python2.7
 
 import pygame, sys
+
 import listbox
+import inputbox2
 import gameclient
 
 from pygame.locals import *    
@@ -66,12 +68,18 @@ class Game2(object):
         self.game_box = listbox.ListBox(self.background, WHITE, 
                             LIST_BOX_DIMS[0], LIST_BOX_DIMS[1], 
                             self.LEFT_EDGE + LIST_BOX_DIMS[0] +
-                             self.INTERBOX_MARGIN + self.LEFT_MARGIN, 
+                            self.INTERBOX_MARGIN + self.LEFT_MARGIN, 
                             self.TOP_EDGE + 100)
 
-        self.user_box.display_items(self.users, self.background)
-        self.game_box.display_items(self.users, self.background)
+        self.user_box.display_items(self.users)
+        self.game_box.display_items(self.users)
 
+
+    def setup_textboxes(self):
+        self.server_input_box = inputbox2.InputBox2(self.background, WHITE, 
+                                                    200, 20, self.LEFT_EDGE, 
+                                                    self.TOP_EDGE + 50, 
+                                                    "server", 0)
 
 
     # display red error message if something goes wrong w/ server or username
@@ -118,6 +126,7 @@ class Game2(object):
         self.setup_fonts()
         self.setup_main_window()
         self.setup_listboxes();
+        self.setup_textboxes();
         #get_input()
         #try_register   
 

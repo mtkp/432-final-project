@@ -10,15 +10,17 @@ class ListBox():
     # height & width - dimensions of the rect
     def __init__(self, screenObj, colortup, width, height, left, top):
         "Make a box to display text items, such as usernames or actiive games."
+        self.background = screenObj
         self.box_surface = pygame.Surface((width, height))
         self.box_surface.fill(colortup)
         self.box_surface_pos = self.box_surface.get_rect()
         self.box_surface_pos.left = left
         self.box_surface_pos.top = top
-        screenObj.blit(self.box_surface, self.box_surface_pos)
+        self.background.blit(self.box_surface, self.box_surface_pos)
 
-    # renders list of users in users box, returns tup of user text/ rect
-    def display_items(self, items, screenObj):
+    # renders list of users in users box, returns tup of user text/rect
+    def display_items(self, items):
+        "displays a given list inside of this listbox"
         list_box_font  = pygame.font.SysFont(None, 24)
 
         item_names = []
@@ -34,7 +36,7 @@ class ListBox():
             
         item_tups = zip(item_names, item_pos)
         for a, b in item_tups:      
-            screenObj.blit(a, b)
+            self.background.blit(a, b)
         
         return item_tups
 
