@@ -1,19 +1,17 @@
 #!/usr/bin/python2.7
 
-import pygame, pygame.font, pygame.event, pygame.draw, string
+import pygame, pygame.draw
 from pygame.locals import *
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED   = (255, 0, 0)
-GRAY  = (195, 195, 195)
+import game2
+
 
 class InputBox2(object):
     "a text input box for getting user input"
-    def __init__(self, screenObj, colortup, width, height, left, bottom, message, 
-                 sequenceNum):
+    def __init__(self, screen, colortup, width, height, left, bottom, message,
+                 sequence_num):
         self.message = message
-        self.background = screenObj
+        self.background = screen
         self.LEFT_EDGE = self.background.get_rect().left
         self.BOTTOM_EDGE = self.background.get_rect().bottom
         self.MARGIN = 5
@@ -21,7 +19,7 @@ class InputBox2(object):
         self.width = width
         self.height = height
         self.left = left
-        self.bottom = self.BOTTOM_EDGE - (sequenceNum * (height + self.MARGIN))
+        self.bottom = self.BOTTOM_EDGE - (sequence_num * (height + self.MARGIN))
 
         self.box_surface = pygame.Surface((width, height))
         self.box_surface.fill(colortup)
@@ -30,6 +28,7 @@ class InputBox2(object):
         self.box_surface_pos.bottom = self.bottom
         self.background.blit(self.box_surface, self.box_surface_pos)
 
+        self.font = pygame.font.Font(None, 20)
         self.display_box(self.message + ": ")
 
 
@@ -46,13 +45,20 @@ class InputBox2(object):
 
     # called each character key is pressed during ask()
     def display_box(self, message):
-        fontobject = pygame.font.Font(None,18)
-        pygame.draw.rect(self.background, WHITE,
-                         (self.left, self.bottom - self.height,
-                          self.width, self.height), 0)
-        if len(message) != 0:
-            self.background.blit(fontobject.render(message, 1, BLACK),
-                        (self.left, self.bottom - self.height))
+        print "<message = {}>".format(message)
+
+        pygame.draw.rect(
+            self.background,
+            game2.WHITE,
+            (self.left, self.bottom - self.height, self.width, self.height),
+            0
+        )
+
+        self.background.blit(
+            self.font.render(message, 1, game2.BLACK),
+            (self.left, self.bottom - self.height)
+        )
+        pygame.display.get_surface().blit(self.background, (0,0))
         pygame.display.flip()
 
 
@@ -60,20 +66,24 @@ class InputBox2(object):
     def ask(self):
         pygame.font.init()
         current_string = []
-        self.display_box(self.message + ": " + string.join(current_string,""))
+        self.display_box(self.message + ": " + "".join(current_string))
 
         while 1:
             inkey = self.get_input_key()
-            if inkey == K_BACKSPACE:
-                current_string = current_string[0:-1]
-            elif inkey == K_RETURN:
+            if inkey == K_RETURN:
                 break
+            elif inkey == K_BACKSPACE:
+                current_string = current_string[0:-1]
+                self.display_box(
+                    self.message + ": " + "".join(current_string)
+                )
             elif inkey <= 127:
                 current_string.append(chr(inkey))
-                self.display_box(self.message + ": " + 
-                    string.join(current_string,""))
+                self.display_box(
+                    self.message + ": " + "".join(current_string)
+                )
 
-        return string.join(current_string,"")
+        return "".join(current_string)
 
 
 

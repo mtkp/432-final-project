@@ -14,42 +14,38 @@ RED   = (255, 0, 0)
 GRAY  = (195, 195, 195)
 BLUE  = (0, 0, 255)
 
-LIST_BOX_DIMS = (150, 200)
+LIST_BOX_DIMS = (300, 200)
 
 class Game2(object):
     def __init__(self):
         self.client = gameclient.GameClient()
-        self.user_names = []
         self.user_tups  = []
-        self.game_names = []
         self.game_tups  = []
-
 
     # setup different font objects
     def setup_fonts(self):
         "setup some different fonts for later use"
         self.error_font = pygame.font.SysFont("monospace", 15)
         self.label_font = pygame.font.Font(None, 36)
-        self.user_font  = pygame.font.SysFont(None, 24)
-
 
     # display latest list of active users inside the active user listbox
     def refresh_users(self):
         "Refresh list of active users."
-        # get up to date list of users
-        self.user_names = self.client.get_users()
-        self.user_tups = self.user_box.display_items(self.user_names)
+        user_names = self.client.get_users()
+        self.user_tups = self.user_box.display_items(user_names)
         print "updated user list"
 
 
     # display latest list of active users inside the game listbox
     def refresh_games(self):
         "Refresh list of active games."
-        # get up to date list of users
-        self.game_names = self.client.get_games()
-        self.game_tups = self.game_box.display_items(self.game_names)
+        games = self.client.get_games()
+        game_names = [
+            "{} ({}/{})".format(game[0], len(game[2]), game[3])
+            for game in games
+        ]
+        self.game_tups = self.game_box.display_items(game_names)
         print "updated games list"
-
 
     # setup for the lobby window
     def setup_main_window(self):
@@ -139,7 +135,7 @@ class Game2(object):
         set_server = False
         set_name = False
 
-        while not (set_server and set_name):
+        while not set_server or not set_name:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -155,7 +151,6 @@ class Game2(object):
                         set_server = True
                         # TODO: check client side formatting of input here
                         print "joining server {}".format(self.server)
-                pygame.display.flip()
 
 
     # use the username and servername to try to register w/ the server
@@ -182,6 +177,7 @@ class Game2(object):
         "Run the program to display the lobby screen."
         # strt pygame
         pygame.init()
+
         self.setup_fonts()
         self.setup_main_window()
         self.setup_listboxes();
@@ -194,7 +190,11 @@ class Game2(object):
         # try to get the input before making a connection
         self.try_register()
 
-        # Used to manage how fast the screen updates
+        # initial refresh of user and game lists upon joining
+        self.refresh_users()
+        self.refresh_games()
+
+        # clock for managing fps
         clock = pygame.time.Clock()
 
         # -------- Main Program Loop -----------
@@ -205,6 +205,7 @@ class Game2(object):
             # --- Main event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    pygame.quit()
                     return
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse = pygame.mouse.get_pos()
@@ -232,11 +233,7 @@ class Game2(object):
             pygame.display.flip()
 
 
-             # Limit to 20 frames per second
-            clock.tick(20)
-
-        # close window and quit
-        pygame.quit()
+            clock.tick(30) # frames per second
 
 
 if __name__ == "__main__":
