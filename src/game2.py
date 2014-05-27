@@ -13,12 +13,12 @@ WHITE = (255, 255, 255)
 RED   = (255, 0, 0)
 GRAY  = (195, 195, 195)
 
-LIST_BOX_DIMS = (250, 400)
+LIST_BOX_DIMS = (150, 200)
 
 class Game2(object):
     def __init__(self):
         self.client = gameclient.GameClient()
-        self.users  = []
+        self.users  = ["greg", "matt"]
     
 
     # setup different font objects 
@@ -48,20 +48,30 @@ class Game2(object):
 
         self.TOP_EDGE  = self.background.get_rect().top
         self.LEFT_EDGE = self.background.get_rect().left
+        self.LEFT_MARGIN = 5
+        self.INTERBOX_MARGIN = 5
 
 
     def setup_listboxes(self):
         "instantiate a listbox for active users and games to join"
         # make two listboxes, one for users and one for games
         
+        # add a listbox to display active users in
         self.user_box = listbox.ListBox(self.background, WHITE, 
                             LIST_BOX_DIMS[0], LIST_BOX_DIMS[1],
-                            self.LEFT_EDGE + 5, self.TOP_EDGE + 100)
-
+                            self.LEFT_EDGE + self.LEFT_MARGIN, 
+                            self.TOP_EDGE + 100)
+        
+        # add listbox to display games to join in
         self.game_box = listbox.ListBox(self.background, WHITE, 
                             LIST_BOX_DIMS[0], LIST_BOX_DIMS[1], 
-                            self.LEFT_EDGE + LIST_BOX_DIMS[0], 
+                            self.LEFT_EDGE + LIST_BOX_DIMS[0] +
+                             self.INTERBOX_MARGIN + self.LEFT_MARGIN, 
                             self.TOP_EDGE + 100)
+
+        self.user_box.display_items(self.users, self.background)
+        self.game_box.display_items(self.users, self.background)
+
 
 
     # display red error message if something goes wrong w/ server or username
@@ -133,7 +143,7 @@ class Game2(object):
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     print "You pressed the left mouse button at (%d, %d)" % event.pos
-                    #for xy in self.user_pos:
+                    #for i in self.user_pos:
                     #    if xy.collidepoint(pos):
                     #        print "you clicked on a name"
 

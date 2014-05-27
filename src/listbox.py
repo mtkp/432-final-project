@@ -2,35 +2,39 @@
 
 import pygame
 
+
 class ListBox():
     # screenObj - which surface to draw onto
     # colortup  - color to fill box. ex: (255,255,255)
     # x & y     - coordinates to draw the box at
     # height & width - dimensions of the rect
     def __init__(self, screenObj, colortup, width, height, left, top):
-        # make a box to display text items in
-        self.user_box = pygame.Surface((250, 400))
-        self.user_box.fill(colortup)
-        self.user_box_pos = self.user_box.get_rect()
-        self.user_box_pos.left = left
-        self.user_box_pos.top = top
-        screenObj.blit(self.user_box, self.user_box_pos)
+        "Make a box to display text items, such as usernames or actiive games."
+        self.box_surface = pygame.Surface((width, height))
+        self.box_surface.fill(colortup)
+        self.box_surface_pos = self.box_surface.get_rect()
+        self.box_surface_pos.left = left
+        self.box_surface_pos.top = top
+        screenObj.blit(self.box_surface, self.box_surface_pos)
 
     # renders list of users in users box, returns tup of user text/ rect
     def display_items(self, items, screenObj):
-        user_names = []
-        user_pos = []
+        list_box_font  = pygame.font.SysFont(None, 24)
+
+        item_names = []
+        item_pos = []
+
         for i, name in enumerate(items):
-            user_text = user_font.render(name, True, (10, 10, 10) )
-            user_text_pos = user_text.get_rect()
-            user_text_pos.left = (user_box_pos.left + 5)
-            user_text_pos.top = user_box_pos.top + (i * (user_text_pos.height) + 2 )
-            user_names.append(user_text)
-            user_pos.append(user_text_pos)
+            item_text = list_box_font.render(name, True, (10, 10, 10) )
+            item_text_pos = item_text.get_rect()
+            item_text_pos.left = (self.box_surface_pos.left + 5)
+            item_text_pos.top = self.box_surface_pos.top + (i * (item_text_pos.height) + 2 )
+            item_names.append(item_text)
+            item_pos.append(item_text_pos)
             
-        user_tups = zip(user_names, user_pos)
-        for a, b in user_tups:      
+        item_tups = zip(item_names, item_pos)
+        for a, b in item_tups:      
             screenObj.blit(a, b)
         
-        return user_tups
+        return item_tups
 
