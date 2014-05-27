@@ -1,12 +1,10 @@
 #!/usr/bin/python2.7
 
-import pygame, sys
+import pygame
 
 import listbox
 import inputbox2
 import gameclient
-
-from pygame.locals import *    
 
 
 # Define some colors
@@ -27,7 +25,7 @@ class Game2(object):
         self.game_tups  = []
 
 
-    # setup different font objects 
+    # setup different font objects
     def setup_fonts(self):
         "setup some different fonts for later use"
         self.error_font = pygame.font.SysFont("monospace", 15)
@@ -63,7 +61,7 @@ class Game2(object):
         self.background = pygame.Surface(self.screen.get_size())
         self.background = self.background.convert()
         self.background.fill(GRAY)
-        
+
         # Display greeting text at top of window
         self.greeting = self.label_font.render("Hello There", 1, (10, 10, 10))
         self.greeting_pos = self.greeting.get_rect()
@@ -80,18 +78,18 @@ class Game2(object):
     # make two listboxes, one for users and one for games
     def setup_listboxes(self):
         "instantiate a listbox for active users and games to join"
-        
+
         # add a listbox to display active users in
-        self.user_box = listbox.ListBox(self.background, WHITE, 
+        self.user_box = listbox.ListBox(self.background, WHITE,
                             LIST_BOX_DIMS[0], LIST_BOX_DIMS[1],
-                            self.LEFT_EDGE + self.LEFT_MARGIN, 
+                            self.LEFT_EDGE + self.LEFT_MARGIN,
                             self.TOP_EDGE + 100)
-        
+
         # add listbox to display games to join in
-        self.game_box = listbox.ListBox(self.background, WHITE, 
-                            LIST_BOX_DIMS[0], LIST_BOX_DIMS[1], 
+        self.game_box = listbox.ListBox(self.background, WHITE,
+                            LIST_BOX_DIMS[0], LIST_BOX_DIMS[1],
                             self.LEFT_EDGE + LIST_BOX_DIMS[0] +
-                            self.MARGIN + self.LEFT_MARGIN, 
+                            self.MARGIN + self.LEFT_MARGIN,
                             self.TOP_EDGE + 100)
 
         # Display refresh button for user listbox
@@ -113,16 +111,16 @@ class Game2(object):
     def setup_textboxes(self):
         # server input box
         self.server_input_box = \
-                inputbox2.InputBox2(self.background, WHITE, 
-                                     200, 20, self.LEFT_EDGE + self.MARGIN, 
+                inputbox2.InputBox2(self.background, WHITE,
+                                     200, 20, self.LEFT_EDGE + self.MARGIN,
                                      self.BOTTOM_EDGE - self.MARGIN,
                                      "server", 1)
 
         # user input box
         self.user_input_box = \
-                inputbox2.InputBox2(self.background, WHITE, 
-                                     200, 20, self.LEFT_EDGE + self.MARGIN, 
-                                     self.BOTTOM_EDGE, 
+                inputbox2.InputBox2(self.background, WHITE,
+                                     200, 20, self.LEFT_EDGE + self.MARGIN,
+                                     self.BOTTOM_EDGE,
                                      "user", 2)
 
 
@@ -131,7 +129,7 @@ class Game2(object):
         "print a red error message to the screen if register operation fails"
         label = self.error_font.render(message, 1, RED)
         self.screen.blit(label,
-                     (self.server_input_box.box_surface_pos.right + 
+                     (self.server_input_box.box_surface_pos.right +
                      self.MARGIN, self.server_input_box.box_surface_pos.top,))
 
 
@@ -143,7 +141,7 @@ class Game2(object):
 
         while not (set_server and set_name):
             for event in pygame.event.get():
-                if event.type == QUIT:
+                if event.type == pygame.QUIT:
                     pygame.quit()
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse = pygame.mouse.get_pos()
@@ -151,18 +149,18 @@ class Game2(object):
                         self.username = self.user_input_box.ask()
                         set_name = True
                         # TODO: check clientside formatting
-                        print "username {}".format(self.username)    
+                        print "username {}".format(self.username)
                     elif self.server_input_box.box_surface_pos.collidepoint(mouse):
                         self.server = self.server_input_box.ask()
                         set_server = True
                         # TODO: check client side formatting of input here
                         print "joining server {}".format(self.server)
-                pygame.display.flip()            
-    
+                pygame.display.flip()
+
 
     # use the username and servername to try to register w/ the server
     def try_register(self):
-        """Attempt to use the username and the server info to register to a 
+        """Attempt to use the username and the server info to register to a
         server"""
         while 1:
             # attempt to get the username and server strings
@@ -183,12 +181,12 @@ class Game2(object):
     def run(self):
         "Run the program to display the lobby screen."
         # strt pygame
-        pygame.init()  
+        pygame.init()
         self.setup_fonts()
         self.setup_main_window()
         self.setup_listboxes();
         self.setup_textboxes();
-                
+
         # display everything to the screen
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
@@ -206,11 +204,11 @@ class Game2(object):
         while 1:
             # --- Main event loop
             for event in pygame.event.get():
-                if event.type == QUIT:
+                if event.type == pygame.QUIT:
                     return
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse = pygame.mouse.get_pos()
-                    print "You pressed the left mouse button at (%d, %d)" % event.pos       
+                    print "You pressed the left mouse button at (%d, %d)" % event.pos
                     for user in self.user_tups:
                         if user[2].collidepoint(mouse):
                             # highlight user name text with blue
@@ -221,7 +219,7 @@ class Game2(object):
                         if game[2].collidepoint(mouse):
                             # highlight gamename text with blue
                             # be aware that game is selected for register
-                            print "you clicked on {}".format(game[0])   
+                            print "you clicked on {}".format(game[0])
                     if self.user_refresh_pos.collidepoint(mouse):
                         self.refresh_users()
                     if self.game_refresh_pos.collidepoint(mouse):
@@ -240,3 +238,7 @@ class Game2(object):
         # close window and quit
         pygame.quit()
 
+
+if __name__ == "__main__":
+    game = Game2()
+    game.run()
