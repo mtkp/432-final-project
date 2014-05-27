@@ -116,16 +116,15 @@ class GameServer(object):
         self.games     = []
         self.usernames = []
 
-    def register(self, user):
-        cmd, name = user.recv()
+    def register(self, user, msg):
+        cmd, name = msg
         if cmd == "login" and name not in self.usernames:
             user.name  = name
             user.send(True)
         else:
             user.send(False)
 
-    def in_lobby(self, user):
-        msg = user.recv()
+    def in_lobby(self, user, msg):
         cmd = msg[0]
         if cmd == "users":
             user.send(self.usernames)
@@ -148,9 +147,8 @@ class GameServer(object):
         else:
             user.send(False)
 
-    def in_game(self, user):
+    def in_game(self, user, msg):
         game = user.game
-        msg = user.recv()
         cmd = msg[0]
         if cmd == "users":
             user.send(game.usernames())
@@ -175,12 +173,13 @@ class GameServer(object):
             # handle requests
             for user in self.server.users():
                 while user.has_messages():
+                    msg = user.recv()
                     if user.name is None:
-                        self.register(user)
+                        self.register(user, msg)
                     elif user.game is None:
-                        self.in_lobby(user)
+                        self.in_lobby(user, msg)
                     else:
-                        self.in_game(user)
+                        self.in_game(user, msg)
 
 
 if __name__ == "__main__":

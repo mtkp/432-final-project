@@ -14,7 +14,8 @@ def print_games(game_list):
 
 def print_game(game):
     print "####"
-    print "Game created: '{}' [{}] ({}/{})".format(game[0], game[1], len(game[2]), game[3])
+    print "'{}' [{}] ({}/{})".format(game[0], game[1], len(game[2]), game[3])
+    print_users(game[2])
     print "####"
 
 # get server name from user
@@ -51,14 +52,20 @@ while True:
     elif command == 'create game':
         result = client.create_game(raw_input("game name: "))
         if result:
+            print "Game created!"
             print_game(result)
 
     elif command == 'join game':
-        result = client.join_game(raw_input("game id: "))
-        if result:
-            print "success! joined {}".format(result[0])
-        else:
-            print "unable to join game"
+        try:
+            game_id = int(raw_input("game id: "))
+            result = client.join_game(game_id)
+            if result:
+                print "Joined game!"
+                print_game(result)
+            else:
+                print "unable to join game"
+        except ValueError:
+            print "bad id format"
 
     elif command == 'exit game':
         result = client.exit_game()
