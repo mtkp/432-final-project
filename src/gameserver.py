@@ -10,7 +10,6 @@ import message
 LISTEN_QUEUE = 5
 PORT         = 7307
 
-
 class Game(object):
     def __init__(self, name, size):
         self.users = []
@@ -52,13 +51,13 @@ class User(object):
 
 
 class UserServer(object):
-    def __init__(self, port, listen_queue):
+    def __init__(self):
         # set up non-blocking server socket with reuse option
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setblocking(0)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server.bind(('',port))
-        self.server.listen(listen_queue)
+        self.server.bind(('',PORT))
+        self.server.listen(LISTEN_QUEUE)
 
         # map socket fds to User objects
         self._users = {}
@@ -111,8 +110,8 @@ class UserServer(object):
 
 
 class GameServer(object):
-    def __init__(self, port, listen_queue):
-        self.server    = UserServer(port, listen_queue)
+    def __init__(self):
+        self.server    = UserServer()
         self.games     = []
         self.usernames = []
 
@@ -180,11 +179,3 @@ class GameServer(object):
                         self.in_lobby(user, msg)
                     else:
                         self.in_game(user, msg)
-
-
-if __name__ == "__main__":
-    server = GameServer(PORT, LISTEN_QUEUE)
-    print "<starting server on port {}>".format(PORT)
-
-    server.serve_forever()
-

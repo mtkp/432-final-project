@@ -4,6 +4,7 @@
 # our libs
 import gameclient
 
+
 def print_users(user_list):
     print '\n'.join(" - {}".format(user) for user in user_list)
 
