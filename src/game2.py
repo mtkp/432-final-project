@@ -36,7 +36,7 @@ class Game2(object):
     def get_user_tups(self, user_boxes, user_pos):
         "get a list of tuples representing users"
         self.user_tups = zip(user_names, user_boxes, user_pos)
-        return user_tups
+        return self.user_tups
 
 
     # setup for the lobby window
@@ -81,14 +81,14 @@ class Game2(object):
                             self.TOP_EDGE + 100)
 
         # prepare to display on the screen
-        self.user_box.display_items(self.users)
-        self.game_box.display_items(self.users)
+        #self.user_box.display_items(self.users)
+        #self.game_box.display_items(self.users)
 
         # Display refresh button for user listbox
-        self.user_refresh = label_font.render("refresh", True, (10, 10, 10))
-        self.user_refresh_pos = refresh.get_rect()
-        self.user_refresh_pos.top = user_box_pos.bottom
-        background.blit(self.user_refresh, self.user_refresh_pos)
+        self.user_refresh = self.label_font.render("refresh", True, (10, 10, 10))
+        self.user_refresh_pos = self.user_refresh.get_rect()
+        self.user_refresh_pos.top = self.user_box.box_surface_pos.bottom
+        self.background.blit(self.user_refresh, self.user_refresh_pos)
 
 
     # setup input text boxes to get info from user
@@ -107,8 +107,8 @@ class Game2(object):
                                      self.BOTTOM_EDGE, 
                                      "user", 2)
 
-        self.inputbox_buttons.append(self.server_input_box.box_surface_pos)
-        self.inputbox_buttons.append(self.user_input_box.box_surface_pos)
+        #self.inputbox_buttons.append(self.server_input_box.box_surface_pos)
+        #self.inputbox_buttons.append(self.user_input_box.box_surface_pos)
 
 
     # display red error message if something goes wrong w/ server or username
@@ -118,17 +118,32 @@ class Game2(object):
         self.screen.blit(label, (100, 100))
 
 
-    # diplay the username and server input boxes, get input
+    # get input from the server input box, then the user input box
     def get_input(self):
         "get user input for server, username"
+        set_server = False
+        set_name = False
+
         while 1:
-            self.server = inputbox.ask(screen, 'server')
-            # TODO: check client side formatting of input here
-            print "joining server {}".format(self.server)
-              
-            self.username = inputbox.ask(screen, 'username')
-            # TODO: check clientside formatting
-            print "username {}".format(self.username)        
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse = pygame.mouse.get_pos()
+                    if self.user_input_box.box_surface_pos.collidepoint(mouse):
+                        self.username = self.user_input_box.ask()
+                        set_name = True
+                        # TODO: check clientside formatting
+                        print "username {}".format(self.username)    
+                    elif self.server_input_box.box_surface_pos.collidepoint(mouse):
+                        self.server = self.server_input_box.ask()
+                        set_server = True
+                        # TODO: check client side formatting of input here
+                        print "joining server {}".format(self.server)
+                   
+                pygame.display.flip()            
+            if set_server and set_name:
+                break
     
 
     # use the username and servername to try to register w/ the server
@@ -136,8 +151,11 @@ class Game2(object):
         """Attempt to use the username and the server info to register to a 
         server"""
         while 1:
+            # attempt to get the username and server strings
+            self.get_input()
+            # attemopt to connect with given username and server info
             try:
-                client.register(username, server)
+                self.client.register(username, server)
                 break
             except gameclient.InvalidFormat:
                 print_error("invalid usrname format")
@@ -156,12 +174,13 @@ class Game2(object):
         self.setup_main_window()
         self.setup_listboxes();
         self.setup_textboxes();
-        #get_input()
-        #try_register   
                 
         # display everything to the screen
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
+
+        # try to get the input before making a connection
+        self.try_register()
 
         # Used to manage how fast the screen updates
         clock = pygame.time.Clock()
@@ -175,16 +194,17 @@ class Game2(object):
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse = pygame.mouse.get_pos()
                     print "You pressed the left mouse button at (%d, %d)" % event.pos       
-                    if server_input_box.box_surface_pos.collidepoint(pos):
-                        self.server = self.server_input_box.ask()
-                    elif user_input_box.box_surface_pos.collidepoint(pos):
-                        self.user = self.user_input_box.ask()
-                    for user in user_tups:
+                    #if server_input_box.box_surface_pos.collidepoint(pos):
+                    #    self.server = self.server_input_box.ask()
+                    #elif user_input_box.box_surface_pos.collidepoint(pos):
+                    #    self.user = self.user_input_box.ask()
+                    for user in self.user_tups:
                         if user[2].collidepoint(mouse):
                             print "you clicked on {}".format(user[0])
                     if refresh_pos.collidepoint(mouse):
-                        user_names = client.get_users()
-                        user_tup = get_user_tups(user_names, user_boxes, user_pos)
+                        self.user_names = client.get_users()
+                        self.user_tup = self.get_user_tups(self.user_names, 
+                                            self.user_boxes, self.user_pos)
                         print "updated user list"
 
             # --- Game logic should go here

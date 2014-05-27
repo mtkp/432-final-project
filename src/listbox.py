@@ -22,22 +22,24 @@ class ListBox():
     def display_items(self, items):
         "displays a given list inside of this listbox"
 #------------------------------------------------------------------------------
-            # display users in users_box
-            list_box_font  = pygame.font.SysFont(None, 24)
+        # display users in users_box
+        list_box_font = pygame.font.SysFont(None, 24)
 
-            item_boxes = []
-            item_pos = []
-            for i, name in enumerate(user_names):
-                item_text = item_font.render(name, True, (10, 10, 10), item_box.get_at((0,0)))
-                item_text_pos = item_text.get_rect()
-                item_text_pos.left = (self.box_surface_pos.left + 5)
-                item_text_pos.top = self.box_surface_pos.top + (i * (item_text_pos.height) + 2 )
-                item_boxes.append(item_text)
-                item_pos.append(item_text_pos)
+        item_boxes = []
+        item_pos = []
+        for i, name in enumerate(user_names):
+            item_text = item_font.render(name, True, (10, 10, 10), item_box.get_at((0,0)))
+            item_text_pos = item_text.get_rect()
+            item_text_pos.left = (self.box_surface_pos.left + 5)
+            item_text_pos.top = self.box_surface_pos.top + (i * (item_text_pos.height) + 2 )
+            item_boxes.append(item_text)
+            item_pos.append(item_text_pos)
 
-            item_tups = zip(item_names, item_boxes, item_pos)
-            for _, box, position in item_tups:
-                self.background.blit(box, position)
+        item_tups = zip(item_names, item_boxes, item_pos)
+        for _, box, position in item_tups:
+            self.background.blit(box, position)
+
+        return item_tups
 #------------------------------------------------------------------------------
 
 
@@ -45,24 +47,27 @@ class ListBox():
 
 
 
-        list_box_font  = pygame.font.SysFont(None, 24)
+        #list_box_font  = pygame.font.SysFont(None, 24)
 
-        item_names = []
-        item_pos = []
+        #item_names = []
+        #item_pos = []
 
-        for i, name in enumerate(items):
-            item_text = list_box_font.render(name, True, (10, 10, 10) )
-            item_text_pos = item_text.get_rect()
-            item_text_pos.left = (self.box_surface_pos.left + 5)
-            item_text_pos.top = self.box_surface_pos.top + (i * (item_text_pos.height) + 2 )
-            item_names.append(item_text)
-            item_pos.append(item_text_pos)
+        #for i, name in enumerate(items):
+        #    item_text = list_box_font.render(name, True, (10, 10, 10) )
+        #    item_text_pos = item_text.get_rect()
+        #    item_text_pos.left = (self.box_surface_pos.left + 5)
+        #    item_text_pos.top = self.box_surface_pos.top + (i * (item_text_pos.height) + 2 )
+        #    item_names.append(item_text)
+        #    item_pos.append(item_text_pos)
             
-        item_tups = zip(item_names, item_pos)
-        for a, b in item_tups:      
-            self.background.blit(a, b)
+        #item_tups = zip(item_names, item_pos)
+        #for a, b in item_tups:      
+        #    self.background.blit(a, b)
         
-        return item_tups
+        #return item_tups
+
+
+
 
         # setup the list box title
         #title_text = label_font.render("Active Users", 1, (10, 10, 10))
