@@ -1,62 +1,88 @@
-# by Timothy Downs, inputbox written for my map editor
+#!/usr/bin/python2.7
 
-# This program needs a little cleaning up
-# It ignores the shift key
-# And, for reasons of my own, this program converts "-" to "_"
-
-# A program to get user input, allowing backspace etc
-# shown in a box in the middle of the screen
-# Called by:
-# import inputbox
-# answer = inputbox.ask(screen, "Your name")
-#
-# Only near the center of the screen is blitted to
-
-import pygame, pygame.font, pygame.event, pygame.draw, string
+import pygame, pygame.draw
 from pygame.locals import *
 
-def get_key():
-  while 1:
-    event = pygame.event.poll()
-    if event.type == pygame.QUIT:
-        pygame.quit()
-    elif event.type == KEYDOWN:
-      return event.key
-    else:
-      pass
+import game
 
-def display_box(screen, message):
-  "Print a message in a box in the middle of the screen"
-  fontobject = pygame.font.Font(None,18)
+class InputBox(object):
+    "a text input box for getting user input"
+    def __init__(self, screen, colortup, width, height, left, bottom, message,
+                 sequence_num):
+        self.message = message
+        self.background = screen
+        self.LEFT_EDGE = self.background.get_rect().left
+        self.BOTTOM_EDGE = self.background.get_rect().bottom
+        self.MARGIN = 5
 
-  pygame.draw.rect(screen, (0,0,0),
-                   ((screen.get_width() / 2) - 100,
-                    (screen.get_height() / 2) - 10,
-                    200,20), 0)
-  pygame.draw.rect(screen, (255,255,255),
-                   ((screen.get_width() / 2) - 102,
-                    (screen.get_height() / 2) - 12,
-                    204,24), 1)
-  if len(message) != 0:
-    screen.blit(fontobject.render(message, 1, (255,255,255)),
-                ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 10))
-  pygame.display.flip()
+        self.width = width
+        self.height = height
+        self.left = left
+        self.bottom = self.BOTTOM_EDGE - (sequence_num * (height + self.MARGIN))
 
-def ask(screen, question):
-  "ask(screen, question) -> answer"
-  pygame.font.init()
-  current_string = []
-  display_box(screen, question + ": " + string.join(current_string,""))
-  while 1:
-    inkey = get_key()
-    if inkey == K_BACKSPACE:
-      current_string = current_string[0:-1]
-    elif inkey == K_RETURN:
-      break
-    #elif inkey == K_MINUS:
-    #  current_string.append("_")
-    elif inkey <= 127:
-      current_string.append(chr(inkey))
-    display_box(screen, question + ": " + string.join(current_string,""))
-  return string.join(current_string,"")
+        self.box_surface = pygame.Surface((width, height))
+        self.box_surface.fill(colortup)
+        self.box_surface_pos = self.box_surface.get_rect()
+        self.box_surface_pos.left = left
+        self.box_surface_pos.bottom = self.bottom
+        self.background.blit(self.box_surface, self.box_surface_pos)
+
+        self.font = pygame.font.Font(None, 20)
+        self.display_box(self.message + ": ")
+
+
+    # if the given box has focus, get the input for it
+    def get_input_key(self):
+        while 1:
+            event = pygame.event.poll()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == KEYDOWN:
+                return event.key
+            else:
+                pass
+
+    # called each character key is pressed during ask()
+    def display_box(self, message):
+        print "<message = {}>".format(message)
+
+        pygame.draw.rect(
+            self.background,
+            game.WHITE,
+            (self.left, self.bottom - self.height, self.width, self.height),
+            0
+        )
+
+        self.background.blit(
+            self.font.render(message, 1, game.BLACK),
+            (self.left, self.bottom - self.height)
+        )
+        pygame.display.get_surface().blit(self.background, (0,0))
+        pygame.display.flip()
+
+
+    # called when input box gets focus
+    def ask(self):
+        pygame.font.init()
+        current_string = []
+        self.display_box(self.message + ": " + "".join(current_string))
+
+        while 1:
+            inkey = self.get_input_key()
+            if inkey == K_RETURN:
+                break
+            elif inkey == K_BACKSPACE:
+                current_string = current_string[0:-1]
+                self.display_box(
+                    self.message + ": " + "".join(current_string)
+                )
+            elif inkey <= 127:
+                current_string.append(chr(inkey))
+                self.display_box(
+                    self.message + ": " + "".join(current_string)
+                )
+
+        return "".join(current_string)
+
+
 

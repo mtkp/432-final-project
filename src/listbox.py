@@ -3,7 +3,7 @@
 import pygame
 
 
-class ListBox():
+class ListBox(object):
     # surface - which surface to draw onto
     # colortup  - color to fill box. ex: (255,255,255)
     # x & y     - coordinates to draw the box at
