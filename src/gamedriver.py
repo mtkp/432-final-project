@@ -2,10 +2,10 @@
 
 import pygame
 
-import game2
+import game
 
 def main():
-    myGame = game2.Game2()
+    myGame = game.Game()
     myGame.run()
 
 

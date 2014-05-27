@@ -1,6 +1,7 @@
 #!/usr/bin/python2.7
 
 import pygame, pygame.draw
+import sys
 from pygame.locals import *
 
 import game
@@ -37,6 +38,7 @@ class InputBox(object):
             event = pygame.event.poll()
             if event.type == pygame.QUIT:
                 pygame.quit()
+                sys.exit()
             elif event.type == KEYDOWN:
                 return event.key
             else:

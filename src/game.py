@@ -1,6 +1,7 @@
 #!/usr/bin/python2.7
 
 import pygame
+import sys
 
 import listbox
 import inputbox
@@ -138,6 +139,7 @@ class Game(object):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    sys.exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse = pygame.mouse.get_pos()
                     if self.user_input_box.box_surface_pos.collidepoint(mouse):
@@ -205,7 +207,7 @@ class Game(object):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    return
+                    sys.exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse = pygame.mouse.get_pos()
                     print "You pressed the left mouse button at (%d, %d)" % event.pos
