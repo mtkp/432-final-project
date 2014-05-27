@@ -20,7 +20,8 @@ LIST_BOX_DIMS = (150, 200)
 class Game2(object):
     def __init__(self):
         self.client = gameclient.GameClient()
-        self.users  = ["greg", "matt"]
+        self.user_names = []
+        self.user_tups = []
     
 
     # setup different font objects 
@@ -29,6 +30,13 @@ class Game2(object):
         self.error_font = pygame.font.SysFont("monospace", 15)
         self.label_font = pygame.font.Font(None, 36)
         self.user_font  = pygame.font.SysFont(None, 24)
+
+
+    # get a list of tuples, used to display user list in listbox
+    def get_user_tups(self, user_boxes, user_pos):
+        "get a list of tuples representing users"
+        self.user_tups = zip(user_names, user_boxes, user_pos)
+        return user_tups
 
 
     # setup for the lobby window
@@ -50,13 +58,14 @@ class Game2(object):
 
         self.TOP_EDGE  = self.background.get_rect().top
         self.LEFT_EDGE = self.background.get_rect().left
+        self.BOTTOM_EDGE = self.background.get_rect().bottom
         self.LEFT_MARGIN = 5
-        self.INTERBOX_MARGIN = 5
+        self.MARGIN = 5
 
 
+    # make two listboxes, one for users and one for games
     def setup_listboxes(self):
         "instantiate a listbox for active users and games to join"
-        # make two listboxes, one for users and one for games
         
         # add a listbox to display active users in
         self.user_box = listbox.ListBox(self.background, WHITE, 
@@ -68,18 +77,38 @@ class Game2(object):
         self.game_box = listbox.ListBox(self.background, WHITE, 
                             LIST_BOX_DIMS[0], LIST_BOX_DIMS[1], 
                             self.LEFT_EDGE + LIST_BOX_DIMS[0] +
-                            self.INTERBOX_MARGIN + self.LEFT_MARGIN, 
+                            self.MARGIN + self.LEFT_MARGIN, 
                             self.TOP_EDGE + 100)
 
+        # prepare to display on the screen
         self.user_box.display_items(self.users)
         self.game_box.display_items(self.users)
 
+        # Display refresh button for user listbox
+        self.user_refresh = label_font.render("refresh", True, (10, 10, 10))
+        self.user_refresh_pos = refresh.get_rect()
+        self.user_refresh_pos.top = user_box_pos.bottom
+        background.blit(self.user_refresh, self.user_refresh_pos)
 
+
+    # setup input text boxes to get info from user
     def setup_textboxes(self):
-        self.server_input_box = inputbox2.InputBox2(self.background, WHITE, 
-                                                    200, 20, self.LEFT_EDGE, 
-                                                    self.TOP_EDGE + 50, 
-                                                    "server", 0)
+        # server input box
+        self.server_input_box = \
+                inputbox2.InputBox2(self.background, WHITE, 
+                                     200, 20, self.LEFT_EDGE + self.MARGIN, 
+                                     self.BOTTOM_EDGE - self.MARGIN,
+                                     "server", 1)
+
+        # user input box
+        self.user_input_box = \
+                inputbox2.InputBox2(self.background, WHITE, 
+                                     200, 20, self.LEFT_EDGE + self.MARGIN, 
+                                     self.BOTTOM_EDGE, 
+                                     "user", 2)
+
+        self.inputbox_buttons.append(self.server_input_box.box_surface_pos)
+        self.inputbox_buttons.append(self.user_input_box.box_surface_pos)
 
 
     # display red error message if something goes wrong w/ server or username
@@ -129,13 +158,6 @@ class Game2(object):
         self.setup_textboxes();
         #get_input()
         #try_register   
-
-        # setup the user box title
-        #title_text = label_font.render("Active Users", 1, (10, 10, 10))
-        #title_text_pos = title_text.get_rect()
-        #title_text_pos.bottom = (user_box_pos.top)
-        #title_text_pos.left = (background.get_rect().left + 20)
-        #background.blit(title_text, title_text_pos)
                 
         # display everything to the screen
         self.screen.blit(self.background, (0, 0))
@@ -144,21 +166,37 @@ class Game2(object):
         # Used to manage how fast the screen updates
         clock = pygame.time.Clock()
 
-        # Event loop
+        # -------- Main Program Loop -----------
         while 1:
+            # --- Main event loop
             for event in pygame.event.get():
                 if event.type == QUIT:
                     return
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    pos = pygame.mouse.get_pos()
-                    print "You pressed the left mouse button at (%d, %d)" % event.pos
-                    #for i in self.user_pos:
-                    #    if xy.collidepoint(pos):
-                    #        print "you clicked on a name"
+                    mouse = pygame.mouse.get_pos()
+                    print "You pressed the left mouse button at (%d, %d)" % event.pos       
+                    if server_input_box.box_surface_pos.collidepoint(pos):
+                        self.server = self.server_input_box.ask()
+                    elif user_input_box.box_surface_pos.collidepoint(pos):
+                        self.user = self.user_input_box.ask()
+                    for user in user_tups:
+                        if user[2].collidepoint(mouse):
+                            print "you clicked on {}".format(user[0])
+                    if refresh_pos.collidepoint(mouse):
+                        user_names = client.get_users()
+                        user_tup = get_user_tups(user_names, user_boxes, user_pos)
+                        print "updated user list"
 
+            # --- Game logic should go here
+
+            # --- Drawing code should go here
             self.screen.blit(self.background, (0, 0))
             pygame.display.flip()
 
+
              # Limit to 20 frames per second
             clock.tick(20)
+
+        # close window and quit
+        pygame.quit()
 
