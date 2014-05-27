@@ -48,11 +48,11 @@ class InputBox2(object):
     def display_box(self, message):
         fontobject = pygame.font.Font(None,18)
         pygame.draw.rect(self.background, WHITE,
-                         (self.left, self.bottom - self.height, self.width, self.height), 0)
+                         (self.left, self.bottom - self.height,
+                          self.width, self.height), 0)
         if len(message) != 0:
             self.background.blit(fontobject.render(message, 1, BLACK),
                         (self.left, self.bottom - self.height))
-                        #+ self.sequenceNum
         pygame.display.flip()
 
 

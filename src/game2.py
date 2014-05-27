@@ -14,6 +14,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED   = (255, 0, 0)
 GRAY  = (195, 195, 195)
+BLUE  = (0, 0, 255)
 
 LIST_BOX_DIMS = (150, 200)
 
@@ -24,7 +25,7 @@ class Game2(object):
         self.user_tups  = []
         self.game_names = []
         self.game_tups  = []
-    
+
 
     # setup different font objects 
     def setup_fonts(self):
@@ -34,13 +35,6 @@ class Game2(object):
         self.user_font  = pygame.font.SysFont(None, 24)
 
 
-    ## get a list of tuples, used to display user list in listbox
-    #def get_user_tups(self, user_boxes, user_pos):
-    #    "get a list of tuples representing users"
-    #    self.user_tups = zip(user_names, user_boxes, user_pos)
-    #    return self.user_tups
-
-    
     # display latest list of active users inside the active user listbox
     def refresh_users(self):
         "Refresh list of active users."
@@ -49,13 +43,15 @@ class Game2(object):
         self.user_tups = self.user_box.display_items(self.user_names)
         print "updated user list"
 
+
     # display latest list of active users inside the game listbox
     def refresh_games(self):
         "Refresh list of active games."
         # get up to date list of users
-        self.games = self.client.get_games()
+        self.game_names = self.client.get_games()
         self.game_tups = self.game_box.display_items(self.game_names)
         print "updated games list"
+
 
     # setup for the lobby window
     def setup_main_window(self):
@@ -98,15 +94,19 @@ class Game2(object):
                             self.MARGIN + self.LEFT_MARGIN, 
                             self.TOP_EDGE + 100)
 
-        # prepare to display on the screen
-        #self.user_box.display_items(self.users)
-        #self.game_box.display_items(self.users)
-
         # Display refresh button for user listbox
-        self.user_refresh = self.label_font.render("refresh", True, (10, 10, 10))
+        self.user_refresh = self.label_font.render("refresh", True, BLACK)
         self.user_refresh_pos = self.user_refresh.get_rect()
         self.user_refresh_pos.top = self.user_box.box_surface_pos.bottom
+        self.user_refresh_pos.left = self.user_box.box_surface_pos.left
         self.background.blit(self.user_refresh, self.user_refresh_pos)
+
+        # Display refresh button for game listbox
+        self.game_refresh = self.label_font.render("refresh", True, BLACK)
+        self.game_refresh_pos = self.game_refresh.get_rect()
+        self.game_refresh_pos.top = self.game_box.box_surface_pos.bottom
+        self.game_refresh_pos.left = self.game_box.box_surface_pos.left
+        self.background.blit(self.game_refresh, self.game_refresh_pos)
 
 
     # setup input text boxes to get info from user
@@ -125,15 +125,14 @@ class Game2(object):
                                      self.BOTTOM_EDGE, 
                                      "user", 2)
 
-        #self.inputbox_buttons.append(self.server_input_box.box_surface_pos)
-        #self.inputbox_buttons.append(self.user_input_box.box_surface_pos)
-
 
     # display red error message if something goes wrong w/ server or username
-    def _print_error(self, message):
+    def print_error(self, message):
         "print a red error message to the screen if register operation fails"
         label = self.error_font.render(message, 1, RED)
-        self.screen.blit(label, (100, 100))
+        self.screen.blit(label,
+                     (self.server_input_box.box_surface_pos.right + 
+                     self.MARGIN, self.server_input_box.box_surface_pos.top,))
 
 
     # get input from the server input box, then the user input box
@@ -142,7 +141,7 @@ class Game2(object):
         set_server = False
         set_name = False
 
-        while 1:
+        while not (set_server and set_name):
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -158,10 +157,7 @@ class Game2(object):
                         set_server = True
                         # TODO: check client side formatting of input here
                         print "joining server {}".format(self.server)
-                   
                 pygame.display.flip()            
-            if set_server and set_name:
-                break
     
 
     # use the username and servername to try to register w/ the server
@@ -204,6 +200,9 @@ class Game2(object):
         clock = pygame.time.Clock()
 
         # -------- Main Program Loop -----------
+        #selected_game_idx = None
+        #selected_user_idx = None
+
         while 1:
             # --- Main event loop
             for event in pygame.event.get():
@@ -214,9 +213,19 @@ class Game2(object):
                     print "You pressed the left mouse button at (%d, %d)" % event.pos       
                     for user in self.user_tups:
                         if user[2].collidepoint(mouse):
+                            # highlight user name text with blue
+                            # TODO: reset highlight on next mouse event
+                            # be aware that game is selected for register
                             print "you clicked on {}".format(user[0])
+                    for game in self.game_tups:
+                        if game[2].collidepoint(mouse):
+                            # highlight gamename text with blue
+                            # be aware that game is selected for register
+                            print "you clicked on {}".format(game[0])   
                     if self.user_refresh_pos.collidepoint(mouse):
                         self.refresh_users()
+                    if self.game_refresh_pos.collidepoint(mouse):
+                        self.refresh_games()
 
             # --- Game logic should go here
 

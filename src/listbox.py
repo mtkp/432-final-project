@@ -38,31 +38,7 @@ class ListBox():
         item_tups = zip(item_names, item_boxes, item_pos)
         for _, box, position in item_tups:
             self.background.blit(box, position)
-
         return item_tups
-
-
-#---- extra crap ---------------------------------------------------------
-        #list_box_font  = pygame.font.SysFont(None, 24)
-
-        #item_names = []
-        #item_pos = []
-
-        #for i, name in enumerate(items):
-        #    item_text = list_box_font.render(name, True, (10, 10, 10) )
-        #    item_text_pos = item_text.get_rect()
-        #    item_text_pos.left = (self.box_surface_pos.left + 5)
-        #    item_text_pos.top = self.box_surface_pos.top + (i * (item_text_pos.height) + 2 )
-        #    item_names.append(item_text)
-        #    item_pos.append(item_text_pos)
-            
-        #item_tups = zip(item_names, item_pos)
-        #for a, b in item_tups:      
-        #    self.background.blit(a, b)
-        
-        #return item_tups
-
-
 
 
         # setup the list box title
