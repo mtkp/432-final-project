@@ -19,16 +19,16 @@ class ListBox():
         self.background.blit(self.box_surface, self.box_surface_pos)
 
     # renders list of users in users box, returns tup of user text/rect
-    def display_items(self, items):
+    def display_items(self, item_names):
         "displays a given list inside of this listbox"
-#------------------------------------------------------------------------------
         # display users in users_box
         list_box_font = pygame.font.SysFont(None, 24)
 
         item_boxes = []
         item_pos = []
-        for i, name in enumerate(user_names):
-            item_text = item_font.render(name, True, (10, 10, 10), item_box.get_at((0,0)))
+        for i, name in enumerate(item_names):
+            item_text = list_box_font.render(name, True, (10, 10, 10), 
+                            self.box_surface.get_at((0,0)))
             item_text_pos = item_text.get_rect()
             item_text_pos.left = (self.box_surface_pos.left + 5)
             item_text_pos.top = self.box_surface_pos.top + (i * (item_text_pos.height) + 2 )
@@ -40,13 +40,9 @@ class ListBox():
             self.background.blit(box, position)
 
         return item_tups
-#------------------------------------------------------------------------------
 
 
-
-
-
-
+#---- extra crap ---------------------------------------------------------
         #list_box_font  = pygame.font.SysFont(None, 24)
 
         #item_names = []
