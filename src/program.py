@@ -17,6 +17,22 @@ class UserInput(object):
         self.events = pygame.event.get()
 
 
+class BorderBox(object):
+    def __init__(self, background, center, size, fill_color):
+        border_size = size[0] + 2, size[1] + 2
+        self.border = rect.Rectangle(background, center, border_size, color.Black)
+        self.box = rect.Rectangle(background, center, size, fill_color)
+
+    def draw(self):
+        self.border.draw()
+        self.box.draw()
+
+    def set_color(self, color):
+        self.box.set_color(color)
+
+    def collidepoint(self, xy):
+        return self.box.collidepoint(xy)
+
 class Text(object):
     def __init__(self, text, background, center):
         self.background = background
@@ -32,7 +48,7 @@ class TextBox(object):
     def __init__(self, text, background, center, size):
         self.background = background
         self.text = Text(text, background, center)
-        self.box  = rect.Rectangle(background, center, size, color.White)
+        self.box  = BorderBox(background, center, size, color.White)
 
     def draw(self):
         self.box.draw()
@@ -50,9 +66,9 @@ class InputBox(object):
         self.center = center
         self.size = size
         self.text = [c for c in text]
-        self._draw_text_box()
-        self.box = rect.Rectangle(background, center, size, color.LightGray)
+        self.box = BorderBox(background, center, size, color.LightGray)
         self.focus = rect.Rectangle(background, center, size, color.White)
+        self._draw_text_box()
         self.active = False
 
     def _draw_text_box(self):
@@ -61,6 +77,7 @@ class InputBox(object):
             self.background,
             self.center,
         )
+        self.text_box.rect.left = self.box.box.rect.left + 4
         self.text_box.draw()
 
     def draw(self):
@@ -112,11 +129,13 @@ class Login(object):
             (800, 600),
             color.Gray
         )
-        self.name_label = TextBox("name:", background, (225, 150), (100, 30))
-        self.name_input = InputBox("", background, (450, 150), (300, 30))
+        self.name_label = Text("name ", background, (450, 150))
+        self.name_input = InputBox("", background, (450, 150), (300, 28))
+        self.name_label.rect.right = self.name_input.box.box.rect.left
 
-        self.server_label = TextBox("server:", background, (225, 250), (100, 30))
-        self.server_input = InputBox("", background, (450, 250), (300, 30))
+        self.server_label = Text("server ", background, (450, 250))
+        self.server_input = InputBox("", background, (450, 250), (300, 28))
+        self.server_label.rect.right = self.server_input.box.box.rect.left
 
         self.login_button = Button("login", background, (550, 350), (100, 30))
 
