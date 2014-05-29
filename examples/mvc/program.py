@@ -15,8 +15,9 @@ import user
 class Program(base.Controller):
     def __init__(self, handler):
         base.Controller.__init__(self, handler)
-        self.user = user.User(self.handler)
-        self.game = game.Game(self.handler)
+        self.user  = user.User(self.handler)
+        self.game  = game.Game(self.handler)
+        self.lobby = lobby.Lobby(self.handler)
 
     def notify(self, event):
         post_event = {
@@ -31,7 +32,7 @@ class Program(base.Controller):
 class ViewSelector(base.Controller):
     def __init__(self, handler):
         base.Controller.__init__(self, handler)
-        self.handler.register_tick(self)
+        self.handler.register_for_ticks(self)
 
         pygame.init()
         pygame.font.init()
@@ -40,6 +41,7 @@ class ViewSelector(base.Controller):
 
         self.background = pygame.Surface(self.window.get_size())
 
+        # inject self as handler so we can deliver messages only when we want
         self.views = {
             "login": login.LoginView(self, self.background),
             "lobby": lobby.LobbyView(self, self.background),
@@ -59,7 +61,7 @@ class ViewSelector(base.Controller):
     def post_event(self, event):
         self.handler.post_event(event)
 
-    def register_event(self, _):
+    def register_for_events(self, _):
         pass
 
     def tick(self):
@@ -71,10 +73,11 @@ class ViewSelector(base.Controller):
 
 
 def main():
-    handler       = base.Handler()
+    handler       = base.EventManager()
     inputs        = userinput.Input(handler)
     program_views = ViewSelector(handler)
     program       = Program(handler)
+
     clock.Clock(handler).run()
 
 

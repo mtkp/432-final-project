@@ -31,14 +31,24 @@ class TryLogin(Event):
         self.name = name
         self.server = server
 
+class Logout(Event):
+    pass
+
 class UserLoggedIn(Event):
     pass
 
 class UserLoggedOut(Event):
     pass
 
+class GetUser(Event):
+    pass
+
 class GetUsers(Event):
     pass
+
+class User(Event):
+    def __init__(self, name):
+        self.name = name
 
 class Users(Event):
     def __init__(self, users):

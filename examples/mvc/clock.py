@@ -6,6 +6,8 @@ import events
 
 
 class Clock(base.Controller):
+    FRAMERATE = 30
+
     def __init__(self, handler):
         base.Controller.__init__(self, handler)
         self.running = True
@@ -13,7 +15,7 @@ class Clock(base.Controller):
     def run(self):
         clock = pygame.time.Clock()
         while self.running:
-            clock.tick(30)
+            clock.tick(Clock.FRAMERATE)
             self.handler.post_tick()
 
     def notify(self, event):

@@ -25,6 +25,8 @@ class GameClient(object):
         """Register to a server by username.
         Exceptions: ServerNotFound, InvalidFormat, UsernameUnavailable
         """
+        if len(username) < 3:
+            raise InvalidFormat
         self._join_server(server)
         self._login(username)
 
@@ -83,8 +85,6 @@ class GameClient(object):
             raise ServerNotFound
 
     def _login(self, username):
-        if len(username) < 2:
-            raise InvalidFormat
         self._send("login", username)
         success = self._recv()
         if not success:
