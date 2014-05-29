@@ -41,9 +41,9 @@ class ViewSelector(base.Controller):
         self.background = pygame.Surface(self.window.get_size())
 
         self.views = {
-            "login": login.LoginView(self.handler, self.background),
-            "lobby": lobby.LobbyView(self.handler, self.background),
-            "game":  game.GameView(self.handler, self.background)
+            "login": login.LoginView(self, self.background),
+            "lobby": lobby.LobbyView(self, self.background),
+            "game":  game.GameView(self, self.background)
         }
         self.state = "login"
 
@@ -54,22 +54,29 @@ class ViewSelector(base.Controller):
             events.GameView:  "game"
         }.get(type(event), self.state)
 
+        self.views[self.state].notify(event)
+
+    def post_event(self, event):
+        self.handler.post_event(event)
+
+    def register_event(self, _):
+        pass
+
     def tick(self):
-        self.views[self.state].draw()
+        view = self.views[self.state]
+        view.draw()
+        view.window.blit(view.background, view.background.get_rect())
         self.window.blit(self.background, self.background.get_rect())
         pygame.display.flip()
 
 
 def main():
-    handler = events.Handler()
-
-    draw_clock = clock.Clock(handler)
-    inputs     = userinput.Input(handler)
-
+    handler       = base.Handler()
+    inputs        = userinput.Input(handler)
     program_views = ViewSelector(handler)
     program       = Program(handler)
+    clock.Clock(handler).run()
 
-    draw_clock.run()
 
 if __name__ == '__main__':
     main()

@@ -6,10 +6,12 @@ class Stop(Event):
     pass
 
 class KeyPress(Event):
-    pass
+    def __init__(self, key):
+        self.key = key
 
 class MouseClick(Event):
-    pass
+    def __init__(self, pos):
+        self.pos = pos
 
 class LoginView(Event):
     pass
@@ -35,24 +37,10 @@ class UserLoggedIn(Event):
 class UserLoggedOut(Event):
     pass
 
+class GetUsers(Event):
+    pass
 
-class Handler(object):
-    def __init__(self):
-        self.event_listeners = []
-        self.tick_listeners = []
-
-    def register_event(self, listener):
-        print "registering " + str(listener.__class__)
-        self.event_listeners.append(listener)
-
-    def register_tick(self, listener):
-        self.tick_listeners.append(listener)
-
-    def post_event(self, event):
-        for listener in self.event_listeners:
-            listener.notify(event)
-
-    def post_tick(self):
-        for listener in self.tick_listeners:
-            listener.tick()
+class Users(Event):
+    def __init__(self, users):
+        self.users = users
 

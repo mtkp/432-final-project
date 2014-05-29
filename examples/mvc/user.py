@@ -12,6 +12,8 @@ class User(base.Model):
     def notify(self, event):
         if isinstance(event, events.TryLogin):
             self.register(event.name, event.server)
+        if isinstance(event, events.GetUsers):
+            self.get_users()
 
     def register(self, name, server):
         try:
@@ -23,3 +25,9 @@ class User(base.Model):
             self.handler.post_event(events.LoginError("Username is taken"))
         except gameclient.ServerNotFound:
             self.handler.post_event(events.LoginError("Server not found"))
+
+    def get_users(self):
+        users = self.client.get_users()
+        if users:
+            self.handler.post_event(events.Users(users))
+
