@@ -1,7 +1,6 @@
 #!/usr/bin/python2.7
 
-import pygame
-
+import .
 
 class Event(object):
     pass
@@ -25,6 +24,14 @@ class LobbyViewEvent(Event):
 class GameViewEvent(Event):
     pass
 
+class TryLoginEvent(Event):
+    pass
+
+class UserLoggedInEvent(Event):
+    pass
+
+class UserLoggedOutEvent(Event):
+    pass
 
 class EventHandler(object):
     def __init__(self):
@@ -79,13 +86,9 @@ class ProgramController(ControllerBase):
         ControllerBase.__init__(self, event_handler)
 
     def notify(self, event):
-        if isinstance(event, KeyPressEvent):
-            if chr(event.key) == 'q':
-                self.event_handler.post(LoginViewEvent())
-            elif chr(event.key) == 'w':
-                self.event_handler.post(LobbyViewEvent())
-            elif chr(event.key) == 'e':
-                self.event_handler.post(GameViewEvent())
+        {UserLoggedInEvent:  self.event_handler.post(LobbyViewEvent()),
+         UserLoggedOutEvent: self.event_handler.post(LoginViewEvent())
+        }.get(type(event))
 
 
 class ViewBase(object):
@@ -105,7 +108,7 @@ class LoginView(ViewBase):
         ViewBase.__init__(self, event_handler)
         self.window = window
         self.background = pygame.Surface(self.window.get_size())
-        self.background.fill((255, 0, 0))
+        self.background.fill(color.Red)
         self.font = pygame.font.SysFont("monospace", 24)
 
     def notify(self, event):
@@ -113,7 +116,7 @@ class LoginView(ViewBase):
 
     def draw(self):
         self.background.blit(
-            self.font.render(str(type(self)), 1, (0, 0, 0)),
+            self.font.render(str(type(self)), 1, color.Black),
             self.background.get_rect()
         )
         self.window.blit(self.background, self.background.get_rect())
@@ -124,7 +127,7 @@ class LobbyView(ViewBase):
         ViewBase.__init__(self, event_handler)
         self.window = window
         self.background = pygame.Surface(self.window.get_size())
-        self.background.fill((0, 255, 0))
+        self.background.fill(color.Green)
         self.font = pygame.font.SysFont("monospace", 24)
 
     def notify(self, event):
@@ -132,7 +135,7 @@ class LobbyView(ViewBase):
 
     def draw(self):
         self.background.blit(
-            self.font.render(str(type(self)), 1, (0, 0, 0)),
+            self.font.render(str(type(self)), 1, color.Black),
             self.background.get_rect()
         )
         self.window.blit(self.background, self.background.get_rect())
@@ -143,7 +146,7 @@ class GameView(ViewBase):
         ViewBase.__init__(self, event_handler)
         self.window = window
         self.background = pygame.Surface(self.window.get_size())
-        self.background.fill((0, 0, 255))
+        self.background.fill(color.Blue)
         self.font = pygame.font.SysFont("monospace", 24)
 
     def notify(self, event):
@@ -151,7 +154,7 @@ class GameView(ViewBase):
 
     def draw(self):
         self.background.blit(
-            self.font.render(str(type(self)), 1, (0, 0, 0)),
+            self.font.render(str(type(self)), 1, color.Black),
             self.background.get_rect()
         )
         self.window.blit(self.background, self.background.get_rect())
@@ -167,7 +170,6 @@ class ViewController(ControllerBase):
         pygame.display.set_caption('432 game')
 
         self.background = pygame.Surface(self.window.get_size())
-        self.background.fill((0, 0, 0))
 
         self.views = {
             "login": LoginView(self.event_handler, self.background),
@@ -194,15 +196,33 @@ class ViewController(ControllerBase):
         pygame.display.flip()
 
 
+class ModelBase(object):
+    def __init__(self, event_handler):
+        self.event_handler = event_handler
+        self.event_handler.register(self)
+
+    def notify(self, event):
+        pass
+
+
+class UserModel(ModelBase):
+    def __init__(self, event_handler):
+        ModelBase.__init__(self, event_handler)
+
+    def notify(self, event):
+        if isinstance(event, TryLoginEvent):
+            name = TryLoginEvent()
 
 
 
 def main():
     event_handler = EventHandler()
+
     clock = Clock(event_handler)
     keyboard = Keyboard(event_handler)
     view = ViewController(event_handler)
     controller = ProgramController(event_handler)
+    user = UserModel(event_handler)
 
     clock.run()
 
