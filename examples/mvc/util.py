@@ -121,14 +121,15 @@ class BorderBox(Box):
 
 
 class Label(object):
-    def __init__(self, background, center, font, text):
+    def __init__(self, background, center, font, text, color=Black):
         self.background = background
         self.font = font
         self.text = text
         self.center = center
+        self.color = color
 
     def draw(self):
-        text_box = self.font.render(self.text, 1, Black)
+        text_box = self.font.render(self.text, 1, self.color)
         text_rect = text_box.get_rect()
         text_rect.center = self.center
         self.background.blit(text_box, text_rect)
