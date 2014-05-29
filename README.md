@@ -6,6 +6,11 @@
 Game server port: `7307`
 
 ### Links
+##### Game Dev
+- [Game Programming Patterns](http://gameprogrammingpatterns.com/)
+- [Writing Games - sjbrown](http://ezide.com/games/writing-games.html)
+  - [Sample code](https://github.com/sjbrown/writing_games_tutorial)
+
 ##### Backend
 - [Python socket library](https://docs.python.org/2/library/socket.html)
 - [Python sockets HOWTO](https://docs.python.org/2/howto/sockets.html#socket-howto)
@@ -19,7 +24,7 @@ Game server port: `7307`
 
 ##### Misc.
 - [Setting up ssh for GitHub (Linux/Mac)](https://help.github.com/articles/generating-ssh-keys) (or just use Windows & the GitHub app)
-
+- [Packaging python apps](https://www.digitalocean.com/community/articles/how-to-package-and-distribute-python-applications)
 ---
 
 ### Using `git`
