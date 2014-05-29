@@ -8,7 +8,7 @@ import events
 class Input(base.Controller):
     def __init__(self, handler):
         base.Controller.__init__(self, handler)
-        self.handler.register_tick(self)
+        self.handler.register_for_ticks(self)
 
     def tick(self):
         for event in pygame.event.get():

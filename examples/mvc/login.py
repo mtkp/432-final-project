@@ -12,37 +12,32 @@ class LoginView(base.View):
 
     def __init__(self, handler, window):
         base.View.__init__(self, handler, window)
-
         self.name_label = util.Label(
             self.background,
             (400, 160),
             self.font,
             "name"
-        )
-
+            )
         self.name_input = util.InputBox(
             self.background,
             (400, 200),
             (400, 40),
             self.font,
             30
-        )
-
+            )
         self.server_label = util.Label(
             self.background,
             (400, 260),
             self.font,
             "server"
-        )
-
+            )
         self.server_input = util.InputBox(
             self.background,
             (400, 300),
             (400, 40),
             self.font,
             30
-        )
-
+            )
         self.login_button = util.Button(
             self.background,
             (400, 400),
@@ -50,15 +45,14 @@ class LoginView(base.View):
             color.LightGray,
             self.font,
             "register"
-        )
-
+            )
         self.error_label = util.Label(
             self.background,
             (400, 500),
             pygame.font.SysFont("monospace", 16),
             "",
             color.Red
-        )
+            )
 
     def notify(self, event):
         if isinstance(event, events.MouseClick):

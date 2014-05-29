@@ -2,16 +2,17 @@
 import pygame
 
 
-class Handler(object):
+class EventManager(object):
     def __init__(self):
         self.event_listeners = []
         self.tick_listeners = []
 
-    def register_event(self, listener):
-        print "registering " + str(listener.__class__)
+    def register_for_events(self, listener):
+        print "registering for events " + str(listener.__class__)
         self.event_listeners.append(listener)
 
-    def register_tick(self, listener):
+    def register_for_ticks(self, listener):
+        print "registering for ticks " + str(listener.__class__)
         self.tick_listeners.append(listener)
 
     def post_event(self, event):
@@ -23,27 +24,27 @@ class Handler(object):
             listener.tick()
 
 
-class EventObserver(object):
+class EventListener(object):
     def __init__(self, handler):
         self.handler = handler
-        self.handler.register_event(self)
+        self.handler.register_for_events(self)
 
     def notify(self, event):
-        """Handler calls this function to notify this observer.
+        """EventManager calls this function to notify this listener.
         """
         pass
 
 
 # M
-class Model(EventObserver):
+class Model(EventListener):
     def __init__(self, handler):
-        EventObserver.__init__(self, handler)
+        EventListener.__init__(self, handler)
 
 
 # V
-class View(EventObserver):
+class View(EventListener):
     def __init__(self, handler, window):
-        EventObserver.__init__(self, handler)
+        EventListener.__init__(self, handler)
         self.window = window
         self.background = pygame.Surface(self.window.get_size())
         self.font = pygame.font.SysFont("monospace", 20)
@@ -55,6 +56,6 @@ class View(EventObserver):
 
 
 # C
-class Controller(EventObserver):
+class Controller(EventListener):
     def __init__(self, handler):
-        EventObserver.__init__(self, handler)
+        EventListener.__init__(self, handler)

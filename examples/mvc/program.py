@@ -32,7 +32,7 @@ class Program(base.Controller):
 class ViewSelector(base.Controller):
     def __init__(self, handler):
         base.Controller.__init__(self, handler)
-        self.handler.register_tick(self)
+        self.handler.register_for_ticks(self)
 
         pygame.init()
         pygame.font.init()
@@ -61,7 +61,7 @@ class ViewSelector(base.Controller):
     def post_event(self, event):
         self.handler.post_event(event)
 
-    def register_event(self, _):
+    def register_for_events(self, _):
         pass
 
     def tick(self):
@@ -73,7 +73,7 @@ class ViewSelector(base.Controller):
 
 
 def main():
-    handler       = base.Handler()
+    handler       = base.EventManager()
     inputs        = userinput.Input(handler)
     program_views = ViewSelector(handler)
     program       = Program(handler)
