@@ -19,7 +19,6 @@ class GameView(base.View):
             self.font.render(str(type(self)), 1, color.Black),
             self.background.get_rect()
         )
-        self.window.blit(self.background, self.background.get_rect())
 
 
 class Game(base.Model):

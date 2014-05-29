@@ -11,7 +11,10 @@ class LobbyView(base.View):
         base.View.__init__(self, handler, window)
 
     def notify(self, event):
-        pass
+        if isinstance(event, events.MouseClick):
+            self.handler.post_event(events.GetUsers())
+        elif isinstance(event, events.Users):
+            print "Users:\n" + "\n".join(user for user in event.users)
 
     def draw(self):
         self.background.fill(color.Green)
@@ -19,4 +22,3 @@ class LobbyView(base.View):
             self.font.render(str(type(self)), 1, color.Black),
             self.background.get_rect()
         )
-        self.window.blit(self.background, self.background.get_rect())
