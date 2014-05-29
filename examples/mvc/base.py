@@ -1,11 +1,14 @@
 
+import collections
+
 import pygame
 
 
 class EventManager(object):
     def __init__(self):
         self.event_listeners = []
-        self.tick_listeners = []
+        self.tick_listeners  = [self]
+        self.event_queue     = collections.deque()
 
     def register_for_events(self, listener):
         print "registering for events " + str(listener.__class__)
@@ -16,12 +19,17 @@ class EventManager(object):
         self.tick_listeners.append(listener)
 
     def post_event(self, event):
-        for listener in self.event_listeners:
-            listener.notify(event)
+        self.event_queue.append(event)
 
     def post_tick(self):
         for listener in self.tick_listeners:
             listener.tick()
+
+    def tick(self):
+        while len(self.event_queue) > 0:
+            event = self.event_queue.popleft()
+            for listener in self.event_listeners:
+                listener.notify(event)
 
 
 class EventListener(object):
