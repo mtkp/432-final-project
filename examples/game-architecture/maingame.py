@@ -18,7 +18,6 @@ RELEASE = pygame.MOUSEBUTTONUP
 
 game_input = None
 
-
 class GameInput(object):
     def update(self):
         self.events = pygame.event.get()
