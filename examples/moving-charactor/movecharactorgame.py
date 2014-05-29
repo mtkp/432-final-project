@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super(Player, self).__init__(*groups)
         self.image = pygame.image.load('player.png')
-        self.original = pygame.image.load('player.png')
+        self.imageMaster = pygame.image.load('player.png')
         self.rect = pygame.rect.Rect((320, 240), self.image.get_size())
         self.angle = 0
         
@@ -32,21 +32,32 @@ class Player(pygame.sprite.Sprite):
             self.rect.y += 10
         
         if key[pygame.K_a]:
-            self._spin()
+            self._turn_left()
+            self._update_rotation()
         elif key[pygame.K_d]:
-            self._spin()
+            self._turn_right()
+            self._update_rotation()
+    
+    def _update_rotation(self):
+        oldCenter = self.rect.center
+        self.image = pygame.transform.rotate(self.imageMaster, self.angle)
+        self.rect = self.image.get_rect()
+        self.rect.center = oldCenter    
+
+    def _turn_left(self):
+        self.angle += 12
+        if self.angle > 360:
+            self.angle = 0
+    
+    def _turn_right(self):
+        self.angle -= 12
+        if self.angle < 0:
+            self.angle = 360
             
-    def _spin(self):
+    def _spin(self, direction):
         "spin the player image"
         center = self.rect.center
-        self.angle = self.angle + 12
-        if self.angle >= 360:
-            self.angle = 0
-            self.image = self.original
-        else:
-            rotate = pygame.transform.rotate
-            self.image = rotate(self.original, self.angle)
-        self.rect = self.image.get_rect(center=center)
+        
             
 
 class Game(object):
