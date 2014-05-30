@@ -1,5 +1,8 @@
+# program/game events
 
 class Event(object):
+    '''Event base class.
+    '''
     pass
 
 class Stop(Event):
@@ -46,11 +49,9 @@ class GetUser(Event):
 class GetUsers(Event):
     pass
 
-class User(Event):
-    def __init__(self, name):
-        self.name = name
+class GetGames(Event):
+    pass
 
-class Users(Event):
-    def __init__(self, users):
-        self.users = users
-
+class UserUpdate(Event):
+    def __init__(self, user):
+        self.user = user

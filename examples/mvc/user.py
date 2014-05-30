@@ -9,14 +9,18 @@ class User(base.Model):
         base.Model.__init__(self, handler)
         self.client = gameclient.GameClient()
         self.name   = None
+        self.users  = []
+        self.games  = []
 
     def notify(self, event):
         if isinstance(event, events.TryLogin):
             self.register(event.name, event.server)
         elif isinstance(event, events.GetUser):
-            self.handler.post_event(events.User(self.name))
+            self.handler.post_event(events.UserUpdate(self))
         elif isinstance(event, events.GetUsers):
             self.get_users()
+        elif isinstance(event, events.GetGames):
+            self.get_games()
         elif isinstance(event, events.Logout):
             self.unregister()
 
@@ -25,6 +29,8 @@ class User(base.Model):
             self.client.register(name, server)
             self.name = name
             self.handler.post_event(events.UserLoggedIn())
+            self.get_users()
+            self.get_games()
         except gameclient.InvalidFormat:
             self.handler.post_event(events.LoginError("Bad format"))
         except gameclient.UsernameUnavailable:
@@ -39,5 +45,12 @@ class User(base.Model):
     def get_users(self):
         users = self.client.get_users()
         if users:
-            self.handler.post_event(events.Users(users))
+            self.users = users
+            self.handler.post_event(events.UserUpdate(self))
+
+    def get_games(self):
+        games = self.client.get_games()
+        if games:
+            self.games = games
+            self.handler.post_event(events.UserUpdate(self))
 

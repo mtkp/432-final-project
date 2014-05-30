@@ -12,22 +12,13 @@ class Input(base.Controller):
 
     def tick(self):
         for event in pygame.event.get():
-            event_generator = {
-                pygame.QUIT: self.post_stop,
-                pygame.KEYDOWN: self.post_key_press,
-                pygame.MOUSEBUTTONDOWN: self.post_mouse_click
-            }.get(event.type, None)
-
-            if event_generator:
-                self.handler.post_event(event_generator(event))
-
-    def post_stop(self, event):
-        return events.Stop()
-
-    def post_mouse_click(self, event):
-        mouse_pos = pygame.mouse.get_pos()
-        return events.MouseClick(mouse_pos)
-
-    def post_key_press(self, event):
-        return events.KeyPress(event.key)
-
+            if event.type == pygame.QUIT:
+                self.handler.post_event(events.Stop())
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.handler.post_event(events.Stop())
+                else:
+                    self.handler.post_event(events.KeyPress(event.key))
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                self.handler.post_event(events.MouseClick(pos))

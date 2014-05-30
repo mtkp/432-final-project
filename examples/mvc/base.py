@@ -3,12 +3,14 @@ import collections
 
 import pygame
 
+import color
 
 class EventManager(object):
     def __init__(self):
         self.event_listeners = []
-        self.tick_listeners  = [self]
+        self.tick_listeners  = []
         self.event_queue     = collections.deque()
+        self.register_for_ticks(self)
 
     def register_for_events(self, listener):
         print "registering for events " + str(listener.__class__)
@@ -53,14 +55,17 @@ class Model(EventListener):
 class View(EventListener):
     def __init__(self, handler, window):
         EventListener.__init__(self, handler)
+        self.background_color = color.Gray
         self.window = window
         self.background = pygame.Surface(self.window.get_size())
         self.font = pygame.font.SysFont("monospace", 20)
+        self.draw_set = []
 
     def draw(self):
         """View selector calls this view to draw it.
         """
-        pass
+        self.background.fill(self.background_color)
+        map(lambda i: i.draw(), self.draw_set)
 
 
 # C

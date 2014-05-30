@@ -12,6 +12,7 @@ class LoginView(base.View):
 
     def __init__(self, handler, window):
         base.View.__init__(self, handler, window)
+        self.background_color = color.Gray
         self.name_label = util.Label(
             self.background,
             (400, 160),
@@ -53,6 +54,14 @@ class LoginView(base.View):
             "",
             color.Red
             )
+        self.draw_set.extend([
+            self.error_label,
+            self.login_button,
+            self.server_input,
+            self.server_label,
+            self.name_input,
+            self.name_label
+            ])
 
     def notify(self, event):
         if isinstance(event, events.MouseClick):
@@ -77,22 +86,12 @@ class LoginView(base.View):
             self.error_label.text = event.msg
 
     def send_login_request(self):
-        self.error_label.text = ""
+        self.error_label.text    = ""
+        self.name_input.active   = False
+        self.server_input.active = False
         self.handler.post_event(
             events.TryLogin(
                 self.name_input.text,
                 self.server_input.text
             )
         )
-
-    def draw(self):
-        self.background.fill(color.Gray)
-
-        self.name_label.draw()
-        self.server_label.draw()
-
-        self.name_input.draw()
-        self.server_input.draw()
-        self.login_button.draw()
-
-        self.error_label.draw()

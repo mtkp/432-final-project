@@ -11,13 +11,15 @@ import lobby
 import login
 import user
 
+LOGIN = 1
+LOBBY = 2
+GAME  = 3
 
 class Program(base.Controller):
     def __init__(self, handler):
         base.Controller.__init__(self, handler)
         self.user  = user.User(self.handler)
         self.game  = game.Game(self.handler)
-        self.lobby = lobby.Lobby(self.handler)
 
     def notify(self, event):
         post_event = {
@@ -43,17 +45,17 @@ class ViewSelector(base.Controller):
 
         # inject self as handler so we can deliver messages only when we want
         self.views = {
-            "login": login.LoginView(self, self.background),
-            "lobby": lobby.LobbyView(self, self.background),
-            "game":  game.GameView(self, self.background)
+            LOGIN: login.LoginView(self, self.background),
+            LOBBY: lobby.LobbyView(self, self.background),
+            GAME:  game.GameView(self, self.background)
         }
-        self.state = "login"
+        self.state = LOGIN
 
     def notify(self, event):
         self.state = {
-            events.LoginView: "login",
-            events.LobbyView: "lobby",
-            events.GameView:  "game"
+            events.LoginView: LOGIN,
+            events.LobbyView: LOBBY,
+            events.GameView:  GAME
         }.get(type(event), self.state)
 
         self.views[self.state].notify(event)
