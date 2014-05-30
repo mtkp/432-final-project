@@ -4,18 +4,25 @@
 # https://bitbucket.org/r1chardj0n3s/pygame-tutorial/src
 
 import pygame
-
-def rot_center(image, rect, angle):
-        """rotate an image while keeping its center"""
-        rot_image = pygame.transform.rotate(image, angle)
-        rot_rect = rot_image.get_rect(center=rect.center)
-        return rot_image,rot_rect
+import os
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super(Player, self).__init__(*groups)
-        self.image = pygame.image.load('player.png')
-        self.imageMaster = pygame.image.load('player.png')
+        
+        # access image in subfolder, os-independant        
+        img_folder = "images"
+        img_name = "player.png"
+        try:
+            self.image = pygame.image.load(os.path.join(img_folder,
+                                                                 img_name))
+            self.imageMaster = pygame.image.load(os.path.join(img_folder,
+                                                                 img_name))
+        except:
+            raise UserWarning, "Unable to find the images in the folder" + \
+                                img_folder
+
+        
         self.rect = pygame.rect.Rect((320, 240), self.image.get_size())
         self.angle = 0
         
