@@ -4,12 +4,28 @@
 # https://bitbucket.org/r1chardj0n3s/pygame-tutorial/src
 
 import pygame
+import os
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super(Player, self).__init__(*groups)
-        self.image = pygame.image.load('player.png')
+        
+        # access image in subfolder, os-independant        
+        img_folder = "images"
+        img_name = "player.png"
+        try:
+            self.image = pygame.image.load(os.path.join(img_folder,
+                                                                 img_name))
+            self.imageMaster = pygame.image.load(os.path.join(img_folder,
+                                                                 img_name))
+        except:
+            raise UserWarning, "Unable to find the images in the folder" + \
+                                img_folder
+
+        
         self.rect = pygame.rect.Rect((320, 240), self.image.get_size())
+        self.angle = 0
+        
 
     def update(self):
         key = pygame.key.get_pressed()
@@ -21,6 +37,35 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= 10
         if key[pygame.K_DOWN]:
             self.rect.y += 10
+        
+        if key[pygame.K_a]:
+            self._turn_left()
+            self._update_rotation()
+        elif key[pygame.K_d]:
+            self._turn_right()
+            self._update_rotation()
+    
+    def _update_rotation(self):
+        oldCenter = self.rect.center
+        self.image = pygame.transform.rotate(self.imageMaster, self.angle)
+        self.rect = self.image.get_rect()
+        self.rect.center = oldCenter    
+
+    def _turn_left(self):
+        self.angle += 12
+        if self.angle > 360:
+            self.angle = 0
+    
+    def _turn_right(self):
+        self.angle -= 12
+        if self.angle < 0:
+            self.angle = 360
+            
+    def _spin(self, direction):
+        "spin the player image"
+        center = self.rect.center
+        
+            
 
 class Game(object):
     def main(self, screen):
@@ -28,6 +73,8 @@ class Game(object):
 
         sprites = pygame.sprite.Group()
         self.player = Player(sprites)
+        
+        # list of opponents
 
         while 1:
             clock.tick(30)
