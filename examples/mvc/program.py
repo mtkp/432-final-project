@@ -26,6 +26,7 @@ class Program(base.Listener):
         pygame.display.set_caption("firestarter")
 
         self.user = user.User(self.handler)
+
         self.modules = {
             LOGIN: login.Login(self.handler),
             LOBBY: lobby.Lobby(self.handler)

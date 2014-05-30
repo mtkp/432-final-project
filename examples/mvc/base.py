@@ -19,7 +19,8 @@ class Module(Listener):
     def __init__(self, handler):
         Listener.__init__(self, handler)
         self.window = pygame.display.get_surface()
-        self.background_color = color.Green
+        self.width, self.height = self.window.get_size()
+        self.background_color = color.Gray
         self.background = pygame.Surface(self.window.get_size())
         self.font = pygame.font.SysFont("monospace", 20)
         self.draw_set = []

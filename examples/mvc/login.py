@@ -12,44 +12,46 @@ class Login(base.Module):
 
     def __init__(self, handler):
         base.Module.__init__(self, handler)
-        self.background_color = color.Green
+        self.background_color = color.DarkGray
+
+        input_box_height = self.height / 15
         self.name_label = util.Label(
             self.background,
-            (400, 160),
+            (self.width / 2, 160),
             self.font,
             "name"
             )
         self.name_input = util.InputBox(
             self.background,
-            (400, 200),
-            (400, 40),
+            (self.width / 2, self.height / 3),
+            (self.width / 2, input_box_height),
             self.font,
             30
             )
         self.server_label = util.Label(
             self.background,
-            (400, 260),
+            (self.width / 2, 260),
             self.font,
             "server"
             )
         self.server_input = util.InputBox(
             self.background,
-            (400, 300),
-            (400, 40),
+            (self.width / 2, self.height / 2),
+            (self.width / 2, input_box_height),
             self.font,
             30
             )
         self.login_button = util.Button(
             self.background,
-            (400, 400),
-            (150, 40),
+            (self.width / 2, self.height * 4 / 6),
+            (self.width / 8, input_box_height),
             color.LightGray,
             self.font,
             "register"
             )
         self.error_label = util.Label(
             self.background,
-            (400, 500),
+            (self.width / 2, self.height * 5 / 6),
             pygame.font.SysFont("monospace", 16),
             "",
             color.Red
@@ -65,14 +67,8 @@ class Login(base.Module):
 
     def notify(self, event):
         if isinstance(event, events.MouseClick):
-            if self.name_input.collidepoint(event.pos):
-                self.name_input.active = True
-            else:
-                self.name_input.active = False
-            if self.server_input.collidepoint(event.pos):
-                self.server_input.active = True
-            else:
-                self.server_input.active = False
+            self.name_input.try_click(event.pos)
+            self.server_input.try_click(event.pos)
             if self.login_button.collidepoint(event.pos):
                 self.send_login_request()
         elif isinstance(event, events.KeyPress):

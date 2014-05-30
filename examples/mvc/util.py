@@ -127,12 +127,17 @@ class Label(object):
         self.text = text
         self.center = center
         self.color = color
+        self.text_rect = self.font.render(self.text, 1, self.color).get_rect()
 
     def draw(self):
         text_box = self.font.render(self.text, 1, self.color)
-        text_rect = text_box.get_rect()
-        text_rect.center = self.center
-        self.background.blit(text_box, text_rect)
+        self.text_rect = text_box.get_rect()
+        self.text_rect.center = self.center
+        self.background.blit(text_box, self.text_rect)
+
+    @property
+    def size(self):
+        return self.text_rect.size
 
 
 class Button(object):
@@ -164,6 +169,10 @@ class InputBox(object):
         self.box.draw()
         self.label.draw()
 
+    def try_click(self, xy):
+        self.active = self.collidepoint(xy)
+
+
     def collidepoint(self, xy):
         return self.box.collidepoint(xy)
 
@@ -179,7 +188,66 @@ class InputBox(object):
         return self.label.text
 
 
+class TextBox(object):
+    def __init__(self, background, center, font, text):
+        self.label = Label(background, center, font, text)
+        self.box = BorderBox(background, center, self.label.size, White, Black)
 
+    def draw(self):
+        self.box.draw()
+        self.label.draw()
+
+    def collidepoint(self, xy):
+        return self.box.collidepoint(xy)
+
+    @property
+    def text(self):
+        return self.label.text
+
+    @text.setter
+    def text(self, text):
+        self.label.text = text
+
+
+class ListBox(object):
+    def __init__(self, background, center, size, font):
+        self.background = background
+        self.box = BorderBox(background, center, size, White, Black)
+        self.font = font
+        self._list = []
+        self.draw_list = []
+
+    def draw(self):
+        self.box.draw()
+        for item in self.draw_list:
+            item.draw()
+
+    def collidepoint(self, xy):
+        for box in self.draw_list:
+            if box.collidepoint(xy):
+                return box.text
+
+    @property
+    def list(self):
+        return self._list
+
+    @list.setter
+    def list(self, list):
+        self._list = list
+        self.build_draw_list()
+
+    def build_draw_list(self):
+        self.draw_list = []
+        top = self.box.top
+        centerx = self.box.centerx
+        for i, item in enumerate(self._list):
+            print "adding in {}".format(item)
+            label = Label(
+                self.background,
+                (centerx, (top + 12) + (i * 24)),
+                self.font,
+                str(item))
+            self.draw_list.append(label)
 
 
 
