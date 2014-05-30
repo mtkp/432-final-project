@@ -7,12 +7,12 @@ import events
 import util
 
 
-class LoginView(base.View):
+class Login(base.Module):
     RETURN_KEY = 13
 
-    def __init__(self, handler, window):
-        base.View.__init__(self, handler, window)
-        self.background_color = color.Gray
+    def __init__(self, handler):
+        base.Module.__init__(self, handler)
+        self.background_color = color.Green
         self.name_label = util.Label(
             self.background,
             (400, 160),
@@ -76,7 +76,7 @@ class LoginView(base.View):
             if self.login_button.collidepoint(event.pos):
                 self.send_login_request()
         elif isinstance(event, events.KeyPress):
-            if event.key == LoginView.RETURN_KEY:
+            if event.key == Login.RETURN_KEY:
                 self.send_login_request()
             elif self.name_input.active:
                 self.name_input.input(event.key)
@@ -93,5 +93,9 @@ class LoginView(base.View):
             events.TryLogin(
                 self.name_input.text,
                 self.server_input.text
+                )
             )
-        )
+
+    def update(self):
+        self.draw()
+

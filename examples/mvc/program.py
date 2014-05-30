@@ -15,70 +15,49 @@ LOGIN = 1
 LOBBY = 2
 GAME  = 3
 
-class Program(base.Controller):
+class Program(base.Listener):
     def __init__(self, handler):
-        base.Controller.__init__(self, handler)
-        self.user  = user.User(self.handler)
-        self.game  = game.Game(self.handler)
-
-    def notify(self, event):
-        post_event = {
-            events.UserLoggedIn:  events.LobbyView,
-            events.UserLoggedOut: events.LoginView
-        }.get(type(event), None)
-
-        if post_event:
-            self.handler.post_event(post_event())
-
-
-class ViewSelector(base.Controller):
-    def __init__(self, handler):
-        base.Controller.__init__(self, handler)
+        base.Listener.__init__(self, handler)
         self.handler.register_for_ticks(self)
 
         pygame.init()
         pygame.font.init()
-        self.window = pygame.display.set_mode((800, 600))
-        pygame.display.set_caption('432 game')
+        pygame.display.set_mode((800, 600))
+        pygame.display.set_caption("firestarter")
 
-        self.background = pygame.Surface(self.window.get_size())
-
-        # inject self as handler so we can deliver messages only when we want
-        self.views = {
-            LOGIN: login.LoginView(self, self.background),
-            LOBBY: lobby.LobbyView(self, self.background),
-            GAME:  game.GameView(self, self.background)
+        self.user = user.User(self.handler)
+        self.modules = {
+            LOGIN: login.Login(self.handler),
+            LOBBY: lobby.Lobby(self.handler)
         }
         self.state = LOGIN
 
+        self.handler.unregister_for_events(self.modules[LOBBY])
+
     def notify(self, event):
-        self.state = {
-            events.LoginView: LOGIN,
-            events.LobbyView: LOBBY,
-            events.GameView:  GAME
-        }.get(type(event), self.state)
+        if self.state == LOGIN:
+            if isinstance(event, events.UserLoggedIn):
+                self.change_state(LOBBY)
+        elif self.state == LOBBY:
+            if isinstance(event, events.UserLoggedOut):
+                self.change_state_(LOGIN)
 
-        self.views[self.state].notify(event)
-
-    def post_event(self, event):
-        self.handler.post_event(event)
-
-    def register_for_events(self, _):
-        pass
+    def change_state(self, new_state):
+        current_module = self.modules[self.state]
+        self.handler.unregister_for_events(current_module)
+        self.state = new_state
+        new_module = self.modules[self.state]
+        self.handler.register_for_events(new_module)
 
     def tick(self):
-        view = self.views[self.state]
-        view.draw()
-        view.window.blit(view.background, view.background.get_rect())
-        self.window.blit(self.background, self.background.get_rect())
+        self.modules[self.state].update()
         pygame.display.flip()
 
 
 def main():
-    handler       = base.EventManager()
-    inputs        = userinput.Input(handler)
-    program_views = ViewSelector(handler)
-    program       = Program(handler)
+    handler = events.EventManager()
+    inputs  = userinput.Input(handler)
+    program = Program(handler)
 
     clock.Clock(handler).run()
 

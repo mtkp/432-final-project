@@ -5,9 +5,9 @@ import base
 import events
 
 
-class Input(base.Controller):
+class Input(base.Listener):
     def __init__(self, handler):
-        base.Controller.__init__(self, handler)
+        base.Listener.__init__(self, handler)
         self.handler.register_for_ticks(self)
 
     def tick(self):

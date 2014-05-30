@@ -1,40 +1,10 @@
 
-import collections
-
 import pygame
 
 import color
 
-class EventManager(object):
-    def __init__(self):
-        self.event_listeners = []
-        self.tick_listeners  = []
-        self.event_queue     = collections.deque()
-        self.register_for_ticks(self)
 
-    def register_for_events(self, listener):
-        print "registering for events " + str(listener.__class__)
-        self.event_listeners.append(listener)
-
-    def register_for_ticks(self, listener):
-        print "registering for ticks " + str(listener.__class__)
-        self.tick_listeners.append(listener)
-
-    def post_event(self, event):
-        self.event_queue.append(event)
-
-    def post_tick(self):
-        for listener in self.tick_listeners:
-            listener.tick()
-
-    def tick(self):
-        while len(self.event_queue) > 0:
-            event = self.event_queue.popleft()
-            for listener in self.event_listeners:
-                listener.notify(event)
-
-
-class EventListener(object):
+class Listener(object):
     def __init__(self, handler):
         self.handler = handler
         self.handler.register_for_events(self)
@@ -45,30 +15,19 @@ class EventListener(object):
         pass
 
 
-# M
-class Model(EventListener):
+class Module(Listener):
     def __init__(self, handler):
-        EventListener.__init__(self, handler)
-
-
-# V
-class View(EventListener):
-    def __init__(self, handler, window):
-        EventListener.__init__(self, handler)
-        self.background_color = color.Gray
-        self.window = window
+        Listener.__init__(self, handler)
+        self.window = pygame.display.get_surface()
+        self.background_color = color.Green
         self.background = pygame.Surface(self.window.get_size())
         self.font = pygame.font.SysFont("monospace", 20)
         self.draw_set = []
 
     def draw(self):
-        """View selector calls this view to draw it.
+        """Draws all objects in view draw set.
         """
         self.background.fill(self.background_color)
         map(lambda i: i.draw(), self.draw_set)
+        self.window.blit(self.background, self.background.get_rect())
 
-
-# C
-class Controller(EventListener):
-    def __init__(self, handler):
-        EventListener.__init__(self, handler)

@@ -3,16 +3,15 @@ import base
 import events
 import util
 
-class LobbyView(base.View):
+class Lobby(base.Module):
     GREETING = "Hello, {}!"
-
-    def __init__(self, handler, window):
-        base.View.__init__(self, handler, window)
+    def __init__(self, handler):
+        base.Module.__init__(self, handler)
         self.hello = util.Label(
             self.background,
             (200, 30),
             self.font,
-            LobbyView.GREETING
+            Lobby.GREETING
             )
         self.users = util.Label(
             self.background,
@@ -42,9 +41,10 @@ class LobbyView(base.View):
                 self.handler.post_event(events.Logout())
 
     def update(self, user):
-        self.hello.text = LobbyView.GREETING.format(user.name)
+        self.hello.text = Lobby.GREETING.format(user.name)
         self.users.text = ", ".join(user.users)
         self.games.text = ", ".join(
             "{} - {}".format(game[0], ",".join(game[2])) for game in user.games
             )
+
 

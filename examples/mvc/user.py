@@ -4,9 +4,9 @@ import events
 import gameclient
 
 
-class User(base.Model):
+class User(base.Listener):
     def __init__(self, handler):
-        base.Model.__init__(self, handler)
+        base.Listener.__init__(self, handler)
         self.client = gameclient.GameClient()
         self.name   = None
         self.users  = []

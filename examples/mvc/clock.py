@@ -5,11 +5,11 @@ import base
 import events
 
 
-class Clock(base.Controller):
+class Clock(base.Listener):
     FRAMERATE = 30
 
     def __init__(self, handler):
-        base.Controller.__init__(self, handler)
+        base.Listener.__init__(self, handler)
         self.running = True
 
     def run(self):
