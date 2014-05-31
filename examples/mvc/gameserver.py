@@ -55,12 +55,15 @@ class UserServer(object):
         # set up non-blocking server socket with reuse option
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setblocking(0)
+
+
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind(('',PORT))
         self.server.listen(LISTEN_QUEUE)
 
         # map socket fds to User objects
         self._users = {}
+        self.user_unregistered = False
 
     def users(self):
         return self._users.itervalues()
@@ -107,70 +110,86 @@ class UserServer(object):
             user.game.remove_user(user)
         del self._users[conn]
         conn.close()
+        self.user_unregistered = True
 
 
 class GameServer(object):
     def __init__(self):
-        self.server    = UserServer()
-        self.games     = []
-        self.usernames = []
+        self.user_server     = UserServer()
+        self.games           = []
+        self.usernames       = []
+        self.user_registered = False
 
     def register(self, user, msg):
         cmd, name = msg
         if cmd == "login" and name not in self.usernames:
             user.name  = name
-            user.send(True)
+            user.send(("login_result", True))
+            self.user_registered = True
         else:
-            user.send(False)
+            user.send(("login_result", False))
 
     def in_lobby(self, user, msg):
+        ("test", "test")
         cmd = msg[0]
-        if cmd == "users":
-            user.send(self.usernames)
-        elif cmd == "games":
-            user.send([game.compact() for game in self.games])
-        elif cmd == "create":
-            new_game = Game(msg[1], 4)
-            new_game.add_user(user)
-            self.games.append(new_game)
-            user.send(new_game.compact())
-        elif cmd == "join":
-            game_id = msg[1]
-            for game in self.games:
-                if id(game) == game_id and len(game.users) < game.size:
-                    game.add_user(user)
-                    user.send(game.compact())
-                    break
-            else:
-                user.send(False)
-        else:
-            user.send(False)
+        if cmd == "test":
+            print "got the test message from " + user.name
+
+        # cmd = msg[0]
+        # if cmd == "users":
+        #     user.send(self.usernames)
+        # elif cmd == "games":
+        #     user.send([game.compact() for game in self.games])
+        # if cmd == "create":
+        #     new_game = Game(msg[1], 4)
+        #     new_game.add_user(user)
+        #     self.games.append(new_game)
+        #     user.send(new_game.compact())
+        # elif cmd == "join":
+        #     game_id = msg[1]
+        #     for game in self.games:
+        #         if id(game) == game_id and len(game.users) < game.size:
+        #             game.add_user(user)
+        #             user.send(game.compact())
+        #             break
+        #     else:
+        #         user.send(False)
+        # else:
+        #     user.send(False)
 
     def in_game(self, user, msg):
-        game = user.game
-        cmd = msg[0]
-        if cmd == "users":
-            user.send(game.usernames())
-        elif cmd == "exit":
-            game.remove_user(user)
-            user.send(True)
-        else:
-            user.send(False)
+        pass
+        # game = user.game
+        # cmd = msg[0]
+        # if cmd == "users":
+        #     user.send(game.usernames())
+        # if cmd == "exit":
+        #     game.remove_user(user)
+        #     user.send(True)
+        # else:
+        #     user.send(False)
 
     def serve_forever(self):
         while True:
-            self.server.update()
+            self.user_server.update()
 
             # clean up games
             self.games = filter(lambda game: len(game.users) > 0, self.games)
 
             # get list of usernames
             self.usernames = [
-                user.name for user in self.server.users() if user.name
+                user.name for user in self.user_server.users() if user.name
             ]
 
+            if self.user_registered or self.user_server.user_unregistered:
+                for user in self.user_server.users():
+                    user.send(("users", self.usernames))
+
+            self.user_registered = False
+            self.user_server.user_unregistered = False
+
             # handle requests
-            for user in self.server.users():
+            for user in self.user_server.users():
                 while user.has_messages():
                     msg = user.recv()
                     if user.name is None:
