@@ -50,10 +50,11 @@ while True:
 while True:
     msg = client.get_messages()
     
+    
     if msg:
         print str(msg[0])
 
-    time.sleep(1)
+    time.sleep(0.04)
 
     client._send(("test", "test"))
    

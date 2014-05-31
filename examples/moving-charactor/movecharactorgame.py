@@ -6,12 +6,33 @@
 import pygame
 import os
 
+img_folder = "images"
+
+class Weapon():
+    def __init__(self, *groups):
+        super(Weapon, self).__init__(*groups)
+        
+        # # access image in subfolder, os-independant
+        img_name = "player.png"
+        try:
+            self.image = pygame.image.load(os.path.join(img_folder,
+                                                                 img_name))
+            self.imageMaster = pygame.image.load(os.path.join(img_folder,
+                                                                 img_name))
+        except:
+            raise UserWarning, "Unable to find the images in the folder" + \
+                                img_folder
+
+    def update(self):
+        pass
+        
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super(Player, self).__init__(*groups)
         
         # access image in subfolder, os-independant        
-        img_folder = "images"
         img_name = "player.png"
         try:
             self.image = pygame.image.load(os.path.join(img_folder,
