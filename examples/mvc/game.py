@@ -6,6 +6,8 @@ import color
 import events
 import util
 
+
+
 class GameView(base.Module):
     def __init__(self, handler, window):
         base.Module.__init__(self, handler, window)
@@ -19,6 +21,11 @@ class GameView(base.Module):
 
     def notify(self, event):
         pass
+        if isinstance(event, events.MouseClick):
+            
+        #self.handler.post_event(events.GetUser())
+
+    def update(self):
 
 
 class Game(base.Listener):

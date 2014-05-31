@@ -56,6 +56,27 @@ class StartGame(Event):
 class EndGame(Event):
     pass
 
+# player got a word right, needs to be moved locally and remotely
+class PlayerMoved(Event):
+    pass
+
+class PlayerWon(Event):
+    pass
+
+# opponent got a word right, needs to be moved locally
+class OpponentMoved(Event):
+    pass
+
+# Opponent wins the game
+class OpponentWon(Event):
+    def __init__(self, opponent):
+        self.opponent = opponent
+
+# Opponent leaves unexpectedly, like quit during game or connection lost
+class OpponentGone(Event):
+    Pass
+
+
 
 class EventManager(object):
     def __init__(self):

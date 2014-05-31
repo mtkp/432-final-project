@@ -33,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__(*groups)
         
         # access image in subfolder, os-independant        
-        img_name = "player.png"
+        img_name = "frog.png"
         try:
             self.image = pygame.image.load(os.path.join(img_folder,
                                                                  img_name))
