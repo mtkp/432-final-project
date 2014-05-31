@@ -1,4 +1,4 @@
-
+#!/usr/bin/python2.7
 
 import pygame
 import os
@@ -17,10 +17,10 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super(Player, self).__init__(*groups)
 
-        self.should_move = False       
-        img_folder = "images"     
+        self.should_move = False
+        img_folder = "images"
         img_name = "frog.png"
-        # access image in subfolder, os-independant 
+        # access image in subfolder, os-independant
         try:
             self.image = pygame.image.load(os.path.join(img_folder,
                                                                  img_name))
@@ -31,7 +31,7 @@ class Player(pygame.sprite.Sprite):
                                 img_folder
         self.rect = pygame.rect.Rect((start_x, start_y), self.image.get_size())
 
-        
+
     # update y coord of player if the word was spelled correctly
     def update(self):
         if self.should_move == True:
@@ -39,7 +39,7 @@ class Player(pygame.sprite.Sprite):
             self.handler.post_event(events.PlayerMoved())
             self.rect.y -= increment
             should_move = False
-            
+
 # Ideas for the view:
 #   * highlight letters as correct
 #   * automatically move on to next word once the correct characters are typed
@@ -61,13 +61,13 @@ class GameView(base.Module):
         # put in input box
         # put in text that displays word user should type
         # draw vertical lines for lanes for each frog
-        
+
 
     def notify(self, event):
         if isinstance(event, events.OpponentMoved()):
             # how do we move those opponent sprites individually?
             # find opponent in model's local collection of opponents
-            # that opponent's update function should move him 
+            # that opponent's update function should move him
             pass
         elif isinstance(event, events.OpponentWon()):
             # maybe print which opponent won text and return to lobby
@@ -76,15 +76,16 @@ class GameView(base.Module):
         elif isinstance(event, events.OpponentGone()):
             # server knows opponent gone, so just remove locally
             # self.sprites.remove()
+            pass
 
-            
+
 
 
 class Game(base.Listener):
     def __init__(self, handler):
         base.Listener.__init__(self, handler)
-        self.wordlist = util.get_words():
-        
+        self.wordlist = util.get_words()
+
     # get a word for the user to type
     def get_word(self):
         if len(self.wordlist) > 0:
