@@ -3,6 +3,8 @@
 
 # python libs
 import socket
+import select
+import collections
 
 # our libs
 import gameserver
@@ -21,6 +23,35 @@ class ServerNotFound(Exception):
     pass
 
 class GameClient(object):
+    def __init__(self):
+        self.outbox = collections.deque()
+        
+
+    # tell us if something is in the buffer using select
+    # to figure out what message type we are getting
+    
+    def get_messages(self):
+        msg = None
+        # if client has messages from select
+        recv_list, send_list, error_list = select.select([self.conn], [self.conn], [])
+
+        # for each of those port we want to send out on, send
+        for i in send_list:
+            if len(self.outbox) > 0:
+                message.send(i, self.outbox.popleft())
+        
+        # for each port we want to receive on, print data received
+        for i in recv_list:
+            try:
+                data = message.recv(i) # what if we want more than 1024?
+                print "<got '{}'>".format(data)
+                msg = data
+            except message.ClosedConnection:
+                i.close()               
+
+        return msg
+        
+    
     def register(self, username, server):
         """Register to a server by username.
         Exceptions: ServerNotFound, InvalidFormat, UsernameUnavailable
@@ -34,15 +65,6 @@ class GameClient(object):
         """Gracefully unregister from server."""
         self.conn.close()
 
-    def get_users(self):
-        """Get a list of connected users."""
-        self._send("users")
-        return self._recv()
-
-    def get_games(self):
-        """Get a list of game tuples (game name, id, list of users, size)."""
-        self._send("games")
-        return self._recv()
 
     def create_game(self, game_name):
         """Create a game on the server."""
@@ -64,29 +86,39 @@ class GameClient(object):
     # TODO ... will likely change a lot
     def update_positions(self, position):
         # send position to other game players
-        self._send("bcast", position)
         return self._recv() # server returns tuple of latest positions of others
 
 
     # -- private --
 
+
     def _send(self, *msg):
-        message.send(self.conn, msg)
+        self.outbox.append(msg)
 
     def _recv(self):
         return message.recv(self.conn)
 
+    
     def _join_server(self, server):
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.conn.connect((server, gameserver.PORT))
-        except (socket.gaierror, socket.error):
-            self.conn = None
-            raise ServerNotFound
 
+        self.conn.connect((server, gameserver.PORT))
+        self.conn.setblocking(0)
+        #except (socket.gaierror, socket.error):
+        #    self.conn = None
+        #   raise ServerNotFound
+
+    
     def _login(self, username):
         self._send("login", username)
-        success = self._recv()
-        if not success:
+        msg = None
+        while msg is None:
+            msg = self.get_messages()
+        if msg[1] == False:
             self.conn.close()
             raise UsernameUnavailable
+            
+
+
+
+        
