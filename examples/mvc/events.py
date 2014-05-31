@@ -60,6 +60,7 @@ class EndGame(Event):
 class PlayerMoved(Event):
     pass
 
+# player won the game, notify server to end the game
 class PlayerWon(Event):
     pass
 
@@ -75,7 +76,6 @@ class OpponentWon(Event):
 # Opponent leaves unexpectedly, like quit during game or connection lost
 class OpponentGone(Event):
     Pass
-
 
 
 class EventManager(object):
