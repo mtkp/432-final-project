@@ -3,17 +3,27 @@
 import cPickle as pickle
 
 
-size_field  = 4
-max_msg_len = (10 ** size_field) - 1
-size_header = "{{0:0{}d}}".format(size_field)
+# maximum message length
+header_size = 4
+max_msg_len = (10 ** header_size) - 1
+packet      = "{{0:0{}d}}{{1}}".format(header_size)
 
 
 class MessageTooLarge(Exception):
+    """This exception is raised if the message exceeds the maximum allowed
+    by the header size.
+    """
     def __init__(self, size):
         self.size = size
     def __str__(self):
         return repr("{} exceeds limit of {}".format(self.size, max_msg_len))
 
+
+class ClosedConnection(Exception):
+    """This exception is thrown if trying to read from a socket when the
+    connection has been closed.
+    """
+    pass
 
 # send a message over the connection
 def send(conn, data):
@@ -22,7 +32,8 @@ def send(conn, data):
     if msg_len > max_msg_len:
         raise MessageTooLarge(msg_len)
 
-    msg = size_header.format(msg_len) + msg
+    # prepend message with header
+    msg = packet.format(msg_len, msg)
     totalsent = 0
     while totalsent < len(msg):
         sent = conn.send(msg[totalsent:])
@@ -33,19 +44,20 @@ def send(conn, data):
 
 # receive a message from the connection
 def recv(conn):
-    length = int(_recv_str(conn, size_field))
+    length = int(_recv_str(conn, header_size))
     msg = _recv_str(conn, length)
     return pickle.loads(msg)
 
 
 # receive a string of specified length
 def _recv_str(conn, length):
-    msg = ''
-
-    while len(msg) < length:
-        chunk = conn.recv(length - len(msg))
-        if chunk == '':
-            raise RuntimeError("socket connection broken")
-        msg = msg + chunk
-
-    return msg
+    msg = conn.recv(length)
+    if msg:
+        while len(msg) < length:
+            chunk = conn.recv(length - len(msg))
+            if chunk == '':
+                raise RuntimeError("socket connection broken")
+            msg = msg + chunk
+        return msg
+    else:
+        raise ClosedConnection
