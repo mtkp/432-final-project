@@ -39,10 +39,11 @@ class Player(pygame.sprite.Sprite):
             self.handler.post_event(events.PlayerMoved())
             self.rect.y -= increment
             should_move = False
-        # notify the server by posting event to event handler
-        # increment the user's player postion by set increment
             
-
+# Ideas for the view:
+#   * highlight letters as correct
+#   * automatically move on to next word once the correct characters are typed
+#   * show words on side of screen that users are getting right or wrong
 class GameView(base.Module):
     def __init__(self, handler, window):
         base.Module.__init__(self, handler, window)
@@ -57,23 +58,41 @@ class GameView(base.Module):
         # i think the view should own the sprite group to be updated?
         self.sprites = pygame.sprite.Group()
         self.player = Player(sprites)
+        # put in input box
+        # put in text that displays word user should type
+        # draw vertical lines for lanes for each frog
         
 
     def notify(self, event):
-        # if the user gets a word right, send event to the server
-        if isinstance(event, events.WordSuccess()):
-            self.handler.post_event(events.PlayerMoved())
-            
-        if isinstance(event, events.OpponentMoved())
+        if isinstance(event, events.OpponentMoved()):
             # how do we move those opponent sprites individually?
             # find opponent in model's local collection of opponents
             # that opponent's update function should move him 
             pass
-        
+        elif isinstance(event, events.OpponentWon()):
+            # maybe print which opponent won text and return to lobby
+            self.handler.post_event(events.EndGame())
+            pass
+        elif isinstance(event, events.OpponentGone()):
+            # server knows opponent gone, so just remove locally
+            # self.sprites.remove()
+
+            
 
 
 class Game(base.Listener):
     def __init__(self, handler):
         base.Listener.__init__(self, handler)
-            
+        self.wordlist = util.get_words():
+        
+    # get a word for the user to type
+    def get_word(self):
+        if len(self.wordlist) > 0:
+            return self.wordlist.pop
+        else:
+            # if no more words, player one
+            self.handler.post_event(events.PlayerWon())
+
+
+
 
