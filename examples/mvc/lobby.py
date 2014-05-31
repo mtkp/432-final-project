@@ -88,6 +88,6 @@ class Lobby(base.Module):
 
     def update(self):
         if self.user is None:
-            self.handler.notify(events.GetUser())
+            self.handler.post_event(events.GetUser())
         self.draw()
 
