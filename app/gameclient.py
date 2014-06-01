@@ -34,13 +34,12 @@ class GameClient(object):
         """
         msg = None
         recv_list, send_list, error_list = \
-            select.select([self.conn], [self.conn], [])
+            select.select([self.conn], [self.conn], [self.conn])
 
         # for each of those port we want to send out on, send
         for i in send_list:
             if len(self.outbox) > 0:
                 message.send(i, self.outbox.popleft())
-
         # for each port we want to receive on, print data received
         for i in recv_list:
             try:
@@ -49,6 +48,9 @@ class GameClient(object):
                 msg = data
             except message.ClosedConnection:
                 i.close()
+        for i in error_list:
+            print "<socket exception...>"
+            i.close()
         return msg
 
 
