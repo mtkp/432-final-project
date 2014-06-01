@@ -29,6 +29,12 @@ class Module(object):
         self.font = pygame.font.SysFont("monospace", 20)
         self.draw_set = []
 
+
+    def notify(self, event):
+        """EventManager calls this function to notify this listener.
+        """
+        pass
+
     def draw(self):
         """Draws all objects in view draw set.
         """

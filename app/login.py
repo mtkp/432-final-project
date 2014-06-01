@@ -13,14 +13,15 @@ class Login(base.Module):
 
     def __init__(self, handler):
         base.Module.__init__(self, handler)
-        self.background_color = color.DarkGray
+        self.background_color = color.DarkGreen
 
         input_box_height = self.height / 15
         name_label = util.Label(
             self.background,
             (self.width / 2, 160),
             self.font,
-            "name"
+            "name",
+            color.White
             )
         self.name_input = util.InputBox(
             self.background,
@@ -33,7 +34,8 @@ class Login(base.Module):
             self.background,
             (self.width / 2, 260),
             self.font,
-            "server"
+            "server",
+            color.White
             )
         self.server_input = util.InputBox(
             self.background,
@@ -65,7 +67,6 @@ class Login(base.Module):
             server_label,
             name_label
             ])
-        self.name_input.active = True
 
     def notify(self, event):
         if isinstance(event, events.MouseClick):

@@ -11,7 +11,7 @@ class Wait(base.Module):
     def __init__(self, handler):
         base.Module.__init__(self, handler)
         self.font = pygame.font.SysFont("monospace", 40)
-
+        self.background_color = color.Green
         # set up left half of screen
         self.label = util.Label(
             self.background,

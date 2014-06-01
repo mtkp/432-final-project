@@ -9,9 +9,11 @@ import game
 import lobby
 import login
 import netmanagerhigh
+import start
 import userinput
 import wait
 
+START = 0
 LOGIN = 1
 LOBBY = 2
 WAIT  = 3
@@ -31,6 +33,7 @@ class Program(base.Listener):
         self.net_manager_high = netmanagerhigh.NetManagerHigh(self.handler)
 
         self.modules = {
+            START: start.Start(self.handler),
             LOGIN: login.Login(self.handler),
             LOBBY: lobby.Lobby(self.handler),
             WAIT:  wait.Wait(self.handler),
@@ -39,10 +42,13 @@ class Program(base.Listener):
 
         # set current state
         # self.state = GAME   # GREG
-        self.state = LOGIN  # MATT
+        self.state = START  # MATT
         self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
+        if self.state == START:
+            if isinstance(event, events.MouseClick):
+                self.change_state(LOGIN)
         if self.state == LOGIN:
             if isinstance(event, events.UserLoggedIn):
                 self.change_state(LOBBY)
