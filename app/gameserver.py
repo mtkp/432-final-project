@@ -140,8 +140,11 @@ class GameServer(object):
 
     def in_game_waiting(self, user, msg):
         # will update users on current number of joined users
-        # probably also a good time to send out the word list...?
         # will end when sending a start game message to all users
+        #
+        # send a start message as: ("start_game", ["username1", "username2", ...])
+        #
+        # also need to send the word list to all players at game start..
         pass
 
     def in_game(self, user, msg):
