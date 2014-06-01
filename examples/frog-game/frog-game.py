@@ -15,11 +15,19 @@ class Player(object):
         # words is a list of label objects
         self.words = []
         self.username = username
-
-    def add_word(self, word):
-        self.words.append(word)
         
-    def draw
+
+    # add a wor
+    def add_word(self, word):
+        # make a new label object
+        label = util.TextBox(
+            self.background,
+            # width, height)
+        self.words.append(label)
+    
+    
+    def draw():
+        
         
 
 # Ideas for the view:
@@ -33,9 +41,12 @@ class Game(base.Module):
 
         # hashmap of usernames to listboxes for opponents
         self.player_list = []
-        self.word_list = self.get_words()
+        self.word_list = []
         self.should_move = False
         self.won = False
+
+        self.handler.post_event(events.GetPlayers())
+        self.handler.post_event(events.GetWords())
 
         self.label = util.Label(
             self.background,
@@ -81,11 +92,7 @@ class Game(base.Module):
          
 
     def update(self):
-        if self.player_list == None
-            self.handler.post_event(events.GetPlayers())
-        elif self.word_list == None:
-            self.handler.post_event(events.GetWords())
-        elif self.should_move == True:
+        if self.should_move == True:
             self.handler.post_event(events.PlayerMoved())
             self.cur_word_box.text = self.get_word()
             self.should_move = False
@@ -94,15 +101,14 @@ class Game(base.Module):
             # display a victory message
         self.draw()
         
-        
 
     def notify(self, event):
         if isinstance(event, events.StartGame()):
             # set the games player list to be the list of names from server
             
         elif isinstance(event, events.OpponentSuccess()):
-            # find opponent in model's local collection of opponents
-            # that opponent's update function should move him
+            # find opponent in local collection of opponents
+            # with that player, call addword method
             pass
         elif isinstance(event, events.OpponentWon()):
             # maybe print which opponent won text and return to lobby
@@ -113,8 +119,14 @@ class Game(base.Module):
             #
             pass
         elif isinstance(event, events.KeyPress):
-            # send the input box the character that the user typed
-            self.word_input.input(event.key)
+            # send the input box the character that the user typed, display it
+            self.word_input.input(event.key)    
+            # check to see if the input box text matches the cur_word text
+            if self.word_input.text == self.cur_word_box.text:
+                # tell the sever that we moved
+                self.handler.post_event(events.PlayerMoved())
+                # reset the displayed word to be the next word in local word list
+                self.cur_word_box.text = self.get_word()
 
 
 

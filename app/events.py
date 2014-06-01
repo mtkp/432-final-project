@@ -77,8 +77,14 @@ class GameUpdateOut(Event):
         self.level_list = level_list
         self.game_id = game_id
 
+# recieve a game update from the server
 class GameUpdateIn(Event):
-    def __init__(self, level_list, game_id):
+    def __init__(self, level_list):
+        self.level_list = level_list
+
+# this is what the server sends to the netmanagerhigh
+class LowLevelGameUpdateIn(Event):
+    def __init__(self, level_list):
         self.level_list = level_list
         self.game_id = game_id
 
@@ -87,8 +93,12 @@ class JoinGame(Event):
         self.game_name = game_name
         self.game_users = game_users
 
+# when the server gets enough users for a game (4), it will send out this event
 class StartGame(Event):
-    pass # sent at start of game ("game_start", [ "user1", "user2", ... ])
+    def __init__(self, game_id, user_list):
+        self.game_id = game_id
+        self
+        # ("game_start", [ "user1", "user2", ... ])
 
 class EndGame(Event):
     pass

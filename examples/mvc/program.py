@@ -29,11 +29,13 @@ class Program(base.Listener):
 
         self.modules = {
             LOGIN: login.Login(self.handler),
-            LOBBY: lobby.Lobby(self.handler)
+            LOBBY: lobby.Lobby(self.handler),
+            GAME:  game.Game(self.handler)
         }
-        self.state = LOGIN
+        self.state = GAME
 
         self.handler.unregister_for_events(self.modules[LOBBY])
+        self.handler.unregister_for_events(self.modules[LOGIN])
 
     def notify(self, event):
         if self.state == LOGIN:
@@ -42,6 +44,8 @@ class Program(base.Listener):
         elif self.state == LOBBY:
             if isinstance(event, events.UserLoggedOut):
                 self.change_state_(LOGIN)
+        
+            
 
     def change_state(self, new_state):
         current_module = self.modules[self.state]
