@@ -60,6 +60,12 @@ class GameUpdate(Event):
     def __init__(self, level_list):
         self.level_list = level_list
 
+
+class joinGame(Event):
+    def __init__(self, game_name, game_users):
+        self.game_name = game_name
+        self.game_users = game_users
+    
 class StartGame(Event):
     pass
 

@@ -14,6 +14,7 @@ class NetManagerHigh(base.Listener):
         self.name   = None
         self.users  = []
         self.games  = []
+        
         # current game ( "name", id, ["bob", "joe", "steve"], 4 )
         # ( "game_update", [1, 4, 7, 2] )
 
@@ -39,8 +40,15 @@ class NetManagerHigh(base.Listener):
             self.handler.post_event(events.UserUpdate(self))
         elif isinstance(event, events.Logout):
             self.unregister()
-        elif isinstance(event, events.GameUpdate):
-            #
+        elif isinstance(event, events.JoinGame):
+            pass
+        elif isinstance(event, events.GameUpdateOut):
+            # player succeeded in spelling word, tell server
+            pass
+            
+        elif isinstance(event, events.GameUpdateIn):
+            # since someone changed, need to tell everyone else
+            pass
 
     def register(self, name, server):
         try:

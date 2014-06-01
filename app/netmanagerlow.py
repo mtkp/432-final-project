@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# gameclient.py
+# netmanagerlow.py
 
 # python libs
 import socket
