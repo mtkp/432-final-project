@@ -2,6 +2,7 @@
 
 import pygame
 import os
+import copy
 
 import base
 import color
@@ -22,14 +23,15 @@ class BoxCollection(object):
         self.background = background
         self.index = 0
     
-        self.box = util.TextBox(
-            background,
-            (100, 500),
-            (100, 100),
-            font,
-            username
-            )
-        self.box_list.append(self.box)
+        for i in range(4):
+            temp_box = util.TextBox(
+                background,
+                ( 60 + i * 110, 500),
+                (100, 100),
+                font,
+                username
+                )
+            self.box_list.append(temp_box)
 
         #def add_word(self, word):
         #    box = util.TextBox(
@@ -53,11 +55,11 @@ class BoxCollection(object):
 
     def grow_boxes(self, level_list):
         for i, box in enumerate(self.box_list):        
-            self.box.height += 10 * level_list[i]
+            box.height = 100 + (10 * level_list[i])
 
     def draw(self):
         for box in self.box_list:
-            self.box.draw()        
+            box.draw()        
 
 # four users limit
 # game = name, ids, list of users, limit
@@ -70,16 +72,14 @@ class Game(base.Module):
         self.game_id = 0     # id of game in the network mgr
         self.user_idx = 0    # position of user in the player_list
 
-        self.level_list = []
+        self.level_list = [0, 0, 0, 0]
         self.word_list = []
         self.should_move = False
         self.won = False
-        self.test_height = 0
         self.my_boxes = BoxCollection("bob", self.background, self.font)
     
         self.handler.post_event(events.GetPlayers())
         self.handler.post_event(events.GetWords())
-        
         
         self.draw_set.extend([
             #self.level_list
@@ -115,7 +115,7 @@ class Game(base.Module):
             self.level_list = event.level_list
             pass
         elif isinstance(event, events.GameUpdateIn):
-            if event.game_id == self.game_id:
+            #if event.game_id == self.game_id:
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
                 self.grow_boxes()
@@ -130,13 +130,14 @@ class Game(base.Module):
             if isinstance(event, events.KeyPress):
                 if event.key == RETURN_KEY:
                     print "game: pressed enter"
-                    
                     self.handler.post_event(events.GameUpdateOut(self.level_list,
                                                                  self.game_id,
                                                                  self.user_idx))
                 if event.key == TAB_KEY:
                     print "game: pressed tab"
-                    self.handler.post_event(events.GameUpdateIn(self.level_list,
+                    new_levels = copy.deepcopy(self.level_list)
+                    new_levels[self.user_idx] += 1
+                    self.handler.post_event(events.GameUpdateIn(new_levels,
                                                                 self.game_id))
             ## send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
