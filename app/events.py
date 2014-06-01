@@ -50,10 +50,26 @@ class GetUsers(Event):
 class GetGames(Event):
     pass
 
+class GetPlayers():
+    pass
+
+class GetWords():
+    pass
+
 class UserUpdate(Event):
     def __init__(self, user):
         self.user = user
 
+class GameUpdate(Event):
+    def __init__(self, level_list):
+        self.level_list = level_list
+
+
+class joinGame(Event):
+    def __init__(self, game_name, game_users):
+        self.game_name = game_name
+        self.game_users = game_users
+    
 class StartGame(Event):
     pass
 
@@ -61,7 +77,7 @@ class EndGame(Event):
     pass
 
 # player got a word right, needs to be moved locally and remotely
-class PlayerMoved(Event):
+class PlayerSuccess(Event):
     pass
 
 # player won the game, notify server to end the game
@@ -69,7 +85,7 @@ class PlayerWon(Event):
     pass
 
 # opponent got a word right, needs to be moved locally
-class OpponentMoved(Event):
+class OpponentSuccess(Event):
     pass
 
 # Opponent wins the game
