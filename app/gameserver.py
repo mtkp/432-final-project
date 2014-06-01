@@ -121,6 +121,7 @@ class GameServer(object):
         if cmd == "login" and name not in usernames:
             user.name  = name
             user.send(("login_result", True))
+            user.send(("games", [g.compact() for g in self.games]))
             self.users_changed = True
         else:
             user.send(("login_result", False))
@@ -131,7 +132,17 @@ class GameServer(object):
             game_name = msg[1]
             game = Game(user, game_name)
             self.games.append(game)
+            user.send(("joined", id(game)))
             self.games_changed = True
+        elif cmd == "join":
+            game_id = msg[1]
+            for game in self.games:
+                if id(game) == game_id:
+                    if len(game.users) < game.limit:
+                        game.add_user(user)
+                        user.send(("joined", id(game)))
+                        self.games_changed = True
+                    break
         elif cmd == "chat":
             chat_msg = "{}: {}".format(user.name, msg[1]) # append who said it
             print "{} said {}".format(user.name, msg[1])

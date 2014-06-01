@@ -32,6 +32,10 @@ class TryCreateGame(Event):
     def __init__(self, name):
         self.name = name
 
+class TryJoinGame(Event):
+    def __init__(self, game_id):
+        self.game_id = game_id
+
 class TrySendChat(Event):
     def __init__(self, msg):
         self.msg = msg

@@ -114,6 +114,10 @@ class Lobby(base.Module):
             self.create_game_input.try_click(event.pos)
             if self.create_game_button.collidepoint(event.pos):
                 self.send_create_game_request()
+            if self.games_box.collidepoint(event.pos):
+                game = self.games_box.get_item(event.pos)
+                if game:
+                    self.handler.post_event(events.TryJoinGame(game.game_id))
         elif isinstance(event, events.UserUpdate):
             self.reload_users(event.user)
         elif isinstance(event, events.KeyPress):

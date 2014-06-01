@@ -241,6 +241,9 @@ class Label(object):
     def size(self):
         return self.text_rect.size
 
+    def collidepoint(self, xy):
+        return self.text_rect.collidepoint(xy)
+
 
 class Button(object):
     def __init__(self, background, center, size, color, font, text):
@@ -402,9 +405,14 @@ class ListBox(object):
             item.draw()
 
     def collidepoint(self, xy):
-        for box in self.draw_list:
-            if box.collidepoint(xy):
-                return box.text
+        return self.box.collidepoint(xy)
+
+    def get_item(self, xy):
+        """Get the item at the specified xy coordinates
+        """
+        for item, label in zip(self._list, self.draw_list):
+            if label.collidepoint(xy):
+                return item
 
     @property
     def list(self):

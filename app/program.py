@@ -6,14 +6,17 @@ import base
 import clock
 import events
 import game
-import userinput
 import lobby
 import login
 import netmanagerhigh
+import userinput
+import wait
 
 LOGIN = 1
 LOBBY = 2
-GAME  = 3
+WAIT  = 3
+GAME  = 4
+
 
 class Program(base.Listener):
     def __init__(self, handler):
@@ -30,6 +33,7 @@ class Program(base.Listener):
         self.modules = {
             LOGIN: login.Login(self.handler),
             LOBBY: lobby.Lobby(self.handler),
+            WAIT:  wait.Wait(self.handler),
             GAME:  game.Game(self.handler)
         }
 
@@ -52,6 +56,7 @@ class Program(base.Listener):
         self.state = new_state
         new_module = self.modules[self.state]
         self.handler.register_for_events(new_module)
+        self.handler.post_event(events.UserUpdate(self.net_manager_high))
 
     def tick(self):
         self.modules[self.state].update()

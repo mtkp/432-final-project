@@ -43,6 +43,8 @@ class NetManagerHigh(base.Listener):
             self.register(event.name, event.server)
         if isinstance(event, events.TryCreateGame):
             self.net_manager_low.create_game(event.name)
+        if isinstance(event, events.TryJoinGame):
+            self.net_manager_low.join_game(event.game_id)
         if isinstance(event, events.TrySendChat):
             self.net_manager_low.chat(event.msg)
         elif isinstance(event, events.GetUser):
@@ -51,7 +53,6 @@ class NetManagerHigh(base.Listener):
             self.unregister()
         elif isinstance(event, events.JoinGame):
             pass
-<<<<<<< HEAD
         # elif isinstance(event, events.GameUpdateOut):
         #     # player succeeded in spelling word, tell server
         #     pass
@@ -59,21 +60,11 @@ class NetManagerHigh(base.Listener):
         # elif isinstance(event, events.GameUpdateIn):
         #     # since someone changed, need to tell everyone else
         #     pass
-=======
-        elif isinstance(event, events.GameUpdateOut):
-            # player succeeded in spelling word, tell server
-            pass
-            
-        elif isinstance(event, events.GameUpdateIn):
-            # since someone changed, need to tell everyone else
-            pass
-    
+
     # give update to network to tell server there was an update
     def send_server_gameupdate(self, user_index):
         self.net_manager_low.send_server_gameupdate(user_index_list, gameid)
 
-
->>>>>>> master
 
     def register(self, name, server):
         try:
