@@ -53,7 +53,7 @@ class BoxCollection(object):
 
     def grow_boxes(self, level_list):
         for i, box in enumerate(self.box_list):        
-            self.box.height = level_list[i]
+            self.box.height += 10 * level_list[i]
 
     def draw(self):
         for box in self.box_list:
@@ -90,7 +90,6 @@ class Game(base.Module):
     # give each box a new .top
     def grow_boxes(self):
         self.my_boxes.grow_boxes(self.level_list)
-        pass
 
     # get a word for the user to type
     def get_word(self):
@@ -137,7 +136,8 @@ class Game(base.Module):
                                                                  self.user_idx))
                 if event.key == TAB_KEY:
                     print "game: pressed tab"
-                    self.handler.post_event(events.GameUpdateIn(self.level_list, self.game_id))
+                    self.handler.post_event(events.GameUpdateIn(self.level_list,
+                                                                self.game_id))
             ## send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
 

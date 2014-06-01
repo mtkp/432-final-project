@@ -33,6 +33,13 @@ class Game(object):
     def usernames(self):
         return [user.name for user in self.users]
 
+    # check if any of the players won the game
+    def check_winner(self):
+        for i in level_list:
+            if i == 10:
+                return i
+        return None
+
     def compact(self):
         return (self.name, id(self), len(self.users), self.limit)
 
@@ -167,19 +174,22 @@ class GameServer(object):
         # will end when one user finishes all words in wordlist
         # when ends, state for all users in game becomes lobby and game
         #   should be destroyed
-        #
-        # case send upate:
-        #     self.user.send( ( "game_update", [5, 7, 8, 3] ) )
+        
         cmd = msg[0]
         # gameupdate: ("gameupdate, game_id, user_idx, [1, 2, 3, 4]")
-        if cmd == "gameupdate":
+        if cmd == "gameupdateout":
             # increment the list at index user_idx
             self.user.game.level_list[user_idx] += 1
-            self.user.send( ( "", ) )
-                
-
-        pass
-
+            # check if anyone won
+            winner = self.user.game()
+            self.user.send( ( "gameupdatein",
+                              msg[1],
+                              self.user.game.level_list) )
+            if winner != None:
+                self.user.send( ( "playerwon", msg[1], winner ) )
+        elif cmd == "":
+            pass
+        
         
 
     def users(self):
