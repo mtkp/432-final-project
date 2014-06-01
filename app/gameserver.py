@@ -51,28 +51,97 @@ class User(object):
     def send(self, msg):
         self.outbox.append(msg)
 
-
-class UserServer(object):
+class GameServer(object):
     def __init__(self):
         # set up non-blocking server socket with reuse option
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.setblocking(0)
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server.bind(('',PORT))
-        self.server.listen(LISTEN_QUEUE)
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setblocking(0)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.bind(('',PORT))
+        self.server_socket.listen(LISTEN_QUEUE)
 
         # map socket fds to User objects
-        self._users = {}
-        self.user_unregistered = False
+        self._users        = {}
+        self.games         = []
+        self.usernames     = []
+        self.users_changed = False
+
+    def serve_forever(self):
+        while True:
+            self.update()
+
+            # clean up games
+            self.games = filter(lambda game: len(game.users) > 0, self.games)
+
+            # get list of usernames
+            self.usernames = [
+                user.name for user in self.users() if user.name
+            ]
+
+            # notify users if user list changed
+            if self.users_changed:
+                for user in self.users():
+                    user.send(("users", self.usernames))
+            self.users_changed = False
+
+            # listen and handle user requests
+            for user in self.users():
+                while user.has_messages():
+                    msg = user.recv()
+                    if user.name is None:
+                        self.register(user, msg)
+                    elif user.game is None:
+                        self.in_lobby(user, msg)
+                    elif user.game.waiting:
+                        self.in_game_waiting(user, msg)
+                    else:
+                        self.in_game(user, msg)
+
+    # -- handle user requests, per the user state --
+    # - regsiter
+    # - in_lobby
+    # - in_game_waiting
+    # - in_game
+
+    def register(self, user, msg):
+        cmd, name = msg
+        if cmd == "login" and name not in self.usernames:
+            user.name  = name
+            user.send(("login_result", True))
+            self.users_changed = True
+        else:
+            user.send(("login_result", False))
+
+    def in_lobby(self, user, msg):
+        cmd = msg[0]
+        if cmd == "create_game":
+            pass
+
+    def in_game_waiting(self, user, msg):
+        # will update users on current number of joined users
+        # probably also a good time to send out the word list...?
+        # will end when sending a start game message to all users
+        pass
+
+    def in_game(self, user, msg):
+        # will pass messages between users when updates occur
+        # will end when one user finishes all words in wordlist
+        # when ends, state for all users in game becomes lobby and game
+        #   should be destroyed
+        #
+        # case send upate:
+        #     self.user.send( ( "game_update", [5, 7, 8, 3] ) )
+        pass
 
     def users(self):
         return self._users.itervalues()
 
     def update(self):
-        """Send and receive to and from any server sockets.
+        """Actually send and receive to and from any server_socket sockets,
+        using select.
         """
         recv_list = [u.conn for u in self.users()]
-        recv_list.append(self.server)
+        recv_list.append(self.server_socket)
         send_list = [u.conn for u in self.users() if len(u.outbox) > 0]
 
         recv_list, send_list, exception_list = \
@@ -88,8 +157,8 @@ class UserServer(object):
     # -- private --
 
     def _recv(self, conn):
-        if conn is self.server:
-            new_conn, addr = self.server.accept()
+        if conn is self.server_socket:
+            new_conn, addr = self.server_socket.accept()
             new_conn.setblocking(0)
             self._users[new_conn] = User(new_conn)
         else:
@@ -112,73 +181,4 @@ class UserServer(object):
             user.game.remove_user(user)
         del self._users[conn]
         conn.close()
-        self.user_unregistered = True
-
-
-class GameServer(object):
-    def __init__(self):
-        self.user_server     = UserServer()
-        self.games           = []
-        self.usernames       = []
-        self.user_registered = False
-
-    def register(self, user, msg):
-        cmd, name = msg
-        if cmd == "login" and name not in self.usernames:
-            user.name  = name
-            user.send(("login_result", True))
-            self.user_registered = True
-        else:
-            user.send(("login_result", False))
-
-    def in_lobby(self, user, msg):
-        ("test", "test")
-        cmd = msg[0]
-        if cmd == "test":
-            print "got the test message from " + user.name
-
-    def in_game_waiting(self, user, msg):
-        # will update users on current number of joined users
-        # probably also a good time to send out the word list...?
-        # will end when sending a start game message to all users
-        pass
-
-
-    def in_game(self, user, msg):
-        # will pass messages between users when updates occur
-        # will end when one user finishes all words in wordlist
-        # when ends, state for all users in game becomes lobby and game
-        #   should be destroyed
-        pass
-
-    def serve_forever(self):
-        while True:
-            self.user_server.update()
-
-            # clean up games
-            self.games = filter(lambda game: len(game.users) > 0, self.games)
-
-            # get list of usernames
-            self.usernames = [
-                user.name for user in self.user_server.users() if user.name
-            ]
-
-            if self.user_registered or self.user_server.user_unregistered:
-                for user in self.user_server.users():
-                    user.send(("users", self.usernames))
-
-            self.user_registered = False
-            self.user_server.user_unregistered = False
-
-            # handle requests
-            for user in self.user_server.users():
-                while user.has_messages():
-                    msg = user.recv()
-                    if user.name is None:
-                        self.register(user, msg)
-                    elif user.game is None:
-                        self.in_lobby(user, msg)
-                    elif user.game.waiting:
-                        self.in_game_waiting(user, msg)
-                    else:
-                        self.in_game(user, msg)
+        self.users_changed = True

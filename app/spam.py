@@ -2,7 +2,10 @@
 
 import gameclient
 
-# get server name from user
+
+# an easy way to connect multiple clients to the server
+# for testing filling up the user list
+
 clients = []
 while True:
     client = gameclient.GameClient()

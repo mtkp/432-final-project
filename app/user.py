@@ -14,6 +14,8 @@ class User(base.Listener):
         self.name   = None
         self.users  = []
         self.games  = []
+        # current game ( "name", id, ["bob", "joe", "steve"], 4 )
+        # ( "game_update", [1, 4, 7, 2] )
 
     def tick(self):
         # if user registered (add registered field)
