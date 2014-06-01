@@ -26,7 +26,7 @@ class Program(base.Listener):
         pygame.init()
         pygame.font.init()
         pygame.display.set_mode((800, 600))
-        pygame.display.set_caption("firestarter")
+        pygame.display.set_caption("type it")
 
         self.net_manager_high = netmanagerhigh.NetManagerHigh(self.handler)
 
