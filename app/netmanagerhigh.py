@@ -57,14 +57,17 @@ class NetManagerHigh(base.Listener):
             # player has updated list to give server
             print "netmgrhigh: got gameupdateoutevent"
             self.net_manager_low.send_server_gameupdate(event.level_list, event.game_id)
-        elif isinstance(event, events.GameUpdateIn):
+        elif isinstance(event, events.LowLevelGameUpdateIn):
             # since someone changed, need to tell everyone else
-            print "netmgrhigh: got gumeupdateinevent"
-            #pass
+            print "netmgrhigh: got gameupdateinevent"
+            self.handler.post_event(events.GameUpdateIn(event.level_list, event.game_id))
 
     # give update to network to tell server there was an update
-    def send_server_gameupdate(self, user_index):
-        self.net_manager_low.send_server_gameupdate(user_index_list, gameid)
+    def send_server_gameupdate(self, level_list, game_id):
+        self.net_manager_low.send_server_gameupdate(level_list, game_id)
+
+    # take update from network and give to event manager
+ 
 
 
     def register(self, name, server):

@@ -9,6 +9,7 @@ import events
 import util
 
 RETURN_KEY = 13
+TAB_KEY = 9
 
 # 800 x 600 width x height
 
@@ -64,7 +65,7 @@ class Game(base.Module):
         base.Module.__init__(self, handler)
         self.background_color = color.Blue
 
-        self.game_id = 0      # id of game in the network mgr
+        self.game_id = 0     # id of game in the network mgr
         self.user_idx = 0    # position of user in the player_list
 
         self.player_list = []
@@ -110,9 +111,11 @@ class Game(base.Module):
             self.players_list = event.players_list
             pass
         elif isinstance(event, events.GameUpdateIn):
-            self.player_list = event.level_list
-            #self.box_list = event.level_list
-            self.box.height
+            if event.game_id == self.game_id:
+                print "got game update"
+                self.player_list = event.level_list
+                # call function to set each box's height to the level in recvd list
+            
         elif isinstance(event, events.OpponentWon):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)
@@ -123,6 +126,9 @@ class Game(base.Module):
                 if event.key == RETURN_KEY:
                     print "game: pressed enter"
                     self.handler.post_event(events.GameUpdateOut(self.player_list, self.game_id))
+                if event.key == TAB_KEY:
+                    print "game: pressed tab"
+                    self.handler.post_event(events.GameUpdateIn(self.player_list, self.game_id))
             ## send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
 

@@ -79,12 +79,13 @@ class GameUpdateOut(Event):
 
 # recieve a game update from the server
 class GameUpdateIn(Event):
-    def __init__(self, level_list):
+    def __init__(self, level_list, game_id):
         self.level_list = level_list
+        self.game_id = game_id
 
 # this is what the server sends to the netmanagerhigh
 class LowLevelGameUpdateIn(Event):
-    def __init__(self, level_list):
+    def __init__(self, level_list, game_id):
         self.level_list = level_list
         self.game_id = game_id
 
