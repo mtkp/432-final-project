@@ -68,9 +68,19 @@ class UserUpdate(Event):
     def __init__(self, user):
         self.user = user
 
-class GameUpdate(Event):
-    def __init__(self, level_list):
+class GameUpdate():
+    pass
+
+# this is for when a client want to tell everyone
+class GameUpdateOut(Event):
+    def __init__(self, level_list, game_id):
         self.level_list = level_list
+        self.game_id = game_id
+
+class GameUpdateIn(Event):
+    def __init__(self, level_list, game_id):
+        self.level_list = level_list
+        self.game_id = game_id
 
 class JoinGame(Event):
     def __init__(self, game_name, game_users):
@@ -78,7 +88,7 @@ class JoinGame(Event):
         self.game_users = game_users
 
 class StartGame(Event):
-    pass
+    pass # sent at start of game ("game_start", [ "user1", "user2", ... ])
 
 class EndGame(Event):
     pass
