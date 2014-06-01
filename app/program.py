@@ -9,7 +9,7 @@ import game
 import userinput
 import lobby
 import login
-import user
+import netmanagerhigh
 
 LOGIN = 1
 LOBBY = 2

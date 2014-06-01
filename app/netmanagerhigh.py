@@ -43,12 +43,13 @@ class NetManagerHigh(base.Listener):
         elif isinstance(event, events.JoinGame):
             pass
         elif isinstance(event, events.GameUpdateOut):
-            # player succeeded in spelling word, tell server
-            pass
-            
+            # player has updated list to give server
+            print "netmgrhigh: got gameupdateoutevent"
+            self.net_manager_low.send_server_gameupdate(event.level_list, event.game_id)    
         elif isinstance(event, events.GameUpdateIn):
-            # since someone changed, need to tell everyone else
-            pass
+            # since someone changed, need to tell everyone else 
+            print "netmgrhigh: got gumeupdateinevent"
+            #pass
     
     # give update to network to tell server there was an update
     def send_server_gameupdate(self, user_index):
