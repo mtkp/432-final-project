@@ -65,7 +65,7 @@ class NetManagerLow(object):
         self._send( ( "gameupdateout", [game_id, user_idx, level_list] ) )
 
     # server tells clients about update
-    def send_gameupdate_to_clients(self, level_list, game_id):
+    def send_gameupdate_to_clients(self, game_id, level_list):
         print "netmgrlow: receiving gameupdate from server"
         self._send( ( "gameupdatein", [game_id, level_list] ) )
         

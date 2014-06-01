@@ -73,10 +73,10 @@ class GameUpdate():
 
 # this is for when a client want to tell everyone
 class GameUpdateOut(Event):
-    def __init__(self, level_list, game_id, user_idx):
-        self.level_list = level_list
+    def __init__(self, game_id, user_idx, level_list,):
         self.game_id = game_id
         self.user_idx = user_idx
+        self.level_list = level_list
 
 # recieve a game update from the server
 class GameUpdateIn(Event):
@@ -86,9 +86,9 @@ class GameUpdateIn(Event):
 
 # this is what the server sends to the netmanagerhigh
 class LowLevelGameUpdateIn(Event):
-    def __init__(self, level_list, game_id):
-        self.level_list = level_list
+    def __init__(self, game_id, level_list):
         self.game_id = game_id
+        self.level_list = level_list
 
 class JoinGame(Event):
     def __init__(self, game_name, game_users):

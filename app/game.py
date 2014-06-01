@@ -46,7 +46,7 @@ class BoxCollection(object):
         #def add_word(self, word):
         #    box = util.TextBox(
         ##        self.background,
-        #        (),
+        #        
         #        (),
         #        self.font,
         #        word
@@ -54,8 +54,8 @@ class BoxCollection(object):
 
 
     def grow_boxes(self, level_list):
-        for i, box in enumerate(self.box_list):        
-            box.height = 100 + (10 * level_list[i])
+        for i, a_box in enumerate(self.box_list):        
+            a_box.height = 100 + (10 * level_list[i])
 
     def draw(self):
         for box in self.box_list:
@@ -130,15 +130,15 @@ class Game(base.Module):
             if isinstance(event, events.KeyPress):
                 if event.key == RETURN_KEY:
                     print "game: pressed enter"
-                    self.handler.post_event(events.GameUpdateOut(self.level_list,
-                                                                 self.game_id,
-                                                                 self.user_idx))
+                    self.handler.post_event(events.GameUpdateOut(self.game_id,
+                                                                 self.user_idx,
+                                                                 self.level_list))
                 if event.key == TAB_KEY:
                     print "game: pressed tab"
                     new_levels = copy.deepcopy(self.level_list)
                     new_levels[self.user_idx] += 1
-                    self.handler.post_event(events.GameUpdateIn(new_levels,
-                                                                self.game_id))
+                    self.handler.post_event(events.GameUpdateIn(self.game_id,
+                                                                new_levels))
             ## send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
 
