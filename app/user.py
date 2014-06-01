@@ -17,18 +17,18 @@ class User(base.Listener):
 
     def tick(self):
         # if user registered (add registered field)
-        if self.name:
-            msg = self.client.get_messages()
-            if msg:
-                # read header
-                # update appropriate filed
-                header, payload = msg
-                if header == "users":
-                    self.users = payload
-                    self.handler.post_event(events.UserUpdate(self))
-                elif header == "games":
-                    self.games = payload
-                    self.handler.post_event(events.UserUpdate(self))
+        if self.client.conn:
+            self.client.update()
+        if self.client.has_messages():
+            header, payload = self.client.get_message()
+            # read header
+            # update appropriate filed
+            if header == "users":
+                self.users = payload
+                self.handler.post_event(events.UserUpdate(self))
+            elif header == "games":
+                self.games = payload
+                self.handler.post_event(events.UserUpdate(self))
 
     def notify(self, event):
         if isinstance(event, events.TryLogin):

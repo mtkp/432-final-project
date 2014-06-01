@@ -1,11 +1,12 @@
 #!/usr/bin/python2.7
 
+# python libs
 import collections
 import select
 import socket
 
 # our libs
-import message
+import messenger
 
 LISTEN_QUEUE = 5
 PORT         = 7307
@@ -56,8 +57,6 @@ class UserServer(object):
         # set up non-blocking server socket with reuse option
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setblocking(0)
-
-
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind(('',PORT))
         self.server.listen(LISTEN_QUEUE)
@@ -86,6 +85,8 @@ class UserServer(object):
             print "<socket exception...>"
             self._close(conn)
 
+    # -- private --
+
     def _recv(self, conn):
         if conn is self.server:
             new_conn, addr = self.server.accept()
@@ -93,16 +94,16 @@ class UserServer(object):
             self._users[new_conn] = User(new_conn)
         else:
             try:
-                data = message.recv(conn) # what if we want more than 1024?
-                print "<got '{}'>".format(data)
-                self._users[conn].inbox.append(data)
-            except message.ClosedConnection:
+                msg = messenger.recv(conn)
+                print "<got '{}'>".format(msg)
+                self._users[conn].inbox.append(msg)
+            except messenger.ClosedConnection:
                 self._close(conn)
 
     def _send(self, conn):
-        response = self._users[conn].outbox.popleft()
-        print "<sending '{}'>".format(response)
-        message.send(conn, response)
+        msg = self._users[conn].outbox.popleft()
+        print "<sending '{}'>".format(msg)
+        messenger.send(conn, msg)
 
     def _close(self, conn):
         print "<closing connection>"
@@ -135,28 +136,6 @@ class GameServer(object):
         cmd = msg[0]
         if cmd == "test":
             print "got the test message from " + user.name
-
-        # cmd = msg[0]
-        # if cmd == "users":
-        #     user.send(self.usernames)
-        # elif cmd == "games":
-        #     user.send([game.compact() for game in self.games])
-        # if cmd == "create":
-        #     new_game = Game(msg[1], 4)
-        #     new_game.add_user(user)
-        #     self.games.append(new_game)
-        #     user.send(new_game.compact())
-        # elif cmd == "join":
-        #     game_id = msg[1]
-        #     for game in self.games:
-        #         if id(game) == game_id and len(game.users) < game.size:
-        #             game.add_user(user)
-        #             user.send(game.compact())
-        #             break
-        #     else:
-        #         user.send(False)
-        # else:
-        #     user.send(False)
 
     def in_game_waiting(self, user, msg):
         # will update users on current number of joined users
