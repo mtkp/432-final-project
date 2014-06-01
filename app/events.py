@@ -28,6 +28,10 @@ class TryLogin(Event):
         self.name = name
         self.server = server
 
+class TryCreateGame(Event):
+    def __init__(self, name):
+        self.name = name
+
 class Logout(Event):
     pass
 

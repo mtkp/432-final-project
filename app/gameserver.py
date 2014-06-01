@@ -11,16 +11,18 @@ import messenger
 LISTEN_QUEUE = 5
 PORT         = 7307
 
+
 class Game(object):
-    def __init__(self, name, size):
+    def __init__(self, maker, name, limit=4):
         self.users   = []
         self.name    = name
-        self.size    = size
+        self.limit   = limit
         self.waiting = True   # don't start the game yet
+        self.add_user(maker)
 
     def add_user(self, user):
-        user.game = self
-        self.users.append(user)
+        user.game = self        # update user's game
+        self.users.append(user) # add user to this game
 
     def remove_user(self, user):
         if user in self.users:
@@ -31,7 +33,7 @@ class Game(object):
         return [user.name for user in self.users]
 
     def compact(self):
-        return (self.name, id(self), self.usernames(), self.size)
+        return (self.name, id(self), len(self.users), self.size)
 
 
 class User(object):
@@ -51,6 +53,7 @@ class User(object):
     def send(self, msg):
         self.outbox.append(msg)
 
+
 class GameServer(object):
     def __init__(self):
         # set up non-blocking server socket with reuse option
@@ -61,28 +64,37 @@ class GameServer(object):
         self.server_socket.listen(LISTEN_QUEUE)
 
         # map socket fds to User objects
-        self._users        = {}
+        self.user_sockets  = {}
+
+        # keep a collection of current games
         self.games         = []
-        self.usernames     = []
+
         self.users_changed = False
+        self.games_changed = False
 
     def serve_forever(self):
         while True:
             self.update()
 
             # clean up games
+            for game in self.games:
+                if len(game.users) == 0:
+                    self.games_changed = True
             self.games = filter(lambda game: len(game.users) > 0, self.games)
-
-            # get list of usernames
-            self.usernames = [
-                user.name for user in self.users() if user.name
-            ]
 
             # notify users if user list changed
             if self.users_changed:
+                usernames = [u.name for u in self.users() if u.name]
                 for user in self.users():
-                    user.send(("users", self.usernames))
-            self.users_changed = False
+                    user.send(("users", usernames))
+                self.users_changed = False
+
+            # notify users if games list changed
+            if self.games_changed:
+                all_games = [g.compact() for g in self.games]
+                for user in self.users():
+                    user.send(("users", usernames))
+                self.users_changed = False
 
             # listen and handle user requests
             for user in self.users():
@@ -105,7 +117,8 @@ class GameServer(object):
 
     def register(self, user, msg):
         cmd, name = msg
-        if cmd == "login" and name not in self.usernames:
+        usernames = [u.name for u in self.users() if u.name]
+        if cmd == "login" and name not in usernames:
             user.name  = name
             user.send(("login_result", True))
             self.users_changed = True
@@ -115,7 +128,10 @@ class GameServer(object):
     def in_lobby(self, user, msg):
         cmd = msg[0]
         if cmd == "create_game":
-            pass
+            game_name = msg[1]
+            game = Game(user, game_name)
+            self.games.append(game)
+            self.games_changed = True
 
     def in_game_waiting(self, user, msg):
         # will update users on current number of joined users
@@ -134,7 +150,7 @@ class GameServer(object):
         pass
 
     def users(self):
-        return self._users.itervalues()
+        return self.user_sockets.itervalues()
 
     def update(self):
         """Actually send and receive to and from any server_socket sockets,
@@ -160,25 +176,25 @@ class GameServer(object):
         if conn is self.server_socket:
             new_conn, addr = self.server_socket.accept()
             new_conn.setblocking(0)
-            self._users[new_conn] = User(new_conn)
+            self.user_sockets[new_conn] = User(new_conn)
         else:
             try:
                 msg = messenger.recv(conn)
                 print "<got '{}'>".format(msg)
-                self._users[conn].inbox.append(msg)
+                self.user_sockets[conn].inbox.append(msg)
             except messenger.ClosedConnection:
                 self._close(conn)
 
     def _send(self, conn):
-        msg = self._users[conn].outbox.popleft()
+        msg = self.user_sockets[conn].outbox.popleft()
         print "<sending '{}'>".format(msg)
         messenger.send(conn, msg)
 
     def _close(self, conn):
         print "<closing connection>"
-        user = self._users[conn]
+        user = self.user_sockets[conn]
         if user.game:
             user.game.remove_user(user)
-        del self._users[conn]
+        del self.user_sockets[conn]
         conn.close()
         self.users_changed = True
