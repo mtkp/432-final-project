@@ -49,6 +49,12 @@ class NetManagerHigh(base.Listener):
         elif isinstance(event, events.GameUpdateIn):
             # since someone changed, need to tell everyone else
             pass
+    
+    # give update to network to tell server there was an update
+    def send_server_gameupdate(self, user_index):
+        self.net_manager_low.send_server_gameupdate(user_index_list, gameid)
+
+
 
     def register(self, name, server):
         try:

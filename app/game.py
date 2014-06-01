@@ -20,29 +20,31 @@ class Player(object):
     
     # add the next word after current index
     
-        #self.box = util.TextBox(
-        #    background,
-        #    (100, 100),
-        #    (100, 100),
-        #    font,
-        #    username
-        #    )
-    def add_word(self, word):
-        box = util.TextBox(
-            self.background,
-            (),
-            (),
-            self.font,
-            word
+        self.box = util.TextBox(
+            background,
+            (100, 100),
+            (100, 100),
+            font,
+            username
             )
-        self.box_list.append(box)
+        self.box_list[0] = self.box
+    #def add_word(self, word):
+    #    box = util.TextBox(
+    ##        self.background,
+    #        (),
+    #        (),
+    #        self.font,
+    #        word
+    #        )
+    #    self.box_list.append(box)
 
             
     # draw each text box in the list    
     def draw(self):
-        for word in 
-        for box in self.box_list:
-            self.box.draw()        
+        self.box.draw() 
+        #for word in 
+        #for box in self.box_list:
+        #    self.box.draw()        
 
 # four users limit
 # game = name, ids, list of users, limit
@@ -88,7 +90,7 @@ class Game(base.Module):
             # display a victory message
         self.draw()
         
-    # 
+
     # listen for update event and take list of ints from it.
     # another success, user listens for this and sends to server
     def notify(self, event):
@@ -97,6 +99,7 @@ class Game(base.Module):
             pass
         elif isinstance(event, events.GameUpdate):
             self.player_list = event.level_list
+            self.should_move = True
         elif isinstance(event, events.OpponentSuccess):
             self.player_list = event.
             # find opponent in local collection of opponents
