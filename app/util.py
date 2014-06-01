@@ -1,7 +1,11 @@
 
+import itertools
+
 import pygame
 
-from color import Black, White, LightGray
+
+from color import *
+
 
 class Box(object):
     def __init__(self, background, center, size, color):
@@ -105,19 +109,117 @@ class Box(object):
         self.rect.size = size
 
 
-class BorderBox(Box):
-    def __init__(self, background, center, size, color, border_color):
-        Box.__init__(self, background, center, size, color)
-        h, w = size
-        size = h + 2, w + 2
+class BorderBox(object):
+    def __init__(self, background, center, size, color, border_color=Black):
         self.border = Box(background, center, size, border_color)
+        h, w = size
+        size = h - 2, w - 2
+        self.fill = Box(background, center, size, color)
 
     def draw(self):
         self.border.draw()
-        Box.draw(self)
+        self.fill.draw()
 
     def set_color(self, color):
-        Box.set_color(self, color)
+        self.fill.set_color(color)
+
+    def set_border_color(self, color):
+        self.border.set_color(color)
+
+    def collidepoint(self, xy):
+        return self.border.collidepoint(xy)
+
+    @property
+    def center(self):
+        return self.border.center
+
+    @center.setter
+    def center(self, center):
+        self.border.center = center
+        self.fill.center = center
+
+    @property
+    def centerx(self):
+        return self.border.centerx
+
+    @centerx.setter
+    def centerx(self, centerx):
+        self.border.centerx = centerx
+        self.fill.centerx = centerx
+
+    @property
+    def centery(self):
+        return self.border.centery
+
+    @centery.setter
+    def centery(self, centery):
+        self.border.centery = centery
+        self.fill.centery = centery
+
+    @property
+    def left(self):
+        return self.border.left
+
+    @left.setter
+    def left(self, left):
+        self.border.left = left
+        self.fill.left = left + 1
+
+    @property
+    def right(self):
+        return self.border.right
+
+    @right.setter
+    def right(self, right):
+        self.border.right = right
+        self.fill.right = right - 1
+
+    @property
+    def top(self):
+        return self.border.top
+
+    @top.setter
+    def top(self, top):
+        self.border.top = top
+        self.fill.top = top + 1
+
+    @property
+    def bottom(self):
+        return self.border.bottom
+
+    @bottom.setter
+    def bottom(self, bottom):
+        self.border.bottom = bottom
+        self.fill.bottom = bottom - 1
+
+    @property
+    def width(self):
+        return self.border.width
+
+    @width.setter
+    def width(self, width):
+        self.border.width = width
+        self.fill.width = width - 2
+
+    @property
+    def height(self):
+        return self.border.height
+
+    @height.setter
+    def height(self, height):
+        self.border.height = height
+        self.fill.height = height - 2
+
+    @property
+    def size(self):
+        return self.border.size
+
+    @size.setter
+    def size(self, size):
+        self.border.size = size
+        h, w = size
+        size = h - 2, w - 2
+        self.fill.size = size
 
 
 class Label(object):
@@ -143,7 +245,7 @@ class Label(object):
 class Button(object):
     def __init__(self, background, center, size, color, font, text):
         self.label = Label(background, center, font, text)
-        self.box = BorderBox(background, center, size, color, Black)
+        self.box = BorderBox(background, center, size, color)
 
     def draw(self):
         self.box.draw()
@@ -154,9 +256,15 @@ class Button(object):
 
 
 class InputBox(object):
+    ascii_nums  = xrange(48, 58)
+    ascii_chars = xrange(97, 122)
+    ascii_misc  = [32, 45, 46] # space, dash, dot
+    ascii_codes = itertools.chain(ascii_nums, ascii_chars, ascii_misc)
+    allowed_input_keys = set(ascii_codes)
+
     def __init__(self, background, center, size, font, limit):
         self.label = Label(background, center, font, "")
-        self.box = BorderBox(background, center, size, LightGray, Black)
+        self.box = BorderBox(background, center, size, LightGray)
         self.active = False
         self.limit = limit
 
@@ -165,19 +273,17 @@ class InputBox(object):
             self.box.set_color(White)
         else:
             self.box.set_color(LightGray)
-
         self.box.draw()
         self.label.draw()
 
     def try_click(self, xy):
         self.active = self.collidepoint(xy)
 
-
     def collidepoint(self, xy):
         return self.box.collidepoint(xy)
 
     def input(self, raw):
-        if raw == 32 or raw == 45 or raw == 46 or (raw > 47 and raw < 58) or (raw > 96 and raw < 122):
+        if raw in InputBox.allowed_input_keys:
             self.label.text += chr(raw)
             self.label.text = self.label.text[:self.limit]
         elif raw == pygame.K_BACKSPACE:
@@ -189,9 +295,16 @@ class InputBox(object):
 
 
 class TextBox(object):
-    def __init__(self, background, center, font, text):
+    def align(func):
+        def aligner(self, *args, **kwargs):
+            return_val = func(self, *args, **kwargs)
+            self.label.center = self.box.center
+            return return_val
+        return aligner
+
+    def __init__(self, background, center, size, font, text):
         self.label = Label(background, center, font, text)
-        self.box = BorderBox(background, center, self.label.size, White, Black)
+        self.box = BorderBox(background, center, size, White)
 
     def draw(self):
         self.box.draw()
@@ -208,11 +321,74 @@ class TextBox(object):
     def text(self, text):
         self.label.text = text
 
+    @property
+    def center(self):
+        return self.box.center
+
+    @center.setter
+    @align
+    def center(self, center):
+        self.box.center = center
+
+    @property
+    def centerx(self):
+        return self.box.centerx
+
+    @centerx.setter
+    @align
+    def centerx(self, centerx):
+        self.box.centerx = centerx
+
+    @property
+    def centery(self):
+        return self.box.centery
+
+    @centery.setter
+    @align
+    def centery(self, centery):
+        self.box.centery = centery
+
+    @property
+    def left(self):
+        return self.box.left
+
+    @left.setter
+    @align
+    def left(self, left):
+        self.box.left = left
+
+    @property
+    def right(self):
+        return self.box.right
+
+    @right.setter
+    @align
+    def right(self, right):
+        self.box.right = right
+
+    @property
+    def top(self):
+        return self.box.top
+
+    @top.setter
+    @align
+    def top(self, top):
+        self.box.top = top
+
+    @property
+    def bottom(self):
+        return self.box.bottom
+
+    @bottom.setter
+    @align
+    def bottom(self, bottom):
+        self.box.bottom = bottom
+
 
 class ListBox(object):
     def __init__(self, background, center, size, font):
         self.background = background
-        self.box = BorderBox(background, center, size, White, Black)
+        self.box = BorderBox(background, center, size, White)
         self.font = font
         self._list = []
         self.draw_list = []

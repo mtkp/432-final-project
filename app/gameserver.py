@@ -12,9 +12,10 @@ PORT         = 7307
 
 class Game(object):
     def __init__(self, name, size):
-        self.users = []
-        self.name = name
-        self.size = size
+        self.users   = []
+        self.name    = name
+        self.size    = size
+        self.waiting = True   # don't start the game yet
 
     def add_user(self, user):
         user.game = self
@@ -157,17 +158,19 @@ class GameServer(object):
         # else:
         #     user.send(False)
 
-    def in_game(self, user, msg):
+    def in_game_waiting(self, user, msg):
+        # will update users on current number of joined users
+        # probably also a good time to send out the word list...?
+        # will end when sending a start game message to all users
         pass
-        # game = user.game
-        # cmd = msg[0]
-        # if cmd == "users":
-        #     user.send(game.usernames())
-        # if cmd == "exit":
-        #     game.remove_user(user)
-        #     user.send(True)
-        # else:
-        #     user.send(False)
+
+
+    def in_game(self, user, msg):
+        # will pass messages between users when updates occur
+        # will end when one user finishes all words in wordlist
+        # when ends, state for all users in game becomes lobby and game
+        #   should be destroyed
+        pass
 
     def serve_forever(self):
         while True:
@@ -196,5 +199,7 @@ class GameServer(object):
                         self.register(user, msg)
                     elif user.game is None:
                         self.in_lobby(user, msg)
+                    elif user.game.waiting:
+                        self.in_game_waiting(user, msg)
                     else:
                         self.in_game(user, msg)

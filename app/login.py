@@ -15,7 +15,7 @@ class Login(base.Module):
         self.background_color = color.DarkGray
 
         input_box_height = self.height / 15
-        self.name_label = util.Label(
+        name_label = util.Label(
             self.background,
             (self.width / 2, 160),
             self.font,
@@ -28,7 +28,7 @@ class Login(base.Module):
             self.font,
             30
             )
-        self.server_label = util.Label(
+        server_label = util.Label(
             self.background,
             (self.width / 2, 260),
             self.font,
@@ -44,7 +44,7 @@ class Login(base.Module):
         self.login_button = util.Button(
             self.background,
             (self.width / 2, self.height * 4 / 6),
-            (self.width / 8, input_box_height),
+            (self.width / 7, input_box_height),
             color.LightGray,
             self.font,
             "register"
@@ -60,9 +60,9 @@ class Login(base.Module):
             self.error_label,
             self.login_button,
             self.server_input,
-            self.server_label,
             self.name_input,
-            self.name_label
+            server_label,
+            name_label
             ])
 
     def notify(self, event):

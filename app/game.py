@@ -7,7 +7,6 @@ import events
 import util
 
 
-
 class Game(base.Module):
     def __init__(self, handler, window):
         base.Module.__init__(self, handler, window)

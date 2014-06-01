@@ -22,15 +22,19 @@ class User(base.Listener):
             if msg:
                 # read header
                 # update appropriate filed
-                if msg[0] == "users":
-                    self.users = msg[1]
+                header, payload = msg
+                if header == "users":
+                    self.users = payload
+                    self.handler.post_event(events.UserUpdate(self))
+                elif header == "games":
+                    self.games = payload
                     self.handler.post_event(events.UserUpdate(self))
 
     def notify(self, event):
         if isinstance(event, events.TryLogin):
             self.register(event.name, event.server)
         elif isinstance(event, events.GetUser):
-            self.handler.post_event(events.UserUpdate(self))            
+            self.handler.post_event(events.UserUpdate(self))
         elif isinstance(event, events.Logout):
             self.unregister()
 
