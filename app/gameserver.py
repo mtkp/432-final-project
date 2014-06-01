@@ -14,10 +14,11 @@ PORT         = 7307
 
 class Game(object):
     def __init__(self, maker, name, limit=4):
-        self.users   = []
-        self.name    = name
-        self.limit   = limit
-        self.waiting = True   # don't start the game yet
+        self.users      = []
+        self.level_list = [0, 0, 0, 0]
+        self.name       = name
+        self.limit      = limit
+        self.waiting    = True   # don't start the game yet
         self.add_user(maker)
 
     def add_user(self, user):
@@ -156,6 +157,9 @@ class GameServer(object):
         # send a start message as: ("start_game", ["username1", "username2", ...])
         #
         # also need to send the word list to all players at game start..
+        #cmd = msg[0]
+        #    if cmd == "":
+                
         pass
 
     def in_game(self, user, msg):
@@ -166,7 +170,17 @@ class GameServer(object):
         #
         # case send upate:
         #     self.user.send( ( "game_update", [5, 7, 8, 3] ) )
+        cmd = msg[0]
+        # gameupdate: ("gameupdate, game_id, user_idx, [1, 2, 3, 4]")
+        if cmd == "gameupdate":
+            # increment the list at index user_idx
+            self.user.game.level_list[user_idx] += 1
+            self.user.send( ( "", ) )
+                
+
         pass
+
+        
 
     def users(self):
         return self.user_sockets.itervalues()

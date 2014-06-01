@@ -73,9 +73,10 @@ class GameUpdate():
 
 # this is for when a client want to tell everyone
 class GameUpdateOut(Event):
-    def __init__(self, level_list, game_id):
+    def __init__(self, level_list, game_id, user_idx):
         self.level_list = level_list
         self.game_id = game_id
+        self.user_idx = user_idx
 
 # recieve a game update from the server
 class GameUpdateIn(Event):
@@ -96,9 +97,9 @@ class JoinGame(Event):
 
 # when the server gets enough users for a game (4), it will send out this event
 class StartGame(Event):
-    def __init__(self, game_id, user_list):
+    def __init__(self, game_id, level_list):
         self.game_id = game_id
-        self
+        self.level_list
         # ("game_start", [ "user1", "user2", ... ])
 
 class EndGame(Event):

@@ -60,10 +60,12 @@ class NetManagerLow(object):
         return self.inbox.popleft()
 
     # tell server to notify all clients that a game's level list has changed
-    def send_server_gameupdate(self, level_list, game_id):
+    def send_gameupdate(self, level_list, game_id, user_idx):
         print "netmgrlow: sending gameupdate to server"
-        self._send(("gameupdate", [level_list, game_id]))
+        self._send(("gameupdate", [game_id, user_idx, level_list]))
 
+    def recv_gameupdate(self, level_list, game_id):
+        print "netmgrlow: receiving gameupdate from server"
         
     def register(self, username, server):
         """Register to a server by username.
