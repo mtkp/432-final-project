@@ -8,46 +8,35 @@ import color
 import events
 import util
 
-img_folder = "images"
-increment = 3
-start_x = 320
-start_y = 240
+# player represents by the stack of words that he/she has completed so far
+# 
+class Player(object):
+    def __init__(self, username):
+        # words is a list of label objects
+        self.words = []
+        self.username = username
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, *groups):
-        super(Player, self).__init__(*groups)
-
-        self.should_move = False
-        img_folder = "images"
-        img_name = "frog.png"
-        # access image in subfolder, os-independant
-        try:
-            self.image = pygame.image.load(os.path.join(img_folder,
-                                                                 img_name))
-            self.imageMaster = pygame.image.load(os.path.join(img_folder,
-                                                                 img_name))
-        except:
-            raise UserWarning, "Unable to find the images in the folder" + \
-                                img_folder
-        self.rect = pygame.rect.Rect((start_x, start_y), self.image.get_size())
-
-
-    # update y coord of player if the word was spelled correctly
-    def update(self):
-        if self.should_move == True:
-            # how do we notify the server?
-            self.handler.post_event(events.PlayerMoved())
-            self.rect.y -= increment
-            should_move = False
+    def add_word(self, word):
+        self.words.append(word)
+        
+    def draw
+        
 
 # Ideas for the view:
 #   * highlight letters as correct
 #   * automatically move on to next word once the correct characters are typed
 #   * show words on side of screen that users are getting right or wrong
-class GameView(base.Module):
+class Game(base.Module):
     def __init__(self, handler, window):
         base.Module.__init__(self, handler, window)
         self.background_color = color.Blue
+
+        # hashmap of usernames to listboxes for opponents
+        self.player_list = []
+        self.word_list = self.get_words()
+        self.should_move = False
+        self.won = False
+
         self.label = util.Label(
             self.background,
             (400, 300),
@@ -55,36 +44,32 @@ class GameView(base.Module):
             str(type(self))
             )
 
-        # i think the view should own the sprite group to be updated?
-        self.sprites = pygame.sprite.Group()
-        self.player = Player(sprites)
-        # put in input box
-        # put in text that displays word user should type
-        # draw vertical lines for lanes for each frog
+        # input box for player to type word into
+        input_box_height = self.height / 15
+        self.word_input = util.InputBox(
+            self.background,
+            (self.width / 2, self.height / 2),
+            (self.width / 2, input_box_height),
+            self.font,
+            30
+            )
+        self.word_input.active == true
 
-
-    def notify(self, event):
-        if isinstance(event, events.OpponentMoved()):
-            # how do we move those opponent sprites individually?
-            # find opponent in model's local collection of opponents
-            # that opponent's update function should move him
-            pass
-        elif isinstance(event, events.OpponentWon()):
-            # maybe print which opponent won text and return to lobby
-            self.handler.post_event(events.EndGame())
-            pass
-        elif isinstance(event, events.OpponentGone()):
-            # server knows opponent gone, so just remove locally
-            # self.sprites.remove()
-            pass
-
-
-
-
-class Game(base.Listener):
-    def __init__(self, handler):
-        base.Listener.__init__(self, handler)
-        self.wordlist = util.get_words()
+        # 
+        self.cur_word_box = util.TextBox(
+            self.background,
+            (self.width / 2, 260),
+            self.font,
+            self.get_word()         # get the first word from the list
+            #get next word
+            )
+        self.draw_set.extend([
+            self.word_input,
+            self.cur_word_box,
+            
+            })
+            # player list
+            
 
     # get a word for the user to type
     def get_word(self):
@@ -93,7 +78,43 @@ class Game(base.Listener):
         else:
             # if no more words, player one
             self.handler.post_event(events.PlayerWon())
+         
 
+    def update(self):
+        if self.player_list == None
+            self.handler.post_event(events.GetPlayers())
+        elif self.word_list == None:
+            self.handler.post_event(events.GetWords())
+        elif self.should_move == True:
+            self.handler.post_event(events.PlayerMoved())
+            self.cur_word_box.text = self.get_word()
+            self.should_move = False
+        elif self.won == True:
+            self.handler.post_event(events.PlayerWon())
+            # display a victory message
+        self.draw()
+        
+        
+
+    def notify(self, event):
+        if isinstance(event, events.StartGame()):
+            # set the games player list to be the list of names from server
+            
+        elif isinstance(event, events.OpponentSuccess()):
+            # find opponent in model's local collection of opponents
+            # that opponent's update function should move him
+            pass
+        elif isinstance(event, events.OpponentWon()):
+            # maybe print which opponent won text and return to lobby
+            self.handler.post_event(events.EndGame())
+            pass
+        elif isinstance(event, events.OpponentGone()):
+            # remove locally
+            #
+            pass
+        elif isinstance(event, events.KeyPress):
+            # send the input box the character that the user typed
+            self.word_input.input(event.key)
 
 
 
