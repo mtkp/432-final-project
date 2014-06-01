@@ -20,11 +20,7 @@ class Player(object):
         self.username = username
         self.background = background
         self.index = 0
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 7e7eacc1b37d9b82d7e2434b1c43941c6f38352b
     # add the next word after current index
 
         self.box = util.TextBox(
@@ -34,11 +30,7 @@ class Player(object):
             font,
             username
             )
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 7e7eacc1b37d9b82d7e2434b1c43941c6f38352b
     #def add_word(self, word):
     #    box = util.TextBox(
     ##        self.background,
@@ -50,13 +42,7 @@ class Player(object):
     #    self.box_list.append(box)
     def grow_box(self, index, level):
         self.box.height = level
-<<<<<<< HEAD
 
-    # draw each text box in the list
-=======
-
-    # draw each text box in the list
->>>>>>> 7e7eacc1b37d9b82d7e2434b1c43941c6f38352b
     def draw(self):
         self.box.draw()
         #for word in
@@ -141,20 +127,14 @@ class Game(base.Module):
                     print "game: pressed enter"
                     self.handler.post_event(events.GameUpdateOut(self.player_list, self.game_id))
             ## send the input box the character that the user typed, display it
-<<<<<<< HEAD
             #self.word_input.input(event.key)
-=======
-            #self.word_input.input(event.key)
->>>>>>> 7e7eacc1b37d9b82d7e2434b1c43941c6f38352b
+
             ## check to see if the input box text matches the cur_word text
             #if self.word_input.text == self.cur_word_box.text:
             #    # tell the sever that we moved
             #    self.handler.post_event(events.PlayerSuccess())
             #    # reset the displayed word to be the next word in local word list
             #    self.cur_word_box.text = self.get_word()
-<<<<<<< HEAD
-=======
 
->>>>>>> 7e7eacc1b37d9b82d7e2434b1c43941c6f38352b
 
 
