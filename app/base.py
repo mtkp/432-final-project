@@ -5,6 +5,8 @@ import color
 
 
 class Listener(object):
+    """Listener automatically registers with handler.
+    """
     def __init__(self, handler):
         self.handler = handler
         self.handler.register_for_events(self)
@@ -15,9 +17,11 @@ class Listener(object):
         pass
 
 
-class Module(Listener):
+class Module(object):
+    """Module does not automatically register with handle.
+    """
     def __init__(self, handler):
-        Listener.__init__(self, handler)
+        self.handler = handler
         self.window = pygame.display.get_surface()
         self.width, self.height = self.window.get_size()
         self.background_color = color.Gray

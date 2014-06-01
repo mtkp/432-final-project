@@ -80,6 +80,11 @@ class NetManagerLow(object):
             return
         self._send(("create", game_name))
 
+    def chat(self, msg):
+        """Create a game on the server.
+        """
+        self._send(("chat", msg))
+
     def join_game(self, game_id):
         """Join a game using the game id (provided in the tuple).
         """

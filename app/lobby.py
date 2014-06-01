@@ -13,10 +13,10 @@ import util
 # this class is NOT actually the game
 class LobbyGame(object):
     def __init__(self, game_tuple):
-        self.name, self._id, self.size, self.limit = game_tuple[0]
+        self.name, self.game_id, self.size, self.limit = game_tuple
 
     def __str__(self):
-        return "{0.name} ({0.size}/{0.limit})".format(self, self.users)
+        return "'{0.name}' ({0.size}/{0.limit})".format(self)
 
 
 class Lobby(base.Module):
@@ -33,7 +33,6 @@ class Lobby(base.Module):
 
     def __init__(self, handler):
         base.Module.__init__(self, handler)
-        self.user = None
         self.hello = util.Label(
             self.background,
             (self.width / 2, 15),
@@ -65,7 +64,7 @@ class Lobby(base.Module):
             (200, 575),
             (340, 40),
             self.font,
-            30
+            20
             )
 
         # set up right half of screen
@@ -116,13 +115,12 @@ class Lobby(base.Module):
             if self.create_game_button.collidepoint(event.pos):
                 self.send_create_game_request()
         elif isinstance(event, events.UserUpdate):
-            self.user = event.user
-            self.reload_users()
+            self.reload_users(event.user)
         elif isinstance(event, events.KeyPress):
             if event.key == Lobby.RETURN_KEY \
                 and self.chat_input.active \
                     and len(self.chat_input.text) > 0:
-                print "saying: {} (not yet, really)".format(self.chat_input.text)
+                self.handler.post_event(events.TrySendChat(self.chat_input.text))
                 self.chat_input.clear()
             elif self.chat_input.active:
                 self.chat_input.input(event.key)
@@ -132,17 +130,16 @@ class Lobby(base.Module):
     def send_create_game_request(self):
         game_name = self.create_game_input.text
         if len(game_name) > 0:
-            "posting create game"
+            print "posting create game"
             self.handler.post_event(events.TryCreateGame(game_name))
 
-    def reload_users(self):
+    def reload_users(self, user):
         print "reloading user"
-        self.hello.text = Lobby.GREETING.format(self.user.name)
-        self.games_box.list = self.user.games
-        self.users_box.list = self.user.users
+        self.hello.text = Lobby.GREETING.format(user.name)
+        self.games_box.list = [LobbyGame(g) for g in user.games]
+        self.users_box.list = user.users
+        self.chat_log.list = user.chat_log
 
     def update(self):
-        if self.user is None:
-            self.handler.post_event(events.GetUser())
         self.draw()
 

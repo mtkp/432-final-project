@@ -11,10 +11,11 @@ class NetManagerHigh(base.Listener):
         base.Listener.__init__(self, handler)
         self.handler.register_for_ticks(self)
         self.net_manager_low = netmanagerlow.NetManagerLow()
-        self.name   = None
-        self.users  = []
-        self.games  = []
-        
+        self.name     = None
+        self.users    = []
+        self.games    = []
+        self.chat_log = []
+
         # current game ( "name", id, ["bob", "joe", "steve"], 4 )
         # ( "game_update", [1, 4, 7, 2] )
 
@@ -32,23 +33,31 @@ class NetManagerHigh(base.Listener):
             elif header == "games":
                 self.games = payload
                 self.handler.post_event(events.UserUpdate(self))
+            elif header == "chat":
+                self.chat_log.append(payload)
+                self.chat_log = self.chat_log[-6:] # only save the last 6 msgs
+                self.handler.post_event(events.UserUpdate(self))
 
     def notify(self, event):
         if isinstance(event, events.TryLogin):
             self.register(event.name, event.server)
+        if isinstance(event, events.TryCreateGame):
+            self.net_manager_low.create_game(event.name)
+        if isinstance(event, events.TrySendChat):
+            self.net_manager_low.chat(event.msg)
         elif isinstance(event, events.GetUser):
             self.handler.post_event(events.UserUpdate(self))
         elif isinstance(event, events.Logout):
             self.unregister()
         elif isinstance(event, events.JoinGame):
             pass
-        elif isinstance(event, events.GameUpdateOut):
-            # player succeeded in spelling word, tell server
-            pass
-            
-        elif isinstance(event, events.GameUpdateIn):
-            # since someone changed, need to tell everyone else
-            pass
+        # elif isinstance(event, events.GameUpdateOut):
+        #     # player succeeded in spelling word, tell server
+        #     pass
+
+        # elif isinstance(event, events.GameUpdateIn):
+        #     # since someone changed, need to tell everyone else
+        #     pass
 
     def register(self, name, server):
         try:

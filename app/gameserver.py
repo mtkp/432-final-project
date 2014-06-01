@@ -33,7 +33,7 @@ class Game(object):
         return [user.name for user in self.users]
 
     def compact(self):
-        return (self.name, id(self), len(self.users), self.size)
+        return (self.name, id(self), len(self.users), self.limit)
 
 
 class User(object):
@@ -82,20 +82,6 @@ class GameServer(object):
                     self.games_changed = True
             self.games = filter(lambda game: len(game.users) > 0, self.games)
 
-            # notify users if user list changed
-            if self.users_changed:
-                usernames = [u.name for u in self.users() if u.name]
-                for user in self.users():
-                    user.send(("users", usernames))
-                self.users_changed = False
-
-            # notify users if games list changed
-            if self.games_changed:
-                all_games = [g.compact() for g in self.games]
-                for user in self.users():
-                    user.send(("users", usernames))
-                self.users_changed = False
-
             # listen and handle user requests
             for user in self.users():
                 while user.has_messages():
@@ -108,6 +94,20 @@ class GameServer(object):
                         self.in_game_waiting(user, msg)
                     else:
                         self.in_game(user, msg)
+
+            # notify users if user list changed
+            if self.users_changed:
+                usernames = [u.name for u in self.users() if u.name]
+                for user in self.users():
+                    user.send(("users", usernames))
+                self.users_changed = False
+
+            # notify users if games list changed
+            if self.games_changed:
+                all_games = [g.compact() for g in self.games]
+                for user in self.users():
+                    user.send(("games", all_games))
+                self.games_changed = False
 
     # -- handle user requests, per the user state --
     # - regsiter
@@ -127,11 +127,16 @@ class GameServer(object):
 
     def in_lobby(self, user, msg):
         cmd = msg[0]
-        if cmd == "create_game":
+        if cmd == "create":
             game_name = msg[1]
             game = Game(user, game_name)
             self.games.append(game)
             self.games_changed = True
+        elif cmd == "chat":
+            chat_msg = "{}: {}".format(user.name, msg[1]) # append who said it
+            print "{} said {}".format(user.name, msg[1])
+            for u in self.users():
+                u.send(("chat", chat_msg))
 
     def in_game_waiting(self, user, msg):
         # will update users on current number of joined users

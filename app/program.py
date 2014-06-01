@@ -9,7 +9,7 @@ import game
 import userinput
 import lobby
 import login
-import user
+import netmanagerhigh
 
 LOGIN = 1
 LOBBY = 2
@@ -32,10 +32,11 @@ class Program(base.Listener):
             LOBBY: lobby.Lobby(self.handler),
             GAME:  game.Game(self.handler)
         }
-        self.state = GAME
 
-        self.handler.unregister_for_events(self.modules[LOBBY])
-        self.handler.unregister_for_events(self.modules[LOGIN])
+        # set current state
+        # self.state = GAME   # GREG
+        self.state = LOGIN  # MATT
+        self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
         if self.state == LOGIN:
@@ -44,8 +45,6 @@ class Program(base.Listener):
         elif self.state == LOBBY:
             if isinstance(event, events.UserLoggedOut):
                 self.change_state_(LOGIN)
-        
-            
 
     def change_state(self, new_state):
         current_module = self.modules[self.state]

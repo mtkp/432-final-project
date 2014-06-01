@@ -32,6 +32,10 @@ class TryCreateGame(Event):
     def __init__(self, name):
         self.name = name
 
+class TrySendChat(Event):
+    def __init__(self, msg):
+        self.msg = msg
+
 class Logout(Event):
     pass
 
@@ -64,12 +68,11 @@ class GameUpdate(Event):
     def __init__(self, level_list):
         self.level_list = level_list
 
-
-class joinGame(Event):
+class JoinGame(Event):
     def __init__(self, game_name, game_users):
         self.game_name = game_name
         self.game_users = game_users
-    
+
 class StartGame(Event):
     pass
 
