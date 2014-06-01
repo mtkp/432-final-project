@@ -8,6 +8,7 @@ import util
 
 
 class Login(base.Module):
+    TAB_KEY = 9
     RETURN_KEY = 13
 
     def __init__(self, handler):
@@ -64,6 +65,7 @@ class Login(base.Module):
             server_label,
             name_label
             ])
+        self.name_input.active = True
 
     def notify(self, event):
         if isinstance(event, events.MouseClick):
@@ -72,6 +74,9 @@ class Login(base.Module):
             if self.login_button.collidepoint(event.pos):
                 self.send_login_request()
         elif isinstance(event, events.KeyPress):
+            if event.key == Login.TAB_KEY:
+                self.name_input.active, self.server_input.active = \
+                    self.server_input.active, self.name_input.active
             if event.key == Login.RETURN_KEY:
                 self.send_login_request()
             elif self.name_input.active:

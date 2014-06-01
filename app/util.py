@@ -262,7 +262,7 @@ class InputBox(object):
     ascii_codes = itertools.chain(ascii_nums, ascii_chars, ascii_misc)
     allowed_input_keys = set(ascii_codes)
 
-    def __init__(self, background, center, size, font, limit):
+    def __init__(self, background, center, size, font, limit=20):
         self.label = Label(background, center, font, "")
         self.box = BorderBox(background, center, size, LightGray)
         self.active = False
@@ -292,6 +292,9 @@ class InputBox(object):
     @property
     def text(self):
         return self.label.text
+
+    def clear(self):
+        self.label.text = ""
 
 
 class TextBox(object):
