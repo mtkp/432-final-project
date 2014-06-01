@@ -8,7 +8,7 @@ import util
 
 
 
-class GameView(base.Module):
+class Game(base.Module):
     def __init__(self, handler, window):
         base.Module.__init__(self, handler, window)
         self.background_color = color.Blue
@@ -20,7 +20,6 @@ class GameView(base.Module):
             )
 
     def notify(self, event):
-        pass
         if isinstance(event, events.MouseClick):
             pass
 
@@ -28,8 +27,3 @@ class GameView(base.Module):
 
     def update(self):
         pass
-
-
-class Game(base.Listener):
-    def __init__(self, handler):
-        base.Listener.__init__(self, handler)
