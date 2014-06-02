@@ -13,88 +13,73 @@ RETURN_KEY = 13
 TAB_KEY = 9
 
 # 800 x 600 width x height
-
-# player represents by the stack of words that he/she has completed so far
-class BoxCollection(object):
-    def __init__(self, username, background, font):
-
-        self.box_list = []          # list of the TextBox objects to dislay
-        self.username = username
-        self.background = background
-        self.index = 0
-    
-        for i in range(4):
-            temp_box = util.TextBox(
-                background,
-                ( 60 + i * 110, 500),
-                (100, 100),
-                font,
-                username
-                )
-            self.box_list.append(temp_box)
-
-
-    def grow_boxes(self, level_list):
-        for i, box in enumerate(self.box_list):        
-            box.height = 100 + (10 * level_list[i])
-            #box.centery = 550 - (10 * level_list[i])
-            
-
-    def draw(self):
-        for box in self.box_list:
-            box.draw()        
-
 # four users limit
 # game = name, ids, list of users, limit
 class Game(base.Module):
     def __init__(self, handler):
         base.Module.__init__(self, handler)
         self.background_color = color.Blue
-
+        self.font = pygame.font.SysFont("monospace", 15)
 
         self.game_id = 0     # id of game in the network mgr
         self.user_idx = 0    # position of user in the player_list
-
+        self.won = False
         self.box_list = [None, None, None, None]
+        
+        # text input box for user to type into
+        self.word_input = util.InputBox(
+            self.background,
+            (600, 500),
+            (200, 30),
+            self.font,
+            30
+            )
+        self.word_input.active = True
+
         for i in range(0,4):
             temp_box = util.TextBox(
                 self.background,
                 ( 60 + i * 110, 500),
                 (100, 100),
-                pygame.font.SysFont("monospace", 15),
+                self.font,
                 "default"
                 )
             self.box_list[i] = temp_box
-
+        
+        # make text input box
+        
+        # make box to display word for user to try to type
 
         self.level_list = [0, 0, 0, 0]
-        self.word_list = []
-        self.should_move = False
-        self.won = False
+        self.word_list = ["cat",
+                          "dog",
+                          "rabbit",
+                          "mouse",
+                          "bird",
+                          "horse",
+                          "cow",
+                          "chicken",
+                          "tuna",
+                          "zebra"]
+
         #self.my_boxes = BoxCollection("bob", self.background, self.font)
     
         #self.handler.post_event(events.GetPlayers())
         #self.handler.post_event(events.GetWords())
         
         self.draw_set.extend(self.box_list)
-            
-            #self.level_list
-            #self.word_input
+        self.draw_set.extend([self.word_input])    
             
 
     # give each box a new height dimension
     def grow_boxes(self):
         for i, box in enumerate(self.box_list):        
             self.box_list[i].top = 450 - (10 * self.level_list[i])
-            #box.centery = 550 - (10 * level_list[i])
 
     # get a word for the user to type
     def get_word(self):
         if len(self.word_list) > 0:
             return self.wordlist.pop
-        else:
-            # if no more words, player won
-            self.handler.post_event(events.PlayerWon())
 
 
     def update(self):
@@ -102,7 +87,6 @@ class Game(base.Module):
         #    print "game: posting playerwon"
         #    self.handler.post_event(events.PlayerWon(self.game_id, self.user_idx))
             # display a victory message
-        #self.grow_boxes()
         self.draw()
 
 
@@ -134,15 +118,18 @@ class Game(base.Module):
                     self.grow_boxes()
                     #self.handler.post_event(events.GameUpdateIn(self.game_id,
                     #                                           new_levels))
+            
+                elif self.word_input.active:
+                    self.word_input.input(event.key)
 
 
 
-            ## send the input box the character that the user typed, display it
+            # send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
 
-            ## check to see if the input box text matches the cur_word text
+            # check to see if the input box text matches the cur_word text
             #if self.word_input.text == self.cur_word_box.text:
-            #    # tell the sever that we moved
+                # tell the sever that we moved
             #    self.handler.post_event(events.PlayerSuccess())
             #    # reset the displayed word to be the next word in local word list
             #    self.cur_word_box.text = self.get_word()
