@@ -5,14 +5,14 @@ import collections
 import select
 import socket
 import random
-import os       # maybe use "os.path.join()" for opening a file
+import os
 
 # our libs
 import messenger
 
 LISTEN_QUEUE = 5
-PORT         = 7307
-WORDS_FILE   = "text/words"
+PORT = 7307
+WORDS_FILE = "text/words"
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
@@ -30,16 +30,16 @@ def read_words(words_file=WORDS_FILE):
 
 class Game(object):
     def __init__(self, maker, name, limit=4):
-        self.users      = []           # 
-        self.words      = read_words() # open word file and get list of words
-        self.level_list = [0, 0, 0, 0] # progress level of game's players
-        self.name       = name         # game name that user typed
-        self.limit      = limit        # limit of players per game
-        self.waiting    = True         # don't start the game yet
+        self.users = []
+        self.words = read_words()
+        self.level_list = [0, 0, 0, 0]
+        self.name = name
+        self.limit = limit
+        self.waiting = True # don't start the game yet
         self.add_user(maker)
 
     def add_user(self, user):
-        user.game = self        # update user's game
+        user.game = self # update user's game
         self.users.append(user) # add user to this game
 
     def remove_user(self, user):
@@ -63,11 +63,11 @@ class Game(object):
 
 class User(object):
     def __init__(self, conn):
-        self.conn   = conn
-        self.inbox  = collections.deque()
+        self.conn = conn
+        self.inbox = collections.deque()
         self.outbox = collections.deque()
-        self.name   = None
-        self.game   = None
+        self.name = None
+        self.game = None
 
     def has_messages(self):
         return len(self.inbox) > 0
@@ -89,17 +89,13 @@ class GameServer(object):
         self.server_socket.listen(LISTEN_QUEUE)
 
         # map socket fds to User objects
-        self.user_sockets  = {}
+        self.user_sockets = {}
 
         # keep a collection of current games
-        self.games         = []
+        self.games = []
 
         self.users_changed = False
         self.games_changed = False
-        # self.wait_changed = False
-        # self.ingame_changed = False
-        
-
 
     def serve_forever(self):
         while True:
@@ -137,13 +133,6 @@ class GameServer(object):
                 for user in self.users():
                     user.send(("games", all_games))
                 self.games_changed = False
-            
-            # notify users if waiting state changes
-                # if the game is full, send message to that game's user to start
-                # when start is sent, send username list and word list
-    
-            # notfy users in game if game state changes
-                # send updated level list to everyone in that game
 
     # -- handle user requests, per the user state --
     # - regsiter
@@ -155,7 +144,7 @@ class GameServer(object):
         cmd, name = msg
         usernames = [u.name for u in self.users() if u.name]
         if cmd == "login" and name not in usernames:
-            user.name  = name
+            user.name = name
             user.send(("login_result", True))
             user.send(("games", [g.compact() for g in self.games]))
             self.users_changed = True
@@ -177,17 +166,7 @@ class GameServer(object):
                     if len(game.users) < game.limit:
                         game.add_user(user)
                         user.send(("joined", game.compact()))
-                    #---------------------------------------------------------
-                        # tell other waiting users to increment count?
-                        for usr in game.users:
-                           usr.send(("other_user_joined", len(game.users)))
-                        
-                        # if enough players, start game
-                        if len(game.users) == game.limit:
-                            for usr in game.users:
-                                usr.send(("user_game_started", None))
-                    #--------------------------------------------------------
-                        self.games_changed = True   
+                        self.games_changed = True
                     break
         elif cmd == "chat":
             chat_msg = "{}: {}".format(user.name, msg[1]) # append who said it
@@ -195,22 +174,24 @@ class GameServer(object):
             for u in self.users():
                 u.send(("chat", chat_msg))
 
-    
     def in_game_waiting(self, user, msg):
         game = user.game
         cmd = msg[0]
- 
-        if cmd == "exit_game":
+        if cmd == "user_num_update":
+            user.send((
+                "user_num_reply",
+                [id(game), len(game.users)]
+                ))
+        elif cmd == "exit_game":
             game.remove_user(user)
-            # for user in game.users:
             self.games_changed = True
-        #elif cmd == "send_words":
-        #    user.send(("words_reply",  word_list))
-        #elif cmd == "start_game":
-        #    user.send( (
-        #        "start_game",
-        #        [id(game), game.usernames()]
-        #        ))
+        elif cmd == "send_words":
+            user.send(("words_reply", word_list))
+        elif cmd == "start_game":
+            user.send( (
+                "start_game",
+                [id(game), game.usernames()]
+                ))
 
         # will update users on current number of joined users
         # will end when sending a start game message to all users
@@ -224,7 +205,7 @@ class GameServer(object):
         # will pass messages between users when updates occur
         # will end when one user finishes all words in wordlist
         # when ends, state for all users in game becomes lobby and game
-        #   should be destroyed
+        # should be destroyed
         cmd = msg[0]
         game = user.game
         # gameupdate: ("gameupdate, game_id, user_idx, [1, 2, 3, 4]")
@@ -253,8 +234,8 @@ class GameServer(object):
 
     def update(self):
         """Actually send and receive to and from any server_socket sockets,
-        using select.
-        """
+using select.
+"""
         recv_list = [u.conn for u in self.users()]
         recv_list.append(self.server_socket)
         send_list = [u.conn for u in self.users() if len(u.outbox) > 0]

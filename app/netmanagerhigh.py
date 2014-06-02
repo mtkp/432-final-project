@@ -1,4 +1,3 @@
-
 import base
 import events
 import netmanagerlow
@@ -11,9 +10,9 @@ class NetManagerHigh(base.Listener):
         base.Listener.__init__(self, handler)
         self.handler.register_for_ticks(self)
         self.net_manager_low = netmanagerlow.NetManagerLow()
-        self.name     = None
-        self.users    = []
-        self.games    = []
+        self.name = None
+        self.users = []
+        self.games = []
         self.chat_log = []
 
         # current game ( "name", id, ["bob", "joe", "steve"], 4 )
@@ -28,10 +27,8 @@ class NetManagerHigh(base.Listener):
             header, payload = self.net_manager_low.get_message()
             # read header
             # update appropriate filed
-            #----------------------Lobby--------------------------------------
             if header == "users":
                 self.users = payload
-                # why pass in self here? is self the game object?
                 self.handler.post_event(events.UserUpdate(self))
             elif header == "games":
                 self.games = payload
@@ -42,15 +39,9 @@ class NetManagerHigh(base.Listener):
                 self.handler.post_event(events.UserUpdate(self))
             elif header == "joined":
                 self.handler.post_event(events.UserJoinedGame(payload))
-            #----------------------Waiting------------------------------------
-            elif header == "other_user_joined":
-                self.handler.post_event(events.OtherJoinedWait(payload))
-            elif header == "user_game_started":
-                self.handler.post_event(events.UserGameStarted())
-            #----------------------Game---------------------------------------
             elif header == "game_update_in":
-                # take update from network and give to event manager
                 self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
+                # why pass in self here?
             elif header == "end_game":
                 self.handler.post_event(event.EndGame(payload[0]))
 
@@ -69,12 +60,29 @@ class NetManagerHigh(base.Listener):
         elif isinstance(event, events.LeaveGame):
             self.net_manager_low.exit_game()
         elif isinstance(event, events.GameUpdateOut):
-            # give update to network to tell server there was an update
+            # player has updated list to give server
             print "netmgrhigh: got gameupdateoutevent"
             self.net_manager_low.send_gameupdate_to_server(
                 event.game_id,
+                event.user_idx,
                 event.level_list
                 )
+
+        #elif isinstance(event, events.LowLevelGameUpdateIn):
+        # # since someone changed, need to tell everyone else
+        # print "netmgrhigh: got gameupdateinevent"
+        # self.handler.post_event(events.GameUpdateIn(event.game_id,
+        # event.level_list))
+
+    # give update to network to tell server there was an update
+    def send_gameupdate(self, level_list, game_id):
+        self.net_manager_low.send_gameupdate_to_sever(game_id,
+                                                      user_idx,
+                                                      level_list)
+
+    # take update from network and give to event manager
+    def recv_gameupdate(self, game_id, level_list):
+        self.handler.post_event(events.GameUpdateIn(game_id, level_list))
 
 
     def register(self, name, server):
@@ -92,4 +100,3 @@ class NetManagerHigh(base.Listener):
     def unregister(self):
         self.net_manager_low.unregister()
         self.handler.post_event(events.UserLoggedOut())
-
