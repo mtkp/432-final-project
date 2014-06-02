@@ -4,17 +4,33 @@
 import collections
 import select
 import socket
+import random
+import os
 
 # our libs
 import messenger
 
 LISTEN_QUEUE = 5
 PORT         = 7307
+       
 
+# returns list of ten words chosen randomly form larger list
+def get_random_words(all_words):
+        real_word_list = []
+        range_max = len(all_words) - 1
+        for _ in range(10):
+            real_word_list.append(all_words[ random.randint(0, range_max) ])
+        return real_word_list
+
+# opens text file and rturns a small list of the words
+def read_words(words_file):
+        all_words = [word for line in open(words_file, 'r') for word in line.split()]
+        return get_random_words(all_words)
 
 class Game(object):
     def __init__(self, maker, name, limit=4):
         self.users      = []
+        self.words      = read_words(words)
         self.level_list = [0, 0, 0, 0]
         self.name       = name
         self.limit      = limit
@@ -160,11 +176,17 @@ class GameServer(object):
     def in_game_waiting(self, user, msg):
         cmd = msg[0]
         if cmd == "user_num_update":
-            self.user.send( ( "user_num_reply", [self.game.game_id, len(self.game.users)] ) )
+            self.user.send( ( 
+                "user_num_reply",
+                 [self.game.game_id, len(self.game.users)]
+                 ) )
         elif cmd == "send_words":
             self.user.send( ( "words_reply",  word_list) )
         elif cmd == "start_game":
-            self.user.send( ( "start_game", [self.game_id, self.user.usernames]) )
+            self.user.send( (
+                "start_game",
+                [self.game_id, self.user.usernames]
+                ) )
 
         # will update users on current number of joined users
         # will end when sending a start game message to all users

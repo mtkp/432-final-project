@@ -57,6 +57,15 @@ class Program(base.Listener):
                 self.change_state(LOGIN)
             elif isinstance(event, events.UserJoinedGame):
                 self.change_state(GAMEWAIT)
+        elif self.state == GAMEWAIT:
+            pass
+            # if isinstance(event, events.UserJoinedGame):
+            #     self.change_state(GAME)
+        elif self.state == GAME:
+            if isinstance(even, events.UserGameEnded):
+                self.change_state(LOBBY)
+
+>>>>>>> 55bb66dffa02648523f518f61c8e4a57fa6a92ff
 
     def change_state(self, new_state):
         current_module = self.modules[self.state]
