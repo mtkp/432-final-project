@@ -44,7 +44,10 @@ class NetManager(base.Listener):
             self.handler.post_event(events.UserJoinedGame(payload))
         elif header == "game_update_in":
             self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
-            # why pass in self here?
+        elif header == "wait_update":
+            self.handler.post_event(events.OtherJoinedWait(payload))
+        elif header == "user_game_started":
+            self.handler.post_event(events.UserGameStarted())
         elif header == "end_game":
             self.handler.post_event(event.EndGame(payload[0]))
 

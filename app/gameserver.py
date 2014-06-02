@@ -166,6 +166,16 @@ class GameServer(object):
                     if len(game.users) < game.limit:
                         game.add_user(user)
                         user.send(("joined", game.compact()))
+                        #-----------------------------------------------------
+                        # tell other waiting users to update player count
+                        for usr in game.users:
+                           usr.send(("wait_update", len(game.users)))
+
+                        # if enough players, start game
+                        if len(game.users) == game.limit:
+                            for usr in game.users:
+                                usr.send(("user_game_started", None))
+                        #----------------------------------------------------
                         self.games_changed = True
                     break
         elif cmd == "chat":
@@ -180,6 +190,8 @@ class GameServer(object):
         # this will trigger the 
         if cmd == "exit_game":
             game.remove_user(user)
+            for usr in game.users:
+                usr.send(("wait_update", len(game.users)))
             self.games_changed = True
 
 
