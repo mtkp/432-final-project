@@ -41,8 +41,8 @@ class Program(base.Listener):
         }
 
         # set current state
-        #self.state = GAME   # GREG
-        self.state = START  # MATT
+        self.state = GAME   # GREG
+        #self.state = START  # MATT
         self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
