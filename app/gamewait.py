@@ -11,12 +11,14 @@ class GameWait(base.Module):
         base.Module.__init__(self, handler)
         self.font = pygame.font.SysFont("monospace", 60)
         self.background_color = color.GameBackground
+        self.player_count = 1
         # set up left half of screen
 
         self.label = util.Label(
             self.background,
             (400, 300),
             self.font,
+            
             "1 / 4" # stub this out for now... eventually will need to put real count here
             )
 
@@ -38,6 +40,11 @@ class GameWait(base.Module):
         if isinstance(event, events.MouseClick):
             if self.exit_button.collidepoint(event.pos):
                 self.handler.post_event(events.LeaveGame())
+        elif isinstance(event, events.Games):
+            self.player_count = event.game[3]
+            
+            
+        
 
     def update(self):
         self.draw()
