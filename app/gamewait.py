@@ -13,11 +13,12 @@ class GameWait(base.Module):
         self.font = pygame.font.SysFont("monospace", 60)
         self.background_color = color.GameBackground
         # set up left half of screen
+
         self.label = util.Label(
             self.background,
             (400, 300),
             self.font,
-            "1 / 4"
+            "1 / 4" # stub this out for now... eventually will need to put real count here
             )
 
         self.exit_button = util.Button(
