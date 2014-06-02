@@ -41,7 +41,7 @@ class Program(base.Listener):
         }
 
         # set current state
-        # self.state = GAME   # GREG
+        #self.state = GAME   # GREG
         self.state = START  # MATT
         self.handler.register_for_events(self.modules[self.state])
 
@@ -63,7 +63,7 @@ class Program(base.Listener):
             elif isinstance(event, events.UserGameStarted):
                 self.change_state(GAME)
         elif self.state == GAME:
-            if isinstance(even, events.UserGameEnded):
+            if isinstance(event, events.UserGameEnded):
                 self.change_state(LOBBY)
 
 
