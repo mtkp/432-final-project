@@ -24,10 +24,11 @@ GAME     = 4
 class Model(object):
     def __init__(self):
         self.username     = None
-        self.current_game = None
+        self.current_game = ("game name", id, 3, 4)
         self.all_users    = []
         self.all_games    = []
         self.chat_log     = []
+
 
 class Program(base.Listener):
     def __init__(self, handler):

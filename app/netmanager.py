@@ -31,7 +31,7 @@ class NetManager(base.Listener):
             self.model.all_users = payload
             self.handler.post_event(events.ModelUpdated())
         elif header == "games":
-            self.games = payload
+            self.model.all_games = payload
             self.handler.post_event(events.ModelUpdated())
         elif header == "chat":
             self.model.chat_log.append(payload)
@@ -39,11 +39,13 @@ class NetManager(base.Listener):
             self.handler.post_event(events.ModelUpdated())
         elif header == "joined":
             self.model.current_game = payload
-            self.handler.post_event(events.UserJoinedGame(payload))
+            self.handler.post_event(events.UserJoinedGame())
+        elif header == "wait_update":
+            self.model.current_game = payload
+            self.handler.post_event(events.ModelUpdated())
         elif header == "game_update_in":
             self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
-        elif header == "wait_update":
-            self.handler.post_event(events.OtherJoinedWait(payload))
+
         elif header == "user_game_started":
             self.handler.post_event(events.UserGameStarted())
         elif header == "end_game":
@@ -124,12 +126,12 @@ class NetManager(base.Listener):
         Exceptions: InvalidFormat, UsernameUnavailable
         """
         if len(username) < 3:
+            self.net_conn.update()
             raise InvalidFormat
         self.net_conn.send(("login", username))
         while not self.net_conn.has_messages():
             self.net_conn.update()
         header, payload = self.net_conn.recv()
         if header != "login_result" or payload == False:
-            self.conn.close()
-            self.conn = None
+            self.net_conn.close()
             raise UsernameUnavailable

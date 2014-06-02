@@ -11,4 +11,4 @@ Blue      =   0,   0, 255
 DarkBlue  =  10,  10, 245
 LimeGreen = 153, 255, 51
 
-GameBackground = LimeGreen
+GameBackground = LightGray
