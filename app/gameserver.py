@@ -185,7 +185,7 @@ class GameServer(object):
                         # if enough players, start game
                         if len(game.users) == game.limit:
                             for usr in game.users:
-                                usr.send(("user_game_started", game.words))
+                                usr.send(("user_game_started", None))
                     #--------------------------------------------------------
                         self.games_changed = True   
                     break

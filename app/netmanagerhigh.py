@@ -45,6 +45,8 @@ class NetManagerHigh(base.Listener):
             #----------------------Waiting------------------------------------
             elif header == "other_user_joined":
                 self.handler.post_event(events.OtherJoinedWait(payload))
+            elif header == "user_game_started":
+                self.handler.post_event(events.UserGameStarted())
             #----------------------Game---------------------------------------
             elif header == "game_update_in":
                 # take update from network and give to event manager

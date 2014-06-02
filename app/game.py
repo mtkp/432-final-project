@@ -111,7 +111,6 @@ class Game(base.Module):
                 print "game: pressed enter"
                 self.handler.post_event(events.GameUpdateOut(
                     self.game_id,
-                    self.user_idx,
                     self.level_list))
             elif self.word_input.active:
                 self.word_input.input(event.key)
