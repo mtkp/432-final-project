@@ -5,6 +5,7 @@ import netmanagerlow
 
 # wrap the while loop from bottom of client test, check header
 
+# high = networkmgr
 class NetManagerHigh(base.Listener):
     def __init__(self, handler):
         base.Listener.__init__(self, handler)
@@ -37,6 +38,7 @@ class NetManagerHigh(base.Listener):
                 self.chat_log.append(payload)
                 self.chat_log = self.chat_log[-6:] # only save the last 6 msgs
                 self.handler.post_event(events.UserUpdate(self))
+            
             elif header == "joined":
                 self.handler.post_event(events.UserJoinedGame(payload))
             elif header == "game_update_in":

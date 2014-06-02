@@ -40,8 +40,9 @@ class GameWait(base.Module):
         if isinstance(event, events.MouseClick):
             if self.exit_button.collidepoint(event.pos):
                 self.handler.post_event(events.LeaveGame())
-        elif isinstance(event, events.Games):
-            self.player_count = event.game[3]
+        elif isinstance(event, events.OtherJoinedWait):
+            self.user_count = event.num_players
+            self.label.text = str(self.user_count) + "/4"
             
             
         

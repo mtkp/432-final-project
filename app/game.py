@@ -100,7 +100,9 @@ class Game(base.Module):
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
                 self.grow_boxes()
-        
+        elif isinstance(event, events.GameInitialize):  # recv the word list
+            self.word_list = event.words
+            self.users = event.users
         elif isinstance(event, events.OpponentWon):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)

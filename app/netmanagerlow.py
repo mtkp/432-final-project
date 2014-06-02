@@ -22,6 +22,7 @@ class ServerNotFound(Exception):
     """Unable to connect to the given server."""
     pass
 
+# network interface
 class NetManagerLow(object):
     def __init__(self):
         self.outbox = collections.deque()
