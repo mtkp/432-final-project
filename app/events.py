@@ -56,6 +56,11 @@ class UserJoinedGame(Event):
     def __init__(self, game):
         self.game = game
 
+class OtherJoinedWait(Event):
+    def __init__(self, num_players):
+        self.num_players = num_players
+
+# trigger state change to the game state
 class UserGameStarted(Event):
     pass
 
@@ -66,8 +71,11 @@ class UserUpdate(Event):
     def __init__(self, user):
         self.user = user
 
-class GameUpdate():
-    pass
+# in game state, send the game a copy of word list and user list
+class GameInitialize(Event):
+    def __init__(self, users, words):
+        self.words = words
+        self.users = users
 
 # this is for when a client want to tell everyone
 class GameUpdateOut(Event):
