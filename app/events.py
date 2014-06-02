@@ -2,7 +2,7 @@
 
 class Event(object):
     '''Event base class.
-    '''
+'''
     pass
 
 class Stop(Event):
@@ -56,29 +56,27 @@ class UserJoinedGame(Event):
     def __init__(self, game):
         self.game = game
 
-class OtherJoinedWait(Event):
-    def __init__(self, num_players):
-        self.num_players = num_players
-
-# after waiting in game wait state, trigger a local state switch to Game state
 class UserGameStarted(Event):
     pass
 
-# after ending game state, trigger a local state switch to lobby state
-class UserGameEnded(Event):
+class GetPlayers():
+    pass
+
+class GetWords():
     pass
 
 class UserUpdate(Event):
     def __init__(self, user):
         self.user = user
 
-#class GameUpdate():
-#    pass
+class GameUpdate():
+    pass
 
 # this is for when a client want to tell everyone
 class GameUpdateOut(Event):
-    def __init__(self, game_id, level_list,):
+    def __init__(self, game_id, user_idx, level_list,):
         self.game_id = game_id
+        self.user_idx = user_idx
         self.level_list = level_list
 
 # recieve a game update from the server
@@ -87,9 +85,11 @@ class GameUpdateIn(Event):
         self.game_id = game_id
         self.level_list = level_list
 
-# in waiting state, when a user joins. just to trigger increment of user count
-class UserJoined(Event):
-    pass
+# this is what the server sends to the netmanagerhigh
+class LowLevelGameUpdateIn(Event):
+    def __init__(self, game_id, level_list):
+        self.game_id = game_id
+        self.level_list = level_list
 
 class JoinGame(Event):
     def __init__(self, game_name, game_users):
@@ -125,8 +125,8 @@ class EventManager(object):
     def __init__(self):
         import collections
         self.event_listeners = []
-        self.tick_listeners  = []
-        self.event_queue     = collections.deque()
+        self.tick_listeners = []
+        self.event_queue = collections.deque()
         self.register_for_ticks(self)
 
     def register_for_events(self, listener):
@@ -153,4 +153,3 @@ class EventManager(object):
             event = self.event_queue.popleft()
             for listener in self.event_listeners:
                 listener.notify(event)
-
