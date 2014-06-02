@@ -13,15 +13,14 @@ class Login(base.Module):
 
     def __init__(self, handler):
         base.Module.__init__(self, handler)
-        self.background_color = color.DarkGreen
+        self.background_color = color.GameBackground
 
         input_box_height = self.height / 15
         name_label = util.Label(
             self.background,
             (self.width / 2, 160),
             self.font,
-            "name",
-            color.White
+            "name"
             )
         self.name_input = util.InputBox(
             self.background,
@@ -34,8 +33,7 @@ class Login(base.Module):
             self.background,
             (self.width / 2, 260),
             self.font,
-            "server",
-            color.White
+            "server"
             )
         self.server_input = util.InputBox(
             self.background,

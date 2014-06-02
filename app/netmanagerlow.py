@@ -68,7 +68,7 @@ class NetManagerLow(object):
     #def send_gameupdate_to_clients(self, game_id, level_list):
     #    print "netmgrlow: receiving gameupdate from server"
     #    self._send( ( "gameupdatein", [game_id, level_list] ) )
-        
+
     def register(self, username, server):
         """Register to a server by username.
         Exceptions: ServerNotFound, InvalidFormat, UsernameUnavailable
@@ -82,6 +82,7 @@ class NetManagerLow(object):
         """Gracefully unregister from server.
         """
         self.conn.close()
+        self.conn = None
 
     def create_game(self, game_name):
         """Create a game on the server.
@@ -126,6 +127,7 @@ class NetManagerLow(object):
         header, payload = self.get_message()
         if header != "login_result" or payload == False:
             self.conn.close()
+            self.conn = None
             raise UsernameUnavailable
 
 

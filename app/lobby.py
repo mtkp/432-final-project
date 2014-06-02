@@ -33,15 +33,26 @@ class Lobby(base.Module):
 
     def __init__(self, handler):
         base.Module.__init__(self, handler)
+        self.background_color = color.GameBackground
+
+        # top bar
         self.hello = util.Label(
             self.background,
-            (self.width / 2, 15),
+            (400, 20),
             pygame.font.SysFont("monospace", 15),
             Lobby.GREETING
             )
+        self.logout_button = util.Button(
+            self.background,
+            (730, 20),
+            (120, 25),
+            color.LightGray,
+            pygame.font.SysFont("monospace", 15),
+            "unregister"
+            )
 
         # set up left half of screen
-        self.users_label = util.Label(
+        users_label = util.Label(
             self.background,
             (self.width * 1 / 4, 50),
             self.font,
@@ -62,13 +73,13 @@ class Lobby(base.Module):
         self.chat_input = util.InputBox(
             self.background,
             (200, 575),
-            (340, 40),
+            (340, 32),
             self.font,
             20
             )
 
         # set up right half of screen
-        self.games_label = util.Label(
+        games_label = util.Label(
             self.background,
             (self.width * 3 / 4, 50),
             self.font,
@@ -80,17 +91,23 @@ class Lobby(base.Module):
             (340, 375),
             pygame.font.SysFont("monospace", 18),
             )
+        create_game_label = util.Label(
+            self.background,
+            (460, 500),
+            pygame.font.SysFont("monospace", 16),
+            "game name"
+            )
         self.create_game_input = util.InputBox(
             self.background,
-            (600, 500),
-            (260, 40),
+            (640, 500),
+            (260, 32),
             self.font,
             20
             )
         self.create_game_button = util.Button(
             self.background,
-            (600, 550),
-            (260, 40),
+            (650, 550),
+            (150, 32),
             color.LightGray,
             self.font,
             "create game"
@@ -98,14 +115,16 @@ class Lobby(base.Module):
 
         self.draw_set.extend([
             self.hello,
+            self.logout_button,
             self.users_box,
             self.games_box,
-            self.users_label,
-            self.games_label,
             self.chat_log,
             self.chat_input,
             self.create_game_input,
-            self.create_game_button
+            self.create_game_button,
+            users_label,
+            games_label,
+            create_game_label
             ])
 
     def notify(self, event):
@@ -114,7 +133,9 @@ class Lobby(base.Module):
             self.create_game_input.try_click(event.pos)
             if self.create_game_button.collidepoint(event.pos):
                 self.send_create_game_request()
-            if self.games_box.collidepoint(event.pos):
+            elif self.logout_button.collidepoint(event.pos):
+                self.handler.post_event(events.Logout())
+            elif self.games_box.collidepoint(event.pos):
                 game = self.games_box.get_item(event.pos)
                 if game:
                     self.handler.post_event(events.TryJoinGame(game.game_id))

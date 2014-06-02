@@ -140,7 +140,7 @@ class GameServer(object):
             game_name = msg[1]
             game = Game(user, game_name)
             self.games.append(game)
-            user.send(("joined", id(game)))
+            user.send(("joined", game.compact()))
             self.games_changed = True
         elif cmd == "join":
             game_id = msg[1]
@@ -148,7 +148,7 @@ class GameServer(object):
                 if id(game) == game_id:
                     if len(game.users) < game.limit:
                         game.add_user(user)
-                        user.send(("joined", id(game)))
+                        user.send(("joined", game.compact()))
                         self.games_changed = True
                     break
         elif cmd == "chat":
@@ -172,14 +172,14 @@ class GameServer(object):
         # send a start message as: ("start_game", ["username1", "username2", ...])
         #
         # also need to send the word list to all players at game start..
-                
+
 
     def in_game(self, user, msg):
         # will pass messages between users when updates occur
         # will end when one user finishes all words in wordlist
         # when ends, state for all users in game becomes lobby and game
         #   should be destroyed
-        
+
         cmd = msg[0]
         # gameupdate: ("gameupdate, game_id, user_idx, [1, 2, 3, 4]")
         if cmd == "game_update_out":

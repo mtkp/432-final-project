@@ -38,6 +38,8 @@ class NetManagerHigh(base.Listener):
                 self.chat_log.append(payload)
                 self.chat_log = self.chat_log[-6:] # only save the last 6 msgs
                 self.handler.post_event(events.UserUpdate(self))
+            elif header == "joined":
+                self.handler.post_event(events.UserJoinedGame(payload))
             elif header == "game_update_in":
                 self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
                 # why pass in self here?
@@ -54,12 +56,8 @@ class NetManagerHigh(base.Listener):
             self.net_manager_low.join_game(event.game_id)
         if isinstance(event, events.TrySendChat):
             self.net_manager_low.chat(event.msg)
-        elif isinstance(event, events.GetUser):
-            self.handler.post_event(events.UserUpdate(self))
         elif isinstance(event, events.Logout):
             self.unregister()
-        elif isinstance(event, events.JoinGame):
-            pass
         elif isinstance(event, events.GameUpdateOut):
             # player has updated list to give server
             print "netmgrhigh: got gameupdateoutevent"
@@ -75,7 +73,7 @@ class NetManagerHigh(base.Listener):
     # give update to network to tell server there was an update
     def send_gameupdate(self, level_list, game_id):
         self.net_manager_low.send_gameupdate_to_sever(game_id,
-                                                      user_idx, 
+                                                      user_idx,
                                                       level_list)
 
     # take update from network and give to event manager

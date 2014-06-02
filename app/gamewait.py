@@ -7,11 +7,11 @@ import events
 import util
 
 
-class Wait(base.Module):
+class GameWait(base.Module):
     def __init__(self, handler):
         base.Module.__init__(self, handler)
-        self.font = pygame.font.SysFont("monospace", 40)
-        self.background_color = color.Green
+        self.font = pygame.font.SysFont("monospace", 60)
+        self.background_color = color.GameBackground
         # set up left half of screen
         self.label = util.Label(
             self.background,

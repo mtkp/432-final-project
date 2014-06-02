@@ -9,22 +9,20 @@ import util
 class Start(base.Module):
     def __init__(self, handler):
         base.Module.__init__(self, handler)
-        self.background_color = color.DarkGreen
-        self.font = pygame.font.SysFont("monospace", 40)
+        self.background_color = color.GameBackground
+        self.font = pygame.font.SysFont("monospace", 50)
 
         label = util.Label(
             self.background,
             (self.width / 2, 200),
             self.font,
-            "type it",
-            color.White
+            "type it"
             )
         help_label = util.Label(
             self.background,
             (self.width / 2, 400),
-            pygame.font.SysFont("monospace", 20),
-            "click anywhere to begin",
-            color.White
+            pygame.font.SysFont("monospace", 30),
+            "click anywhere to begin"
             )
         self.draw_set.extend([
             label,

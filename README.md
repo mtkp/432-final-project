@@ -3,7 +3,16 @@
 
 432 Final Project - [Network Game](https://canvas.uw.edu/courses/895740/assignments/2435056)
 
+
+`type it`
+
+Type a bunch of words faster than your opponents.
+
+
+
+
 Game server port: `7307`
+
 
 ### Links
 ##### Game Dev
@@ -41,7 +50,7 @@ $ git push
 1. (optional) Pull previous commits from remote: `git pull`
 2. Check status: `git status`
 3. Add changes: `git add my_file.py other_file.py`
-  - or commit all changes in *current directory* with: `git add .`  
+  - or commit all changes in *current directory* with: `git add .`
   - or commit all changes in *entire project* with: `git add :/`
 4. Check status again to make sure everything is added: `git status`
 5. Commit added changes: `git commit` or `git commit -m "my commit msg"`

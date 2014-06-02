@@ -11,13 +11,13 @@ import login
 import netmanagerhigh
 import start
 import userinput
-import wait
+import gamewait
 
-START = 0
-LOGIN = 1
-LOBBY = 2
-WAIT  = 3
-GAME  = 4
+START    = 0
+LOGIN    = 1
+LOBBY    = 2
+GAMEWAIT = 3
+GAME     = 4
 
 
 class Program(base.Listener):
@@ -33,16 +33,16 @@ class Program(base.Listener):
         self.net_manager_high = netmanagerhigh.NetManagerHigh(self.handler)
 
         self.modules = {
-            START: start.Start(self.handler),
-            LOGIN: login.Login(self.handler),
-            LOBBY: lobby.Lobby(self.handler),
-            WAIT:  wait.Wait(self.handler),
-            GAME:  game.Game(self.handler)
+            START:    start.Start(self.handler),
+            LOGIN:    login.Login(self.handler),
+            LOBBY:    lobby.Lobby(self.handler),
+            GAMEWAIT: gamewait.GameWait(self.handler),
+            GAME:     game.Game(self.handler)
         }
 
         # set current state
-        self.state = GAME   # GREG
-        # self.state = START  # MATT
+        # self.state = GAME   # GREG
+        self.state = START  # MATT
         self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
@@ -54,7 +54,9 @@ class Program(base.Listener):
                 self.change_state(LOBBY)
         elif self.state == LOBBY:
             if isinstance(event, events.UserLoggedOut):
-                self.change_state_(LOGIN)
+                self.change_state(LOGIN)
+            elif isinstance(event, events.UserJoinedGame):
+                self.change_state(GAMEWAIT)
 
     def change_state(self, new_state):
         current_module = self.modules[self.state]

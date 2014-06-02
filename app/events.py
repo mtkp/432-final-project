@@ -49,14 +49,9 @@ class UserLoggedIn(Event):
 class UserLoggedOut(Event):
     pass
 
-class GetUser(Event):
-    pass
-
-class GetUsers(Event):
-    pass
-
-class GetGames(Event):
-    pass
+class UserJoinedGame(Event):
+    def __init__(self, game):
+        self.game = game
 
 class GetPlayers():
     pass
