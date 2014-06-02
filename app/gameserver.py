@@ -164,7 +164,7 @@ class GameServer(object):
         elif cmd == "send_words":
             self.user.send( ( "words_reply",  word_list) )
         elif cmd == "start_game":
-            self.user.send( ( "start_game", [game_id, self.user.usernames]) )
+            self.user.send( ( "start_game", [self.game_id, self.user.usernames]) )
 
         # will update users on current number of joined users
         # will end when sending a start game message to all users
