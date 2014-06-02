@@ -25,6 +25,7 @@ class NetManager(base.Listener):
         self.handler.register_for_ticks(self)
         self.net_conn = netio.NetIO()
 
+    # handle messages from server by posting events to local event handler
     def network_notify(self, event):
         header, payload = event
         if header == "users":
@@ -44,14 +45,19 @@ class NetManager(base.Listener):
             self.model.current_game = payload
             self.handler.post_event(events.ModelUpdated())
         elif header == "game_update_in":
-            self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
-
+            self.handler.post_event(event.GameUpdateIn(
+                payload[0],
+                payload[1]
+                ))
         elif header == "user_game_started":
-            self.handler.post_event(events.UserGameStarted())
+            self.handler.post_event(events.UserGameStarted(
+                payload[0],
+                payload[1]
+                ))
         elif header == "end_game":
             self.handler.post_event(event.EndGame(payload[0]))
 
-    # handle program events
+    # handle locally generated program events by sending messages to server
     def notify(self, event):
         if isinstance(event, events.TryLogin):
             self.register(event.name, event.server)

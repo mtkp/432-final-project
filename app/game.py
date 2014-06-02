@@ -21,11 +21,10 @@ class Game(base.Module):
         self.background_color = color.Blue
         self.font = pygame.font.SysFont("monospace", 15)
 
-        self.game_id = 0 # id of game in the network mgr
-        self.user_idx = 0 # position of user in the player_list
         self.won = False
         self.box_list = [None, None, None, None]
 
+        self.user_names = []
         self.level_list = [0, 0, 0, 0]
         self.word_list = [
             "cat",
@@ -48,7 +47,8 @@ class Game(base.Module):
             30
             )
         self.word_input.active = True
-
+        
+        # box to display the current word user should type
         self.cur_word_box = util.TextBox(
             self.background,
             (600, 550),
@@ -56,20 +56,27 @@ class Game(base.Module):
             self.font,
             self.get_word()
             )
+        
+        #
+        self.make_boxes()
 
-        for i in range(0,4):
+    # only display boxes for users in the current game (maybe someone left)
+    def make_boxes(self):
+        for i in range(self.model.current_game[3]):
             temp_box = util.TextBox(
                 self.background,
                 ( 60 + i * 110, 500),
                 (100, 100),
                 self.font,
                 "default"
+                # user_names[i]
                 )
             self.box_list[i] = temp_box
-
-
-        self.draw_set.extend(self.box_list)
+        
+        # take box of user who left out of draw_set
+        self.draw_set = []
         self.draw_set.extend([self.word_input, self.cur_word_box])
+        self.draw_set.extend(self.box_list)
 
 
     # give each box a new height dimension
@@ -96,6 +103,10 @@ class Game(base.Module):
     def notify(self, event):
         if isinstance(event, events.StartGame):
             self.user_list = event.user_names
+        elif isinstance(event, events.ModelUpdated):
+            # take out users who quit?
+            self.model
+            pass
         elif isinstance(event, events.GameUpdateIn):
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
@@ -115,14 +126,14 @@ class Game(base.Module):
                 self.word_input.input(event.key)
                 if self.word_input.text == self.cur_word_box.text:
                     self.handler.post_event(events.GameUpdateOut(
-                    self.level_list
-                    ))
-                    # eventuall take this out once connected to server----
-                    new_levels = copy.deepcopy(self.level_list)
-                    new_levels[self.user_idx] += 1
-                    self.handler.post_event(events.GameUpdateIn(
-                        new_levels
+                        self.level_list
                         ))
+                    # eventuall take this out once connected to server----
+                    #new_levels = copy.deepcopy(self.level_list)
+                    #new_levels[self.user_idx] += 1
+                    #self.handler.post_event(events.GameUpdateIn(
+                    #    new_levels
+                    #    ))
 
                     #-----------------------------------------------------
                     self.word_input.clear()
@@ -132,4 +143,7 @@ class Game(base.Module):
                     else:
                         print "ran out of words"
                         # at this point, wait and see who won?
+
+
+
 

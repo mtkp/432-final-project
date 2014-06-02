@@ -29,7 +29,7 @@ def read_words(words_file=WORDS_FILE):
 
 
 class Game(object):
-    def __init__(self, maker, name, limit=4):
+    def __init__(self, maker, name, limit=2):
         self.users = []
         self.words = read_words()
         self.level_list = [0, 0, 0, 0]
@@ -59,6 +59,10 @@ class Game(object):
 
     def compact(self):
         return (self.name, id(self), len(self.users), self.limit)
+
+    # wraps up the game's users names and word list to be sent out
+    def initialize(self):
+        return (self.words, self.usernames())
 
 
 class User(object):
@@ -171,10 +175,13 @@ class GameServer(object):
                         for usr in (u for u in game.users if u != user):
                             usr.send(("wait_update", game.compact()))
 
-                        # if enough players, start game
+                        # start gameif enough players, also pass words/usernames
                         if len(game.users) == game.limit:
                             for usr in game.users:
-                                usr.send(("user_game_started", None))
+                                usr.send((
+                                    "user_game_started",
+                                    game.initialize()
+                                    ))
                         #----------------------------------------------------
                         self.games_changed = True
                     break
