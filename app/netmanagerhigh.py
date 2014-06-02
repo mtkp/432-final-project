@@ -19,6 +19,7 @@ class NetManagerHigh(base.Listener):
         # current game ( "name", id, ["bob", "joe", "steve"], 4 )
         # ( "game_update", [1, 4, 7, 2] )
 
+    # these are mesages that come in from the server
     def tick(self):
         # if user registered (add registered field)
         if self.net_manager_low.conn:
@@ -37,7 +38,13 @@ class NetManagerHigh(base.Listener):
                 self.chat_log.append(payload)
                 self.chat_log = self.chat_log[-6:] # only save the last 6 msgs
                 self.handler.post_event(events.UserUpdate(self))
+            elif header == "game_update_in":
+                self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
+                # why pass in self here?
+            elif header == "end_game":
+                self.handler.post_event(event.EndGame(payload[0]))
 
+    # these are messages going out to the server
     def notify(self, event):
         if isinstance(event, events.TryLogin):
             self.register(event.name, event.server)
@@ -59,11 +66,11 @@ class NetManagerHigh(base.Listener):
             self.net_manager_low.send_gameupdate_to_server(event.level_list,
                                                            event.game_id,
                                                            event.user_idx)
-        elif isinstance(event, events.LowLevelGameUpdateIn):
-            # since someone changed, need to tell everyone else
-            print "netmgrhigh: got gameupdateinevent"
-            self.handler.post_event(events.GameUpdateIn(event.game_id,
-                                                        event.level_list))
+        #elif isinstance(event, events.LowLevelGameUpdateIn):
+        #    # since someone changed, need to tell everyone else
+        #    print "netmgrhigh: got gameupdateinevent"
+        #    self.handler.post_event(events.GameUpdateIn(event.game_id,
+        #                                                event.level_list))
 
     # give update to network to tell server there was an update
     def send_gameupdate(self, level_list, game_id):

@@ -33,29 +33,12 @@ class BoxCollection(object):
                 )
             self.box_list.append(temp_box)
 
-        #def add_word(self, word):
-        #    box = util.TextBox(
-        ##        self.background,
-        #        (),
-        #        (),
-        #        self.font,
-        #        word
-        #        )
-        #    self.box_list.append(box)
-
-        #def add_word(self, word):
-        #    box = util.TextBox(
-        ##        self.background,
-        #        
-        #        (),
-        #        self.font,
-        #        word
-        #        )
-
 
     def grow_boxes(self, level_list):
-        for i, a_box in enumerate(self.box_list):        
-            a_box.height = 100 + (10 * level_list[i])
+        for i, box in enumerate(self.box_list):        
+            box.height = 100 + (10 * level_list[i])
+            #box.centery = 550 - (10 * level_list[i])
+            
 
     def draw(self):
         for box in self.box_list:
@@ -72,24 +55,38 @@ class Game(base.Module):
         self.game_id = 0     # id of game in the network mgr
         self.user_idx = 0    # position of user in the player_list
 
+        self.box_list = [None, None, None, None]
+        for i in range(0,4):
+            temp_box = util.TextBox(
+                self.background,
+                ( 60 + i * 110, 500),
+                (100, 100),
+                pygame.font.SysFont("monospace", 15),
+                "default"
+                )
+            self.box_list[i] = temp_box
+
+
         self.level_list = [0, 0, 0, 0]
         self.word_list = []
         self.should_move = False
         self.won = False
-        self.my_boxes = BoxCollection("bob", self.background, self.font)
+        #self.my_boxes = BoxCollection("bob", self.background, self.font)
     
-        self.handler.post_event(events.GetPlayers())
-        self.handler.post_event(events.GetWords())
+        #self.handler.post_event(events.GetPlayers())
+        #self.handler.post_event(events.GetWords())
         
-        self.draw_set.extend([
+        self.draw_set.extend(self.box_list)
+            
             #self.level_list
             #self.word_input
-            self.my_boxes
-            ])
+            
 
-    # give each box a new .top
+    # give each box a new height dimension
     def grow_boxes(self):
-        self.my_boxes.grow_boxes(self.level_list)
+        for i, box in enumerate(self.box_list):        
+            box.height = 100 + (10 * self.level_list[i])
+            #box.centery = 550 - (10 * level_list[i])
 
     # get a word for the user to type
     def get_word(self):
@@ -101,10 +98,11 @@ class Game(base.Module):
 
 
     def update(self):
-        if self.won == True:
-            print "game: posting playerwon"
-            self.handler.post_event(events.PlayerWon(self.game_id, self.user_idx))
+        #if self.won == True:
+        #    print "game: posting playerwon"
+        #    self.handler.post_event(events.PlayerWon(self.game_id, self.user_idx))
             # display a victory message
+        self.grow_boxes()
         self.draw()
 
 
@@ -112,20 +110,15 @@ class Game(base.Module):
     # another success, user listens for this and sends to server
     def notify(self, event):
         if isinstance(event, events.StartGame):
-            self.level_list = event.level_list
-            pass
+            self.user_list = event.level_list
         elif isinstance(event, events.GameUpdateIn):
-            #if event.game_id == self.game_id:
+            if event.game_id == self.game_id:
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
-                self.grow_boxes()
-                # call function to set each box's height to the level in recvd list
-            
+                self.grow_boxes()            
         elif isinstance(event, events.OpponentWon):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)
-            pass
-
         elif isinstance(event, events.KeyPress):
             if isinstance(event, events.KeyPress):
                 if event.key == RETURN_KEY:
@@ -135,10 +128,15 @@ class Game(base.Module):
                                                                  self.level_list))
                 if event.key == TAB_KEY:
                     print "game: pressed tab"
-                    new_levels = copy.deepcopy(self.level_list)
-                    new_levels[self.user_idx] += 1
-                    self.handler.post_event(events.GameUpdateIn(self.game_id,
-                                                                new_levels))
+                    #new_levels = copy.deepcopy(self.level_list)
+                    #new_levels[self.user_idx] += 1
+                    self.level_list[0] += 1    
+                    self.grow_boxes()
+                    #self.handler.post_event(events.GameUpdateIn(self.game_id,
+                    #                                           new_levels))
+
+
+
             ## send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
 
@@ -148,6 +146,5 @@ class Game(base.Module):
             #    self.handler.post_event(events.PlayerSuccess())
             #    # reset the displayed word to be the next word in local word list
             #    self.cur_word_box.text = self.get_word()
-
 
 

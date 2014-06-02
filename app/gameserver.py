@@ -158,16 +158,21 @@ class GameServer(object):
                 u.send(("chat", chat_msg))
 
     def in_game_waiting(self, user, msg):
+        cmd = msg[0]
+        if cmd == "user_num_update":
+            self.user.send( ( "user_num_reply", [self.game.game_id, len(self.game.users)] ) )
+        elif cmd == "send_words":
+            self.user.send( ( "words_reply",  word_list) )
+        elif cmd == "start_game":
+            self.user.send( ( "start_game", [game_id, self.user.usernames]) )
+
         # will update users on current number of joined users
         # will end when sending a start game message to all users
         #
         # send a start message as: ("start_game", ["username1", "username2", ...])
         #
         # also need to send the word list to all players at game start..
-        #cmd = msg[0]
-        #    if cmd == "":
                 
-        pass
 
     def in_game(self, user, msg):
         # will pass messages between users when updates occur
@@ -177,20 +182,20 @@ class GameServer(object):
         
         cmd = msg[0]
         # gameupdate: ("gameupdate, game_id, user_idx, [1, 2, 3, 4]")
-        if cmd == "gameupdateout":
+        if cmd == "game_update_out":
             # increment the list at index user_idx
             self.user.game.level_list[user_idx] += 1
             # check if anyone won
-            winner = self.user.game()
-            self.user.send( ( "gameupdatein",
+            winner = self.user.game.check_winner()
+            self.user.send( ( "game_update_in",
                               msg[1],
                               self.user.game.level_list) )
             if winner != None:
-                self.user.send( ( "playerwon", msg[1], winner ) )
-        elif cmd == "":
-            pass
-        
-        
+                self.user.send( ( "player_won", msg[1], winner ) )
+        elif cmd == "end_game":
+            # how can itrigger state change in program
+            self.user.send( ( "end_game", game_id ) )
+
 
     def users(self):
         return self.user_sockets.itervalues()
