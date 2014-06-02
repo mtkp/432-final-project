@@ -60,9 +60,9 @@ class NetManagerLow(object):
         return self.inbox.popleft()
 
     # clients tell server about update
-    def send_gameupdate_to_server(self, game_id, level_list):
+    def send_gameupdate_to_server(self, level_list):
         print "netmgrlow: sending gameupdate to server"
-        self._send( ( "update_levels", [game_id, level_list] ) )
+        self._send( ( "update_levels", level_list ) )
 
 
     def register(self, username, server):

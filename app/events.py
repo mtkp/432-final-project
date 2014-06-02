@@ -59,6 +59,8 @@ class UserJoinedGame(Event):
 class UserGameStarted(Event):
     pass
 
+class UserGameEnded(Event):
+    pass
 
 class UserUpdate(Event):
     def __init__(self, user):
