@@ -56,13 +56,14 @@ class UserJoinedGame(Event):
     def __init__(self, game):
         self.game = game
 
+class OtherJoinedWait(Event):
+    def __init__(self, num_players):
+        self.num_players = num_players
+
 class UserGameStarted(Event):
     pass
 
-class GetPlayers():
-    pass
-
-class GetWords():
+class UserGameEnded(Event):
     pass
 
 class UserUpdate(Event):
@@ -74,20 +75,13 @@ class GameUpdate():
 
 # this is for when a client want to tell everyone
 class GameUpdateOut(Event):
-    def __init__(self, game_id, user_idx, level_list,):
+    def __init__(self, game_id, level_list,):
         self.game_id = game_id
-        self.user_idx = user_idx
         self.level_list = level_list
 
 # recieve a game update from the server
 class GameUpdateIn(Event):
     def __init__(self, game_id, level_list,):
-        self.game_id = game_id
-        self.level_list = level_list
-
-# this is what the server sends to the netmanagerhigh
-class LowLevelGameUpdateIn(Event):
-    def __init__(self, game_id, level_list):
         self.game_id = game_id
         self.level_list = level_list
 

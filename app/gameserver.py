@@ -96,6 +96,8 @@ class GameServer(object):
 
         self.users_changed = False
         self.games_changed = False
+        # self.wait_changed = False
+        # self.ingame_changed = False
         
 
 
@@ -135,6 +137,13 @@ class GameServer(object):
                 for user in self.users():
                     user.send(("games", all_games))
                 self.games_changed = False
+            
+            # notify users if waiting state changes
+                # if the game is full, send message to that game's user to start
+                # when start is sent, send username list and word list
+    
+            # notfy users in game if game state changes
+                # send updated level list to everyone in that game
 
     # -- handle user requests, per the user state --
     # - regsiter
@@ -168,8 +177,17 @@ class GameServer(object):
                     if len(game.users) < game.limit:
                         game.add_user(user)
                         user.send(("joined", game.compact()))
-                        self.games_changed = True
-                        # i think here we need to send a message to other users
+                    #---------------------------------------------------------
+                        # tell other waiting users to increment count?
+                        for usr in game.users:
+                           usr.send(("other_user_joined", len(game.users)))
+                        
+                        # if enough players, start game
+                        if len(game.users) == game.limit:
+                            for usr in game.users:
+                                usr.send(("user_game_started", game.words))
+                    #--------------------------------------------------------
+                        self.games_changed = True   
                     break
         elif cmd == "chat":
             chat_msg = "{}: {}".format(user.name, msg[1]) # append who said it
@@ -181,21 +199,18 @@ class GameServer(object):
     def in_game_waiting(self, user, msg):
         game = user.game
         cmd = msg[0]
-        #if cmd == "user_num_update":
-        #    user.send((
-        #        "user_num_reply",
-        #        [id(game), len(game.users)]
-        #        ))
+ 
         if cmd == "exit_game":
             game.remove_user(user)
+            # for user in game.users:
             self.games_changed = True
-        elif cmd == "send_words":
-            user.send(("words_reply",  word_list))
-        elif cmd == "start_game":
-            user.send( (
-                "start_game",
-                [id(game), game.usernames()]
-                ))
+        #elif cmd == "send_words":
+        #    user.send(("words_reply",  word_list))
+        #elif cmd == "start_game":
+        #    user.send( (
+        #        "start_game",
+        #        [id(game), game.usernames()]
+        #        ))
 
         # will update users on current number of joined users
         # will end when sending a start game message to all users
