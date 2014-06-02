@@ -99,7 +99,7 @@ class Game(base.Module):
     # another success, user listens for this and sends to server
     def notify(self, event):
         if isinstance(event, events.StartGame):
-            self.user_list = event.level_list
+            self.user_list = event.user_names
         elif isinstance(event, events.GameUpdateIn):
             if event.game_id == self.game_id:
                 print "game: got gameupdatein"
@@ -118,12 +118,14 @@ class Game(base.Module):
                         self.level_list))
                 if event.key == TAB_KEY:
                     print "game: pressed tab"
-                    #new_levels = copy.deepcopy(self.level_list)
-                    #new_levels[self.user_idx] += 1
-                    self.level_list[0] += 1    
-                    self.grow_boxes()
-                    #self.handler.post_event(events.GameUpdateIn(self.game_id,
-                    #                                           new_levels))
+                    new_levels = copy.deepcopy(self.level_list)
+                    new_levels[self.user_idx] += 1
+                    #self.level_list[0] += 1    
+                    #self.grow_boxes()
+                    self.handler.post_event(events.GameUpdateIn(
+                        self.game_id,
+                        new_levels
+                        ))
             
                 elif self.word_input.active:
                     self.word_input.input(event.key)
@@ -139,15 +141,5 @@ class Game(base.Module):
                             self.cur_word_box.text = next_word
                         else:
                             print "ran out of words"
-
-            # send the input box the character that the user typed, display it
-            #self.word_input.input(event.key)
-
-            # check to see if the input box text matches the cur_word text
-            #if self.word_input.text == self.cur_word_box.text:
-                # tell the sever that we moved
-            #    self.handler.post_event(events.PlayerSuccess())
-            #    # reset the displayed word to be the next word in local word list
-            #    self.cur_word_box.text = self.get_word()
 
 

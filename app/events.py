@@ -97,9 +97,9 @@ class JoinGame(Event):
 
 # when the server gets enough users for a game (4), it will send out this event
 class StartGame(Event):
-    def __init__(self, game_id, level_list):
+    def __init__(self, game_id, user_names):
         self.game_id = game_id
-        self.level_list
+        self.user_names
         # ("game_start", [ "user1", "user2", ... ])
 
 class EndGame(Event):
