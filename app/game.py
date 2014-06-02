@@ -112,9 +112,10 @@ class Game(base.Module):
             if isinstance(event, events.KeyPress):
                 if event.key == RETURN_KEY:
                     print "game: pressed enter"
-                    self.handler.post_event(events.GameUpdateOut(self.game_id,
-                                                                 self.user_idx,
-                                                                 self.level_list))
+                    self.handler.post_event(events.GameUpdateOut(
+                        self.game_id,
+                        self.user_idx,
+                        self.level_list))
                 if event.key == TAB_KEY:
                     print "game: pressed tab"
                     #new_levels = copy.deepcopy(self.level_list)
@@ -127,9 +128,12 @@ class Game(base.Module):
                 elif self.word_input.active:
                     self.word_input.input(event.key)
                     if self.word_input.text == self.cur_word_box.text:
-                        self.handler.post_event(events.GameUpdateOut(self.game_id,
-                                                                  self.user_idx,
-                                                                  self.level_list))
+                        self.handler.post_event(events.GameUpdateOut(
+                        self.game_id,
+                        self.user_idx,
+                        self.level_list
+                        ))
+                        self.word_input.clear()
                         next_word = self.get_word()
                         if next_word != None:
                             self.cur_word_box.text = next_word
