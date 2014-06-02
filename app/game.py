@@ -66,8 +66,6 @@ class Game(base.Module):
                 "default"
                 )
             self.box_list[i] = temp_box
-
-        #self.my_boxes = BoxCollection("bob", self.background, self.font)
     
         #self.handler.post_event(events.GetPlayers())
         #self.handler.post_event(events.GetWords())
@@ -79,7 +77,7 @@ class Game(base.Module):
     # give each box a new height dimension
     def grow_boxes(self):
         for i, box in enumerate(self.box_list):        
-            self.box_list[i].top = 450 - (10 * self.level_list[i])
+            self.box_list[i].top = 450 - (30 * self.level_list[i])
 
     # get a word for the user to type
     def get_word(self):
@@ -88,14 +86,10 @@ class Game(base.Module):
 
 
     def update(self):
-        #if self.won == True:
-        #    print "game: posting playerwon"
-        #    self.handler.post_event(events.PlayerWon(self.game_id, self.user_idx))
-            # display a victory message
         self.draw()
 
 
-    # listen for update event and take list of ints from it.
+    # listen for update event
     # another success, user listens for this and sends to server
     def notify(self, event):
         if isinstance(event, events.StartGame):
@@ -115,18 +109,7 @@ class Game(base.Module):
                     self.handler.post_event(events.GameUpdateOut(
                         self.game_id,
                         self.user_idx,
-                        self.level_list))
-                if event.key == TAB_KEY:
-                    print "game: pressed tab"
-                    new_levels = copy.deepcopy(self.level_list)
-                    new_levels[self.user_idx] += 1
-                    #self.level_list[0] += 1    
-                    #self.grow_boxes()
-                    self.handler.post_event(events.GameUpdateIn(
-                        self.game_id,
-                        new_levels
-                        ))
-            
+                        self.level_list))            
                 elif self.word_input.active:
                     self.word_input.input(event.key)
                     if self.word_input.text == self.cur_word_box.text:
@@ -135,11 +118,21 @@ class Game(base.Module):
                         self.user_idx,
                         self.level_list
                         ))
+                        # eventuall take this out once connected to server----
+                        new_levels = copy.deepcopy(self.level_list)
+                        new_levels[self.user_idx] += 1
+                        self.handler.post_event(events.GameUpdateIn(
+                            self.game_id,
+                            new_levels
+                            ))
+
+                        #-----------------------------------------------------
                         self.word_input.clear()
                         next_word = self.get_word()
                         if next_word != None:
                             self.cur_word_box.text = next_word
                         else:
                             print "ran out of words"
+                            # at this point, wait and see who won?
 
 
