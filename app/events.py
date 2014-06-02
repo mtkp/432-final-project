@@ -60,9 +60,11 @@ class OtherJoinedWait(Event):
     def __init__(self, num_players):
         self.num_players = num_players
 
+# after waiting in game wait state, trigger a local state switch to Game state
 class UserGameStarted(Event):
     pass
 
+# after ending game state, trigger a local state switch to lobby state
 class UserGameEnded(Event):
     pass
 
@@ -70,8 +72,8 @@ class UserUpdate(Event):
     def __init__(self, user):
         self.user = user
 
-class GameUpdate():
-    pass
+#class GameUpdate():
+#    pass
 
 # this is for when a client want to tell everyone
 class GameUpdateOut(Event):
