@@ -79,7 +79,6 @@ class GameUpdateIn(Event):
     def __init__(self, level_list,):
         self.level_list = level_list
 
-
 class JoinGame(Event):
     def __init__(self, game_name, game_users):
         self.game_name = game_name

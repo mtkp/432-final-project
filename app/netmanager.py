@@ -1,0 +1,134 @@
+# netmanager.py
+
+# netmanager provides an interface between the network IO and the program
+# - network events on each tick, "network_notify"
+# - program events through "notify"
+
+import base
+import events
+import netio
+
+
+class InvalidFormat(Exception):
+    """The given username formatting is invalid."""
+    pass
+
+class UsernameUnavailable(Exception):
+    """The server rejected the username."""
+    pass
+
+
+class NetManager(base.Listener):
+    def __init__(self, handler):
+        base.Listener.__init__(self, handler)
+        self.handler.register_for_ticks(self)
+        self.net_conn = netio.NetIO()
+        self.name = None
+        self.users = []
+        self.games = []
+        self.chat_log = []
+
+    def network_notify(self, event):
+        header, payload = event
+        if header == "users":
+            self.users = payload
+            self.handler.post_event(events.UserUpdate(self))
+        elif header == "games":
+            self.games = payload
+            self.handler.post_event(events.UserUpdate(self))
+        elif header == "chat":
+            self.chat_log.append(payload)
+            self.chat_log = self.chat_log[-6:] # only save the last 6 msgs
+            self.handler.post_event(events.UserUpdate(self))
+        elif header == "joined":
+            self.handler.post_event(events.UserJoinedGame(payload))
+        elif header == "game_update_in":
+            self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
+            # why pass in self here?
+        elif header == "end_game":
+            self.handler.post_event(event.EndGame(payload[0]))
+
+    # handle program events
+    def notify(self, event):
+        if isinstance(event, events.TryLogin):
+            self.register(event.name, event.server)
+        if isinstance(event, events.TryCreateGame):
+            self.net_conn.create_game(event.name)
+        if isinstance(event, events.TryJoinGame):
+            self.net_conn.join_game(event.game_id)
+        if isinstance(event, events.TrySendChat):
+            self.net_conn.chat(event.msg)
+        elif isinstance(event, events.Logout):
+            self.unregister()
+        elif isinstance(event, events.LeaveGame):
+            self.net_conn.exit_game()
+        elif isinstance(event, events.GameUpdateOut):
+            self.net_conn.send_gameupdate_to_server(event.level_list)
+
+    # on each tick check for network events
+    def tick(self):
+        if self.net_conn.conn:
+            self.net_conn.update() # update the connection if we have one
+        if self.net_conn.has_messages():
+            # hand off any network events to be processed
+            network_event = self.net_conn.recv()
+            self.network_notify(network_event)
+
+    def register(self, name, server):
+        try:
+            self.net_conn.connect(server)
+            self.login(name)
+            self.name = name
+            self.handler.post_event(events.UserLoggedIn())
+        except InvalidFormat:
+            self.handler.post_event(events.LoginError("Bad format"))
+        except UsernameUnavailable:
+            self.handler.post_event(events.LoginError("Username is taken"))
+        except netio.ServerNotFound:
+            self.handler.post_event(events.LoginError("Server not found"))
+
+    def unregister(self):
+        self.net_conn.close()
+        self.handler.post_event(events.UserLoggedOut())
+
+    # clients tell server about update
+    def send_gameupdate_to_server(self, level_list):
+        print "netmgrlow: sending gameupdate to server"
+        self.net_conn.send( ( "update_levels", level_list ) )
+
+    def create_game(self, game_name):
+        """Create a game on the server.
+        """
+        if len(game_name) == 0:
+            return
+        self.net_conn.send(("create", game_name))
+
+    def chat(self, msg):
+        """Create a game on the server.
+        """
+        self.net_conn.send(("chat", msg))
+
+    def join_game(self, game_id):
+        """Join a game using the game id (provided in the tuple).
+        """
+        self.net_conn.send(("join", game_id))
+
+    def exit_game(self):
+        """Exit the game that the user is currently in.
+        """
+        self.net_conn.send(("exit_game", None))
+
+    def login(self, username):
+        """Login to a server with given username.
+        Exceptions: InvalidFormat, UsernameUnavailable
+        """
+        if len(username) < 3:
+            raise InvalidFormat
+        self.net_conn.send(("login", username))
+        while not self.has_messages():
+            self.update()
+        header, payload = self.net_conn.recv()
+        if header != "login_result" or payload == False:
+            self.conn.close()
+            self.conn = None
+            raise UsernameUnavailable
