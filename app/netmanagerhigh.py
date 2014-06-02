@@ -28,6 +28,7 @@ class NetManagerHigh(base.Listener):
             header, payload = self.net_manager_low.get_message()
             # read header
             # update appropriate filed
+            #------------------------------login / lobby----------------------
             if header == "users":
                 self.users = payload
                 self.handler.post_event(events.UserUpdate(self))
@@ -38,9 +39,14 @@ class NetManagerHigh(base.Listener):
                 self.chat_log.append(payload)
                 self.chat_log = self.chat_log[-6:] # only save the last 6 msgs
                 self.handler.post_event(events.UserUpdate(self))
-            
             elif header == "joined":
                 self.handler.post_event(events.UserJoinedGame(payload))
+            #------------------------------game_wait--------------------------
+            elif header == "wait_update":
+                self.handler.post_event(events.OtherJoinedWait(payload))
+            elif header == "user_game_started":
+                self.handler.post_event(events.UserGameStarted())
+            #------------------------------game-------------------------------- 
             elif header == "game_update_in":
                 self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
                 # why pass in self here?
