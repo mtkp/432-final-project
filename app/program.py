@@ -21,6 +21,14 @@ GAMEWAIT = 3
 GAME     = 4
 
 
+class Model(object):
+    def __init__(self):
+        self.username     = None
+        self.current_game = None
+        self.all_users    = []
+        self.all_games    = []
+        self.chat_log     = []
+
 class Program(base.Listener):
     def __init__(self, handler):
         base.Listener.__init__(self, handler)
@@ -31,14 +39,15 @@ class Program(base.Listener):
         pygame.display.set_mode((800, 600))
         pygame.display.set_caption("type it")
 
-        self.net = netmanager.NetManager(self.handler)
+        self.model = Model()
+        self.net   = netmanager.NetManager(self.handler, self.model)
 
         self.modules = {
-            START:    start.Start(self.handler),
-            LOGIN:    login.Login(self.handler),
-            LOBBY:    lobby.Lobby(self.handler),
-            GAMEWAIT: gamewait.GameWait(self.handler),
-            GAME:     game.Game(self.handler)
+            START:    start.Start(self.handler, self.model),
+            LOGIN:    login.Login(self.handler, self.model),
+            LOBBY:    lobby.Lobby(self.handler, self.model),
+            GAMEWAIT: gamewait.GameWait(self.handler, self.model),
+            GAME:     game.Game(self.handler, self.model)
         }
 
         # set current state
@@ -72,7 +81,6 @@ class Program(base.Listener):
         self.state = new_state
         new_module = self.modules[self.state]
         self.handler.register_for_events(new_module)
-        self.handler.post_event(events.UserUpdate(self.net))
 
     def tick(self):
         self.modules[self.state].update()

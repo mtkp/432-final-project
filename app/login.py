@@ -11,8 +11,8 @@ class Login(base.Module):
     TAB_KEY = 9
     RETURN_KEY = 13
 
-    def __init__(self, handler):
-        base.Module.__init__(self, handler)
+    def __init__(self, handler, model):
+        base.Module.__init__(self, handler, model)
         self.background_color = color.GameBackground
 
         input_box_height = self.height / 15

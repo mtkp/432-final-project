@@ -7,8 +7,8 @@ import util
 
 
 class GameWait(base.Module):
-    def __init__(self, handler):
-        base.Module.__init__(self, handler)
+    def __init__(self, handler, model):
+        base.Module.__init__(self, handler, model)
         self.font = pygame.font.SysFont("monospace", 60)
         self.background_color = color.GameBackground
         self.player_count = 1
@@ -43,9 +43,9 @@ class GameWait(base.Module):
         elif isinstance(event, events.OtherJoinedWait):
             self.user_count = event.num_players
             self.label.text = str(self.user_count) + " / 4"
-            
-            
-        
+
+
+
 
     def update(self):
         self.draw()

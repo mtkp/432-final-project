@@ -19,28 +19,26 @@ class UsernameUnavailable(Exception):
 
 
 class NetManager(base.Listener):
-    def __init__(self, handler):
+    def __init__(self, handler, model):
         base.Listener.__init__(self, handler)
+        self.model = model
         self.handler.register_for_ticks(self)
         self.net_conn = netio.NetIO()
-        self.name     = None
-        self.users    = []
-        self.games    = []
-        self.chat_log = []
 
     def network_notify(self, event):
         header, payload = event
         if header == "users":
-            self.users = payload
-            self.handler.post_event(events.UserUpdate(self))
+            self.model.all_users = payload
+            self.handler.post_event(events.ModelUpdated())
         elif header == "games":
             self.games = payload
-            self.handler.post_event(events.UserUpdate(self))
+            self.handler.post_event(events.ModelUpdated())
         elif header == "chat":
-            self.chat_log.append(payload)
-            self.chat_log = self.chat_log[-6:] # only save the last 6 msgs
-            self.handler.post_event(events.UserUpdate(self))
+            self.model.chat_log.append(payload)
+            self.model.chat_log = self.model.chat_log[-6:] # only save last 6 msgs
+            self.handler.post_event(events.ModelUpdated())
         elif header == "joined":
+            self.model.current_game = payload
             self.handler.post_event(events.UserJoinedGame(payload))
         elif header == "game_update_in":
             self.handler.post_event(event.GameUpdateIn(payload[0], payload[1]))
@@ -81,7 +79,7 @@ class NetManager(base.Listener):
         try:
             self.net_conn.connect(server)
             self.login(name)
-            self.name = name
+            self.model.username = name
             self.handler.post_event(events.UserLoggedIn())
         except InvalidFormat:
             self.handler.post_event(events.LoginError("Bad format"))

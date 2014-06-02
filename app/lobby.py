@@ -20,7 +20,7 @@ class LobbyGame(object):
 
 
 class Lobby(base.Module):
-    GREETING   = random.choice([
+    GREETING = random.choice([
         "hello, {}!",
         "nihao, {}!",
         "aloha, {}!",
@@ -31,8 +31,8 @@ class Lobby(base.Module):
         ])
     RETURN_KEY = 13
 
-    def __init__(self, handler):
-        base.Module.__init__(self, handler)
+    def __init__(self, handler, model):
+        base.Module.__init__(self, handler, model)
         self.background_color = color.GameBackground
 
         # top bar
@@ -139,8 +139,8 @@ class Lobby(base.Module):
                 game = self.games_box.get_item(event.pos)
                 if game:
                     self.handler.post_event(events.TryJoinGame(game.game_id))
-        elif isinstance(event, events.UserUpdate):
-            self.reload_users(event.user)
+        elif isinstance(event, events.ModelUpdated):
+            self.reload_model()
         elif isinstance(event, events.KeyPress):
             if event.key == Lobby.RETURN_KEY \
                 and self.chat_input.active \
@@ -158,12 +158,12 @@ class Lobby(base.Module):
             print "posting create game"
             self.handler.post_event(events.TryCreateGame(game_name))
 
-    def reload_users(self, user):
-        print "reloading user"
-        self.hello.text = Lobby.GREETING.format(user.name)
-        self.games_box.list = [LobbyGame(g) for g in user.games]
-        self.users_box.list = user.users
-        self.chat_log.list = user.chat_log
+    def reload_model(self):
+        print "reloading the program model"
+        self.hello.text     = Lobby.GREETING.format(self.model.username)
+        self.games_box.list = [LobbyGame(g) for g in self.model.all_games]
+        self.users_box.list = self.model.all_users
+        self.chat_log.list  = self.model.chat_log
 
     def update(self):
         self.draw()
