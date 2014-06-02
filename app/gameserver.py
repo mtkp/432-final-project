@@ -5,7 +5,7 @@ import collections
 import select
 import socket
 import random
-import os
+import os       # maybe use "os.path.join()" for opening a file
 
 # our libs
 import messenger
@@ -30,12 +30,12 @@ def read_words(words_file=WORDS_FILE):
 
 class Game(object):
     def __init__(self, maker, name, limit=4):
-        self.users      = []
-        self.words      = read_words()
-        self.level_list = [0, 0, 0, 0]
-        self.name       = name
-        self.limit      = limit
-        self.waiting    = True   # don't start the game yet
+        self.users      = []           # 
+        self.words      = read_words() # open word file and get list of words
+        self.level_list = [0, 0, 0, 0] # progress level of game's players
+        self.name       = name         # game name that user typed
+        self.limit      = limit        # limit of players per game
+        self.waiting    = True         # don't start the game yet
         self.add_user(maker)
 
     def add_user(self, user):
@@ -96,6 +96,8 @@ class GameServer(object):
 
         self.users_changed = False
         self.games_changed = False
+        
+
 
     def serve_forever(self):
         while True:
@@ -167,6 +169,7 @@ class GameServer(object):
                         game.add_user(user)
                         user.send(("joined", game.compact()))
                         self.games_changed = True
+                        # i think here we need to send a message to other users
                     break
         elif cmd == "chat":
             chat_msg = "{}: {}".format(user.name, msg[1]) # append who said it
@@ -174,15 +177,16 @@ class GameServer(object):
             for u in self.users():
                 u.send(("chat", chat_msg))
 
+    
     def in_game_waiting(self, user, msg):
         game = user.game
         cmd = msg[0]
-        if cmd == "user_num_update":
-            user.send((
-                "user_num_reply",
-                [id(game), len(game.users)]
-                ))
-        elif cmd == "exit_game":
+        #if cmd == "user_num_update":
+        #    user.send((
+        #        "user_num_reply",
+        #        [id(game), len(game.users)]
+        #        ))
+        if cmd == "exit_game":
             game.remove_user(user)
             self.games_changed = True
         elif cmd == "send_words":

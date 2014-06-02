@@ -91,6 +91,10 @@ class LowLevelGameUpdateIn(Event):
         self.game_id = game_id
         self.level_list = level_list
 
+# in waiting state, when a user joins. just to trigger increment of user count
+class UserJoined(Event):
+    pass
+
 class JoinGame(Event):
     def __init__(self, game_name, game_users):
         self.game_name = game_name
