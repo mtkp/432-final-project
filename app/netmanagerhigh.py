@@ -59,13 +59,17 @@ class NetManagerHigh(base.Listener):
         elif isinstance(event, events.Logout):
             self.unregister()
         elif isinstance(event, events.JoinGame):
+            # 
             pass
         elif isinstance(event, events.GameUpdateOut):
             # player has updated list to give server
             print "netmgrhigh: got gameupdateoutevent"
-            self.net_manager_low.send_gameupdate_to_server(event.level_list,
-                                                           event.game_id,
-                                                           event.user_idx)
+            self.net_manager_low.send_gameupdate_to_server(
+                event.game_id,
+                event.user_idx,
+                event.level_list
+                )
+
         #elif isinstance(event, events.LowLevelGameUpdateIn):
         #    # since someone changed, need to tell everyone else
         #    print "netmgrhigh: got gameupdateinevent"

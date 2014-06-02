@@ -105,17 +105,10 @@ class StartGame(Event):
 class EndGame(Event):
     pass
 
-# player got a word right, needs to be moved locally and remotely
-class PlayerSuccess(Event):
-    pass
-
-# player won the game, notify server to end the game
+# player won the game, from server
 class PlayerWon(Event):
     pass
 
-# opponent got a word right, needs to be moved locally
-class OpponentSuccess(Event):
-    pass
 
 # Opponent wins the game
 class OpponentWon(Event):
