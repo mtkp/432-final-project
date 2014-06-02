@@ -12,7 +12,7 @@ import messenger
 
 LISTEN_QUEUE = 5
 PORT         = 7307
-       
+
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
@@ -26,6 +26,7 @@ def get_random_words(all_words):
 def read_words(words_file):
         all_words = [word for line in open(words_file, 'r') for word in line.split()]
         return get_random_words(all_words)
+
 
 class Game(object):
     def __init__(self, maker, name, limit=4):
@@ -174,19 +175,23 @@ class GameServer(object):
                 u.send(("chat", chat_msg))
 
     def in_game_waiting(self, user, msg):
+        game = user.game
         cmd = msg[0]
         if cmd == "user_num_update":
-            self.user.send( ( 
+            user.send((
                 "user_num_reply",
-                 [self.game.game_id, len(self.game.users)]
-                 ) )
+                [id(game), len(game.users)]
+                ))
+        elif cmd == "exit_game":
+            game.remove_user(user)
+            self.games_changed = True
         elif cmd == "send_words":
-            self.user.send( ( "words_reply",  word_list) )
+            user.send(("words_reply",  word_list))
         elif cmd == "start_game":
-            self.user.send( (
+            user.send( (
                 "start_game",
-                [self.game_id, self.user.usernames]
-                ) )
+                [id(game), game.usernames()]
+                ))
 
         # will update users on current number of joined users
         # will end when sending a start game message to all users
@@ -201,22 +206,27 @@ class GameServer(object):
         # will end when one user finishes all words in wordlist
         # when ends, state for all users in game becomes lobby and game
         #   should be destroyed
-
         cmd = msg[0]
+        game = user.game
         # gameupdate: ("gameupdate, game_id, user_idx, [1, 2, 3, 4]")
         if cmd == "game_update_out":
             # increment the list at index user_idx
-            self.user.game.level_list[user_idx] += 1
+            game.level_list[user_idx] += 1
             # check if anyone won
-            winner = self.user.game.check_winner()
-            self.user.send( ( "game_update_in",
-                              msg[1],
-                              self.user.game.level_list) )
-            if winner != None:
-                self.user.send( ( "player_won", msg[1], winner ) )
+            winner = game.check_winner()
+            user.send((
+                "game_update_in",
+                msg[1],
+                game.level_list
+                ))
+            if winner:
+                user.send((
+                    "player_won",
+                    msg[1], winner
+                    ))
         elif cmd == "end_game":
             # how can itrigger state change in program
-            self.user.send( ( "end_game", game_id ) )
+            user.send(("end_game", game_id))
 
 
     def users(self):

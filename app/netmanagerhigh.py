@@ -58,6 +58,8 @@ class NetManagerHigh(base.Listener):
             self.net_manager_low.chat(event.msg)
         elif isinstance(event, events.Logout):
             self.unregister()
+        elif isinstance(event, events.LeaveGame):
+            self.net_manager_low.exit_game()
         elif isinstance(event, events.GameUpdateOut):
             # player has updated list to give server
             print "netmgrhigh: got gameupdateoutevent"

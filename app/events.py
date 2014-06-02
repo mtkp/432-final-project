@@ -40,6 +40,9 @@ class TrySendChat(Event):
     def __init__(self, msg):
         self.msg = msg
 
+class LeaveGame(Event):
+    pass
+
 class Logout(Event):
     pass
 
@@ -52,6 +55,9 @@ class UserLoggedOut(Event):
 class UserJoinedGame(Event):
     def __init__(self, game):
         self.game = game
+
+class UserGameStarted(Event):
+    pass
 
 class GetPlayers():
     pass

@@ -104,7 +104,7 @@ class NetManagerLow(object):
     def exit_game(self):
         """Exit the game that the user is currently in.
         """
-        self._send(("exit",None))
+        self._send(("exit_game",None))
 
     # -- private --
 

@@ -89,7 +89,6 @@ class Game(base.Module):
         # make a new label
         # add it to the games draw set
 
-
     def update(self):
         self.draw()
 

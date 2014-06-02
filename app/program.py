@@ -58,9 +58,10 @@ class Program(base.Listener):
             elif isinstance(event, events.UserJoinedGame):
                 self.change_state(GAMEWAIT)
         elif self.state == GAMEWAIT:
-            pass
-            # if isinstance(event, events.UserJoinedGame):
-            #     self.change_state(GAME)
+            if isinstance(event, events.LeaveGame):
+                self.change_state(LOBBY)
+            elif isinstance(event, events.UserGameStarted):
+                self.change_state(GAME)
         elif self.state == GAME:
             if isinstance(even, events.UserGameEnded):
                 self.change_state(LOBBY)
