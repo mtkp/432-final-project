@@ -8,7 +8,7 @@ import events
 import game
 import lobby
 import login
-import netmanagerhigh
+import netmanager
 import start
 import userinput
 import gamewait
@@ -31,7 +31,7 @@ class Program(base.Listener):
         pygame.display.set_mode((800, 600))
         pygame.display.set_caption("type it")
 
-        self.net_manager_high = netmanagerhigh.NetManagerHigh(self.handler)
+        self.net = netmanager.NetManager(self.handler)
 
         self.modules = {
             START:    start.Start(self.handler),
@@ -72,7 +72,7 @@ class Program(base.Listener):
         self.state = new_state
         new_module = self.modules[self.state]
         self.handler.register_for_events(new_module)
-        self.handler.post_event(events.UserUpdate(self.net_manager_high))
+        self.handler.post_event(events.UserUpdate(self.net))
 
     def tick(self):
         self.modules[self.state].update()
