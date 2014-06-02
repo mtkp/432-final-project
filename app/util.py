@@ -390,6 +390,15 @@ class TextBox(object):
     def bottom(self, bottom):
         self.box.bottom = bottom
 
+    @property
+    def height(self):
+        return self.box.height    
+
+    @height.setter
+    @align
+    def height(self, height):
+        self.box.height = height
+
 
 class ListBox(object):
     def __init__(self, background, center, size, font):

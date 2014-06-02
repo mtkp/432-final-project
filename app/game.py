@@ -85,7 +85,7 @@ class Game(base.Module):
     # give each box a new height dimension
     def grow_boxes(self):
         for i, box in enumerate(self.box_list):        
-            self.box_list[i].height = 100 + (10 * self.level_list[i])
+            self.box_list[i].top = 450 - (10 * self.level_list[i])
             #box.centery = 550 - (10 * level_list[i])
 
     # get a word for the user to type
@@ -102,7 +102,7 @@ class Game(base.Module):
         #    print "game: posting playerwon"
         #    self.handler.post_event(events.PlayerWon(self.game_id, self.user_idx))
             # display a victory message
-        self.grow_boxes()
+        #self.grow_boxes()
         self.draw()
 
 
