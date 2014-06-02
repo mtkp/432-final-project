@@ -23,9 +23,9 @@ class NetManager(base.Listener):
         base.Listener.__init__(self, handler)
         self.handler.register_for_ticks(self)
         self.net_conn = netio.NetIO()
-        self.name = None
-        self.users = []
-        self.games = []
+        self.name     = None
+        self.users    = []
+        self.games    = []
         self.chat_log = []
 
     def network_notify(self, event):
@@ -56,17 +56,17 @@ class NetManager(base.Listener):
         if isinstance(event, events.TryLogin):
             self.register(event.name, event.server)
         if isinstance(event, events.TryCreateGame):
-            self.net_conn.create_game(event.name)
+            self.create_game(event.name)
         if isinstance(event, events.TryJoinGame):
-            self.net_conn.join_game(event.game_id)
+            self.join_game(event.game_id)
         if isinstance(event, events.TrySendChat):
-            self.net_conn.chat(event.msg)
+            self.chat(event.msg)
         elif isinstance(event, events.Logout):
             self.unregister()
         elif isinstance(event, events.LeaveGame):
-            self.net_conn.exit_game()
+            self.exit_game()
         elif isinstance(event, events.GameUpdateOut):
-            self.net_conn.send_gameupdate_to_server(event.level_list)
+            self.send_gameupdate_to_server(event.level_list)
 
     # on each tick check for network events
     def tick(self):
@@ -128,8 +128,8 @@ class NetManager(base.Listener):
         if len(username) < 3:
             raise InvalidFormat
         self.net_conn.send(("login", username))
-        while not self.has_messages():
-            self.update()
+        while not self.net_conn.has_messages():
+            self.net_conn.update()
         header, payload = self.net_conn.recv()
         if header != "login_result" or payload == False:
             self.conn.close()
