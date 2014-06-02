@@ -61,7 +61,9 @@ class OtherJoinedWait(Event):
 
 # trigger state change to the game state
 class UserGameStarted(Event):
-    pass
+    def __init__(self, words, user_names):
+        self.words = words
+        self.user_names = user_names
 
 class UserGameEnded(Event):
     pass
