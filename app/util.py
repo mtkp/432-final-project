@@ -260,7 +260,7 @@ class Button(object):
 
 class InputBox(object):
     ascii_nums  = xrange(48, 58)
-    ascii_chars = xrange(97, 122)
+    ascii_chars = xrange(97, 123)
     ascii_misc  = [32, 45, 46] # space, dash, dot
     ascii_codes = itertools.chain(ascii_nums, ascii_chars, ascii_misc)
     allowed_input_keys = set(ascii_codes)

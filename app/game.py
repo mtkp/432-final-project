@@ -130,11 +130,11 @@ class Game(base.Module):
                         self.handler.post_event(events.GameUpdateOut(self.game_id,
                                                                   self.user_idx,
                                                                   self.level_list))
-                    next_word = self.get_word()
-                    if next_word != None:
-                        self.cur_word_box.text = next_word
-                    else:
-                        print "ran out of words"
+                        next_word = self.get_word()
+                        if next_word != None:
+                            self.cur_word_box.text = next_word
+                        else:
+                            print "ran out of words"
 
             # send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
