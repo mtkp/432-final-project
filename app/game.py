@@ -26,6 +26,19 @@ class Game(base.Module):
         self.won = False
         self.box_list = [None, None, None, None]
         
+        self.level_list = [0, 0, 0, 0]
+        self.word_list = [
+            "cat",
+            "dog",
+            "rabbit",
+            "mouse",
+            "bird",
+            "horse",
+            "cow",
+            "chicken",
+            "tuna",
+            "zebra"]
+        
         # text input box for user to type into
         self.word_input = util.InputBox(
             self.background,
@@ -36,6 +49,14 @@ class Game(base.Module):
             )
         self.word_input.active = True
 
+        self.cur_word_box = util.TextBox(
+            self.background,
+            (600, 550),
+            (200, 30),
+            self.font, 
+            self.get_word()
+            )
+
         for i in range(0,4):
             temp_box = util.TextBox(
                 self.background,
@@ -45,22 +66,6 @@ class Game(base.Module):
                 "default"
                 )
             self.box_list[i] = temp_box
-        
-        # make text input box
-        
-        # make box to display word for user to try to type
-
-        self.level_list = [0, 0, 0, 0]
-        self.word_list = ["cat",
-                          "dog",
-                          "rabbit",
-                          "mouse",
-                          "bird",
-                          "horse",
-                          "cow",
-                          "chicken",
-                          "tuna",
-                          "zebra"]
 
         #self.my_boxes = BoxCollection("bob", self.background, self.font)
     
@@ -68,7 +73,7 @@ class Game(base.Module):
         #self.handler.post_event(events.GetWords())
         
         self.draw_set.extend(self.box_list)
-        self.draw_set.extend([self.word_input])    
+        self.draw_set.extend([self.word_input, self.cur_word_box])    
             
 
     # give each box a new height dimension
@@ -79,7 +84,7 @@ class Game(base.Module):
     # get a word for the user to type
     def get_word(self):
         if len(self.word_list) > 0:
-            return self.wordlist.pop
+            return self.word_list.pop()
 
 
     def update(self):
@@ -121,8 +126,15 @@ class Game(base.Module):
             
                 elif self.word_input.active:
                     self.word_input.input(event.key)
-
-
+                    if self.word_input.text == self.cur_word_box.text:
+                        self.handler.post_event(events.GameUpdateOut(self.game_id,
+                                                                  self.user_idx,
+                                                                  self.level_list))
+                    next_word = self.get_word()
+                    if next_word != None:
+                        self.cur_word_box.text = next_word
+                    else:
+                        print "ran out of words"
 
             # send the input box the character that the user typed, display it
             #self.word_input.input(event.key)
