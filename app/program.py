@@ -65,7 +65,6 @@ class Program(base.Listener):
             if isinstance(even, events.UserGameEnded):
                 self.change_state(LOBBY)
 
->>>>>>> 55bb66dffa02648523f518f61c8e4a57fa6a92ff
 
     def change_state(self, new_state):
         current_module = self.modules[self.state]

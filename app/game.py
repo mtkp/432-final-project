@@ -25,7 +25,7 @@ class Game(base.Module):
         self.user_idx = 0    # position of user in the player_list
         self.won = False
         self.box_list = [None, None, None, None]
-        
+
         self.level_list = [0, 0, 0, 0]
         self.word_list = [
             "cat",
@@ -38,7 +38,7 @@ class Game(base.Module):
             "chicken",
             "tuna",
             "zebra"]
-        
+
         # text input box for user to type into
         self.word_input = util.InputBox(
             self.background,
@@ -53,7 +53,7 @@ class Game(base.Module):
             self.background,
             (600, 550),
             (200, 30),
-            self.font, 
+            self.font,
             self.get_word()
             )
 
@@ -66,17 +66,17 @@ class Game(base.Module):
                 "default"
                 )
             self.box_list[i] = temp_box
-    
+
         #self.handler.post_event(events.GetPlayers())
         self.handler.post_event(events.GetWords())
-        
+
         self.draw_set.extend(self.box_list)
-        self.draw_set.extend([self.word_input, self.cur_word_box])    
-            
+        self.draw_set.extend([self.word_input, self.cur_word_box])
+
 
     # give each box a new height dimension
     def grow_boxes(self):
-        for i, box in enumerate(self.box_list):        
+        for i, box in enumerate(self.box_list):
             self.box_list[i].top = 450 - (30 * self.level_list[i])
 
     # get a word for the user to type
@@ -85,9 +85,10 @@ class Game(base.Module):
             return self.word_list.pop()
 
     def do_ending(self):
+        pass
         # make a new label
         # add it to the games draw set
-        
+
 
     def update(self):
         self.draw()
@@ -102,7 +103,7 @@ class Game(base.Module):
             if event.game_id == self.game_id:
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
-                self.grow_boxes()            
+                self.grow_boxes()
         elif isinstance(event, events.OpponentWon):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)
@@ -113,7 +114,7 @@ class Game(base.Module):
                     self.handler.post_event(events.GameUpdateOut(
                         self.game_id,
                         self.user_idx,
-                        self.level_list))            
+                        self.level_list))
                 elif self.word_input.active:
                     self.word_input.input(event.key)
                     if self.word_input.text == self.cur_word_box.text:
