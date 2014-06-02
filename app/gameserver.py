@@ -12,26 +12,26 @@ import messenger
 
 LISTEN_QUEUE = 5
 PORT         = 7307
-
+WORDS_FILE   = "text/words"
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
-        real_word_list = []
-        range_max = len(all_words) - 1
-        for _ in range(10):
-            real_word_list.append(all_words[ random.randint(0, range_max) ])
-        return real_word_list
+    real_word_list = []
+    range_max = len(all_words) - 1
+    for _ in range(10):
+        real_word_list.append(all_words[ random.randint(0, range_max) ])
+    return real_word_list
 
 # opens text file and rturns a small list of the words
-def read_words(words_file):
-        all_words = [word for line in open(words_file, 'r') for word in line.split()]
-        return get_random_words(all_words)
+def read_words(words_file=WORDS_FILE):
+    all_words = [word for line in open(words_file, 'r') for word in line.split()]
+    return get_random_words(all_words)
 
 
 class Game(object):
     def __init__(self, maker, name, limit=4):
         self.users      = []
-        self.words      = read_words(words)
+        self.words      = read_words()
         self.level_list = [0, 0, 0, 0]
         self.name       = name
         self.limit      = limit
