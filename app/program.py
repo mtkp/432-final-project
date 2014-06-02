@@ -41,8 +41,8 @@ class Program(base.Listener):
         }
 
         # set current state
-        self.state = GAME   # GREG
-        # self.state = START  # MATT
+        #self.state = GAME   # GREG
+        self.state = START  # MATT
         self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
@@ -55,6 +55,13 @@ class Program(base.Listener):
         elif self.state == LOBBY:
             if isinstance(event, events.UserLoggedOut):
                 self.change_state_(LOGIN)
+        elif self.state == WAIT:
+            if isinstance(event, events.UserJoinedGame):
+                self.change_state_(GAME)
+        elif self.state == GAME:
+            if isinstance(even, events.UserGameEnded):
+                self.change_state_(LOBBY)
+            
 
     def change_state(self, new_state):
         current_module = self.modules[self.state]

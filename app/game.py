@@ -68,7 +68,7 @@ class Game(base.Module):
             self.box_list[i] = temp_box
     
         #self.handler.post_event(events.GetPlayers())
-        #self.handler.post_event(events.GetWords())
+        self.handler.post_event(events.GetWords())
         
         self.draw_set.extend(self.box_list)
         self.draw_set.extend([self.word_input, self.cur_word_box])    
@@ -84,6 +84,10 @@ class Game(base.Module):
         if len(self.word_list) > 0:
             return self.word_list.pop()
 
+    def do_ending(self):
+        # make a new label
+        # add it to the games draw set
+        
 
     def update(self):
         self.draw()
