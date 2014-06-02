@@ -7,8 +7,8 @@ import util
 
 
 class Start(base.Module):
-    def __init__(self, handler):
-        base.Module.__init__(self, handler)
+    def __init__(self, handler, model):
+        base.Module.__init__(self, handler, model)
         self.background_color = color.GameBackground
         self.font = pygame.font.SysFont("monospace", 50)
 

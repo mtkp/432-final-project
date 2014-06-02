@@ -16,8 +16,8 @@ TAB_KEY = 9
 # four users limit
 # game = name, ids, list of users, limit
 class Game(base.Module):
-    def __init__(self, handler):
-        base.Module.__init__(self, handler)
+    def __init__(self, handler, model):
+        base.Module.__init__(self, handler, model)
         self.background_color = color.Blue
         self.font = pygame.font.SysFont("monospace", 15)
 

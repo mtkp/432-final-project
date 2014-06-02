@@ -20,8 +20,9 @@ class Listener(object):
 class Module(object):
     """Module does not automatically register with handle.
     """
-    def __init__(self, handler):
+    def __init__(self, handler, model):
         self.handler = handler
+        self.model = model
         self.window = pygame.display.get_surface()
         self.width, self.height = self.window.get_size()
         self.background_color = color.Gray

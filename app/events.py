@@ -67,9 +67,8 @@ class UserGameStarted(Event):
 class UserGameEnded(Event):
     pass
 
-class UserUpdate(Event):
-    def __init__(self, user):
-        self.user = user
+class ModelUpdated(Event):
+    pass
 
 # in game state, send the game a copy of word list and user list
 class GameInitialize(Event):
