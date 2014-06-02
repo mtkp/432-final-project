@@ -67,8 +67,6 @@ class Game(base.Module):
                 )
             self.box_list[i] = temp_box
 
-        #self.handler.post_event(events.GetPlayers())
-        self.handler.post_event(events.GetWords())
 
         self.draw_set.extend(self.box_list)
         self.draw_set.extend([self.word_input, self.cur_word_box])
@@ -99,7 +97,6 @@ class Game(base.Module):
         if isinstance(event, events.StartGame):
             self.user_list = event.user_names
         elif isinstance(event, events.GameUpdateIn):
-            if event.game_id == self.game_id:
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
                 self.grow_boxes()
@@ -107,34 +104,29 @@ class Game(base.Module):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)
         elif isinstance(event, events.KeyPress):
-            if isinstance(event, events.KeyPress):
-                if event.key == RETURN_KEY:
-                    print "game: pressed enter"
+            if event.key == RETURN_KEY:
+                print "game: pressed enter"
+                self.handler.post_event(events.GameUpdateOut(
+                    self.level_list))
+            elif self.word_input.active:
+                self.word_input.input(event.key)
+                if self.word_input.text == self.cur_word_box.text:
                     self.handler.post_event(events.GameUpdateOut(
-                        self.game_id,
-                        self.user_idx,
-                        self.level_list))
-                elif self.word_input.active:
-                    self.word_input.input(event.key)
-                    if self.word_input.text == self.cur_word_box.text:
-                        self.handler.post_event(events.GameUpdateOut(
-                        self.game_id,
-                        self.user_idx,
-                        self.level_list
+                    self.level_list
+                    ))
+                    # eventuall take this out once connected to server----
+                    new_levels = copy.deepcopy(self.level_list)
+                    new_levels[self.user_idx] += 1
+                    self.handler.post_event(events.GameUpdateIn(
+                        new_levels
                         ))
-                        # eventuall take this out once connected to server----
-                        new_levels = copy.deepcopy(self.level_list)
-                        new_levels[self.user_idx] += 1
-                        self.handler.post_event(events.GameUpdateIn(
-                            self.game_id,
-                            new_levels
-                            ))
 
-                        #-----------------------------------------------------
-                        self.word_input.clear()
-                        next_word = self.get_word()
-                        if next_word != None:
-                            self.cur_word_box.text = next_word
-                        else:
-                            print "ran out of words"
-                            # at this point, wait and see who won?
+                    #-----------------------------------------------------
+                    self.word_input.clear()
+                    next_word = self.get_word()
+                    if next_word != None:
+                        self.cur_word_box.text = next_word
+                    else:
+                        print "ran out of words"
+                        # at this point, wait and see who won?
+

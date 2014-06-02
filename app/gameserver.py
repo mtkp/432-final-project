@@ -177,21 +177,11 @@ class GameServer(object):
     def in_game_waiting(self, user, msg):
         game = user.game
         cmd = msg[0]
-        if cmd == "user_num_update":
-            user.send((
-                "user_num_reply",
-                [id(game), len(game.users)]
-                ))
-        elif cmd == "exit_game":
+        # this will trigger the 
+        if cmd == "exit_game":
             game.remove_user(user)
             self.games_changed = True
-        elif cmd == "send_words":
-            user.send(("words_reply", word_list))
-        elif cmd == "start_game":
-            user.send( (
-                "start_game",
-                [id(game), game.usernames()]
-                ))
+
 
         # will update users on current number of joined users
         # will end when sending a start game message to all users
