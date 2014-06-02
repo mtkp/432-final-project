@@ -11,8 +11,8 @@ import os
 import messenger
 
 LISTEN_QUEUE = 5
-PORT = 7307
-WORDS_FILE = "text/words"
+PORT         = 7307
+WORDS_FILE   = "text/words"
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
@@ -168,8 +168,8 @@ class GameServer(object):
                         user.send(("joined", game.compact()))
                         #-----------------------------------------------------
                         # tell other waiting users to update player count
-                        for usr in game.users:
-                           usr.send(("wait_update", len(game.users)))
+                        for usr in (u for u in game.users if u != user):
+                            usr.send(("wait_update", game.compact()))
 
                         # if enough players, start game
                         if len(game.users) == game.limit:
@@ -187,7 +187,7 @@ class GameServer(object):
     def in_game_waiting(self, user, msg):
         game = user.game
         cmd = msg[0]
-        # this will trigger the 
+        # this will trigger the
         if cmd == "exit_game":
             game.remove_user(user)
             for usr in game.users:

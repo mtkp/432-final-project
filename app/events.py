@@ -53,8 +53,7 @@ class UserLoggedOut(Event):
     pass
 
 class UserJoinedGame(Event):
-    def __init__(self, game):
-        self.game = game
+    pass
 
 class OtherJoinedWait(Event):
     def __init__(self, num_players):
