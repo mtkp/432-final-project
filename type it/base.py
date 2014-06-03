@@ -1,32 +1,19 @@
-# File:         base.py
+
+#
+
+# File:         .py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-
+      
 # Assignment:   Final Project
 
 # Description:
-# base.py contains 2 important base classes for the program.
-#
-# Listener
-# Instances of the Listener class are automatically registered with a specified
-# event manager handler, and also provide a notify method.
-# The event manager will call the notify method of the listener for each
-# event.
-#
-# Module
-# The name Module does not refer to python modules, instead, it refers to a
-# distinct aspects of our program, providing both views using pygame
-# and interacting with other objects registered to the same event handle.
-# For convenience, the Module provides a draw_set list. At each draw() call,
-# all objects in the draw_set are drawn, and the pygame display is flipped.
 
-# 3rd party modules
 import pygame
 
-# our modules
 import color
 
 
@@ -57,8 +44,6 @@ class Module(object):
         self.draw_set = []
 
     def reload(self):
-        """Called when this module is made active.
-        """
         pass
 
     def notify(self, event):
