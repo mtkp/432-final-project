@@ -45,7 +45,7 @@ class NetManager(base.Listener):
             self.model.current_game = payload
             self.handler.post_event(events.ModelUpdated())
         elif header == "game_update_in":
-            self.handler.post_event(event.GameUpdateIn(payload[0]))
+            self.handler.post_event(event.GameUpdateIn(payload))
         elif header == "start_game":
             self.handler.post_event(events.StartGame())
         elif header == "game_initialize":

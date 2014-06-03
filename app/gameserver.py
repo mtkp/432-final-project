@@ -239,7 +239,6 @@ class GameServer(object):
             #        ))
         if cmd == "exit_game":
             # remove user from game's users and notify others
-
             pass
         elif cmd == "end_game":
             # trigger state change to lobby for all game users
