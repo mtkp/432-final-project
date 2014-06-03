@@ -29,7 +29,7 @@ def read_words(words_file=WORDS_FILE):
 
 
 class Game(object):
-    def __init__(self, maker, name, limit=2):
+    def __init__(self, maker, name, limit=4):
         self.users = []
         self.words = read_words()
         self.level_list = [0, 0, 0, 0]
