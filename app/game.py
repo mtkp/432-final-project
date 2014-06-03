@@ -46,7 +46,7 @@ class Game(base.Module):
             (420, 10),   # width, height
             color.DarkGray
             )
-        
+
         # box to display the current word user should type
         self.cur_word_box = util.TextBox(
             self.background,
@@ -70,21 +70,21 @@ class Game(base.Module):
                 self.users[i]
                 )
             self.box_list[i] = temp_box
-        
+
         # take box of user who left out of draw_set
-        del self.draw_set[0:len(self.draw_set)] 
+        del self.draw_set[0:len(self.draw_set)]
         self.draw_set.extend([
             self.word_input,
             self.cur_word_box,
             self.finish_line
             ])
         self.draw_set.extend(self.box_list)
-    
+
     def refresh_user_text(self):
         for i, user in enumerate(self.users):
             self.box_list[i].text = user
             self.cur_word_box.text = self.get_word()
-    
+
     def refresh_other_text(self):
         self.word_input.clear()
         next_word = self.get_word()
@@ -126,34 +126,18 @@ class Game(base.Module):
         elif isinstance(event, events.GameUpdateIn):
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
-                self.grow_boxes()            
+                self.grow_boxes()
         elif isinstance(event, events.OpponentWon):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)
         elif isinstance(event, events.KeyPress):
-            if event.key == RETURN_KEY:
-                print "game: pressed enter"
+            self.word_input.input(event.key)
+            if self.word_input.text == self.cur_word_box.text:
                 self.handler.post_event(events.GameUpdateOut(
                     self.model.username
                     ))
-            elif event.key == TAB_KEY:
-                self.handler.post_event()
-            elif self.word_input.active:
-                self.word_input.input(event.key)
-                if self.word_input.text == self.cur_word_box.text:
-                    self.handler.post_event(events.GameUpdateOut(
-                        self.model.username
-                        ))
-                    self.refresh_other_text()
+                self.refresh_other_text()
 
-
-# was used to simulate gamupdatein event from server
-# eventuall take this out once connected to server----
-#new_levels = copy.deepcopy(self.level_list)
-#new_levels[self.user_idx] += 1
-#self.handler.post_event(events.GameUpdateIn(
-#    new_levels
-#    ))
 
 
 
