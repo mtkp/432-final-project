@@ -123,15 +123,13 @@ class Game(base.Module):
             if event.key == RETURN_KEY:
                 print "game: pressed enter"
                 self.handler.post_event(events.GameUpdateOut(
-                    self.model.username,
-                    self.level_list
+                    self.model.username
                     ))
             elif self.word_input.active:
                 self.word_input.input(event.key)
                 if self.word_input.text == self.cur_word_box.text:
                     self.handler.post_event(events.GameUpdateOut(
-                        self.model.username,
-                        self.level_list
+                        self.model.username
                         ))
                     self.refresh_other_text()
 

@@ -222,17 +222,12 @@ class GameServer(object):
         # should be destroyed
         cmd = msg[0]
         game = user.game
-        # gameupdate: ("gameupdate", "username", [1, 2, 3, 4]")
-        #if cmd == "game_started":
-        #    user.send((
-        #        "game_initialize", 
-        #        self.initialize()
-        #        ))
-        if cmd == "game_update_out":
+        if cmd == "game_update_out":  # ("game_update_out", username)
             # increment the list at index user_idx
-            user_index = self.getuserindex(msg[1])
+            user_index = self.getuserindex(msg)
+            print user_index
             game.level_list[user_index] += 1
-            for usr in user.game.users:
+            for usr in game.users:
                 usr.send((
                     "game_update_in",
                     game.level_list
