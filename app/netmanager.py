@@ -73,7 +73,7 @@ class NetManager(base.Listener):
         elif isinstance(event, events.GameStarted):
             self.get_initialized()
         elif isinstance(event, events.GameUpdateOut):
-            self.send_game_update(event.user_name, event.level_list)
+            self.send_game_update(event.user_name)
 
     # on each tick check for network events
     def tick(self):
@@ -102,9 +102,10 @@ class NetManager(base.Listener):
         self.handler.post_event(events.UserLoggedOut())
 
     # clients tell server about update
-    def send_game_update(self, username, level_list):
-        print "netmgrlow: sending gameupdate to server"
-        self.net_conn.send( ( "update_levels", username, level_list ) )
+    def send_game_update(self, username):
+        """Sent a correct word notification to the server.
+        """
+        self.net_conn.send( ( "game_update_out", username) )
 
     def create_game(self, game_name):
         """Create a game on the server.

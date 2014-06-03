@@ -77,9 +77,8 @@ class GameInitialize(Event):
 
 # game update from client to server
 class GameUpdateOut(Event):
-    def __init__(self, user_name, level_list,):
+    def __init__(self, user_name):
         self.user_name = user_name
-        self.level_list = level_list
 
 # recieve a game update from the server
 class GameUpdateIn(Event):
