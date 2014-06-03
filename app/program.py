@@ -52,7 +52,7 @@ class Program(base.Listener):
         }
 
         # set current state
-        self.state = GAME
+        self.state = START
         self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
