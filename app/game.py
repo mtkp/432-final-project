@@ -26,11 +26,11 @@ class Game(base.Module):
         self.box_list = [None, None, None, None]
         self.level_list = [0, 0, 0, 0]
 
-        self.user_names = []
+        self.users = []
         for i in range(self.model.current_game[3]):
-            self.user_names.append("")
+            self.users.append("")
 
-        self.word_list = [""]
+        self.words = [""]
 
         # text input box for user to type into
         self.word_input = util.InputBox(
@@ -54,18 +54,20 @@ class Game(base.Module):
 
     # only display boxes for users in the current game (maybe someone left)
     def make_boxes(self):
+        num_boxes = self.model.current_game[3]
+        print "game: num_boxes = " + str(num_boxes)
         for i in range(self.model.current_game[3]):
             temp_box = util.TextBox(
                 self.background,
                 ( 60 + i * 110, 500),
                 (100, 100),
                 self.font,
-                self.user_names[i]
+                self.users[i]
                 )
             self.box_list[i] = temp_box
         
         # take box of user who left out of draw_set
-        self.draw_set = []
+        del self.draw_set[0:len(self.draw_set)] 
         self.draw_set.extend([self.word_input, self.cur_word_box])
         self.draw_set.extend(self.box_list)
 
@@ -77,8 +79,8 @@ class Game(base.Module):
 
     # get a word for the user to type
     def get_word(self):
-        if len(self.word_list) > 0:
-            return self.word_list.pop()
+        if len(self.words) > 0:
+            return self.words.pop()
 
     def do_ending(self):
         pass
@@ -93,9 +95,12 @@ class Game(base.Module):
     # another success, user listens for this and sends to server
     def notify(self, event):
         if isinstance(event, events.GameInitialize):
-            self.user_list = event.user_names
+            self.users = event.user_names
             self.words = event.user_names
-            self.make_boxes()
+            for i, user in enumerate(self.users):
+                self.box_list[i].text = user
+            self.cur_word_box.text = self.get_word()
+
             
         elif isinstance(event, events.ModelUpdated):
             # take out users who quit?
@@ -104,9 +109,13 @@ class Game(base.Module):
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
                 self.grow_boxes()
-        elif isinstance(event, events.GameInitialize):  # recv the word list
-            self.word_list = event.words
-            self.users = event.users
+       # elif isinstance(event, events.GameInitialize):
+           
+            # set the name of each box to the respective name of players
+        #    for i, user in enumerate(self.users):
+        #        self.box_list[i].text = user
+        #    self.cur_word_box = self.get_word()
+            
         elif isinstance(event, events.OpponentWon):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)
@@ -124,12 +133,6 @@ class Game(base.Module):
                         self.model.username,
                         self.level_list
                         ))
-                    # eventuall take this out once connected to server----
-                    #new_levels = copy.deepcopy(self.level_list)
-                    #new_levels[self.user_idx] += 1
-                    #self.handler.post_event(events.GameUpdateIn(
-                    #    new_levels
-                    #    ))
                     self.refresh_text()
 
     def refresh_text(self):
@@ -141,7 +144,13 @@ class Game(base.Module):
             print "ran out of words"
             # at this point, wait and see who won?
 
-
+# was used to simulate gamupdatein event from server
+# eventuall take this out once connected to server----
+#new_levels = copy.deepcopy(self.level_list)
+#new_levels[self.user_idx] += 1
+#self.handler.post_event(events.GameUpdateIn(
+#    new_levels
+#    ))
 
 
 
