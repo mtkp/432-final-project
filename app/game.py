@@ -7,13 +7,12 @@ import color
 import events
 import util
 
-PLAYING         = 0
-GAMEOVER        = 1
 GAME_WORD_COUNT = 15
 
-# 800 x 600 width x height
-# four users limit
-# game = name, ids, list of users, limit
+class State:
+    PLAYING  = 0
+    GAMEOVER = 1
+
 class Game(base.Module):
     def __init__(self, handler, model):
         base.Module.__init__(self, handler, model)
@@ -22,9 +21,8 @@ class Game(base.Module):
         self.reload()
 
     # listen for update event
-    # another success, user listens for this and sends to server
     def notify(self, event):
-        if self.state == GAMEOVER:
+        if self.state == State.GAMEOVER:
             if isinstance(event, events.MouseClick):
                 self.handler.post_event(events.EndGame())
         else:
@@ -33,18 +31,12 @@ class Game(base.Module):
                 self.words = event.words
                 self.refresh_user_names()
                 self.refresh_game_input()
-            elif isinstance(event, events.ModelUpdated):
-                # take out users who quit?
-                pass
             elif isinstance(event, events.PlayerWon):
-                self.state = GAMEOVER
+                self.state = State.GAMEOVER
                 self.make_ending(event.msg)
             elif isinstance(event, events.GameUpdateIn):
                 self.level_list = event.level_list
                 self.move_user_boxes()
-            elif isinstance(event, events.OpponentWon):
-                # maybe print which opponent won text and return to lobby
-                self.handler.post_event(events.EndGame)
             elif isinstance(event, events.KeyPress):
                 self.word_input.input(event.key)
                 if self.word_input.text == self.cur_word_box.text:
@@ -73,7 +65,7 @@ class Game(base.Module):
         for box, username in zip(self.box_list, self.users):
             box.text = username[:16]
             if username == self.model.username:
-                box.set_box_color(color.DarkGreen)
+                box.set_box_color(color.Green)
 
     def refresh_game_input(self):
         self.word_input.clear()
@@ -102,7 +94,7 @@ class Game(base.Module):
             util.TextBox(
                 self.background,
                 (400, 500),
-                (350, 150),
+                (350, 200),
                 pygame.font.SysFont("monospace", 18),
                 "click anywhere to continue..."
                 )
@@ -110,7 +102,7 @@ class Game(base.Module):
 
     def reload(self):
         self.draw_set = []
-        self.state = PLAYING
+        self.state = State.PLAYING
 
         self.box_list = [None, None, None, None]
         self.level_list = [0, 0, 0, 0]

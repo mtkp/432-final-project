@@ -55,8 +55,6 @@ class NetManager(base.Listener):
                 ))
         elif header == "player_won":
             self.handler.post_event(events.PlayerWon(payload))
-        elif header == "end_game":
-            self.handler.post_event(event.EndGame(payload[0]))
 
     # handle locally generated program events by sending messages to server
     def notify(self, event):
