@@ -18,8 +18,10 @@
 # #mouse. clock contains the program's main game loop and controls framerate. 
 # the program is operating on top of pygame, and game library for python.
 
+# third party modules
 import pygame
 
+# our modules
 import base
 import clock
 import eventmanager

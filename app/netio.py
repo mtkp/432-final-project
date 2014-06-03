@@ -16,10 +16,8 @@
 # messages and the other which is used to buffer output messages. netio uses 
 # the "select" method to check if sockets are ready to be read from and written
 # to. for each socket that is ready, a message is taken from the deques and 
-# communicated over the socket.
-#
-
-# handle the actual input and output to and from the network
+# communicated over the socket. handle the actual input and output to and from 
+# the network
 
 # python libs
 import socket
