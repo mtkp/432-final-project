@@ -7,8 +7,9 @@ import color
 import events
 import util
 
-PLAYING  = 0
-GAMEOVER = 1
+PLAYING         = 0
+GAMEOVER        = 1
+GAME_WORD_COUNT = 15
 
 # 800 x 600 width x height
 # four users limit
@@ -70,7 +71,7 @@ class Game(base.Module):
 
     def refresh_user_names(self):
         for box, username in zip(self.box_list, self.users):
-            box.text = username[:15]
+            box.text = username[:16]
             if username == self.model.username:
                 box.set_box_color(color.DarkGreen)
 
@@ -83,8 +84,9 @@ class Game(base.Module):
 
     # give each box a new height dimension
     def move_user_boxes(self):
+        incr = 300 / GAME_WORD_COUNT
         for box, level in zip(self.box_list, self.level_list):
-            box.top = 75 + (30 * (10 - level))
+            box.top = 75 + (incr * (GAME_WORD_COUNT - level))
 
     def make_ending(self, msg):
         self.draw_set.append(
