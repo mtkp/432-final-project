@@ -2,7 +2,7 @@
 
 class Event(object):
     '''Event base class.
-'''
+    '''
     pass
 
 class Stop(Event):
@@ -15,9 +15,6 @@ class KeyPress(Event):
 class MouseClick(Event):
     def __init__(self, pos):
         self.pos = pos
-
-class LoginView(Event):
-    pass
 
 class LoginError(Event):
     def __init__(self, msg):
@@ -35,6 +32,11 @@ class TryCreateGame(Event):
 class TryJoinGame(Event):
     def __init__(self, game_id):
         self.game_id = game_id
+
+class JoinGame(Event):
+    def __init__(self, game_name, game_users):
+        self.game_name = game_name
+        self.game_users = game_users
 
 class TrySendChat(Event):
     def __init__(self, msg):
@@ -54,10 +56,6 @@ class UserLoggedOut(Event):
 
 class UserJoinedGame(Event):
     pass
-
-class OtherJoinedWait(Event):
-    def __init__(self, num_players):
-        self.num_players = num_players
 
 # trigger state change from wait to game
 class GameStarted(Event):
@@ -82,12 +80,6 @@ class GameUpdateIn(Event):
     def __init__(self, level_list):
         self.level_list = level_list
 
-#
-class JoinGame(Event):
-    def __init__(self, game_name, game_users):
-        self.game_name = game_name
-        self.game_users = game_users
-
 # state change from wait to to game when user limit is reached
 class StartGame(Event):
     pass
@@ -99,16 +91,6 @@ class EndGame(Event):
 class PlayerWon(Event):
     def __init__(self, msg):
         self.msg = msg
-
-# Opponent wins the game
-class OpponentWon(Event):
-    def __init__(self, opponent):
-        self.opponent = opponent
-
-# Opponent leaves unexpectedly, like quit during game or connection lost
-class OpponentGone(Event):
-    pass
-
 
 class EventManager(object):
     def __init__(self):

@@ -13,13 +13,12 @@ import start
 import userinput
 import gamewait
 
-
-START    = 0
-LOGIN    = 1
-LOBBY    = 2
-GAMEWAIT = 3
-GAME     = 4
-
+class State:
+    START    = 0
+    LOGIN    = 1
+    LOBBY    = 2
+    GAMEWAIT = 3
+    GAME     = 4
 
 class Model(object):
     def __init__(self):
@@ -47,38 +46,38 @@ class Program(base.Listener):
         self.net   = netmanager.NetManager(self.handler, self.model)
 
         self.modules = {
-            START:    start.Start(self.handler, self.model),
-            LOGIN:    login.Login(self.handler, self.model),
-            LOBBY:    lobby.Lobby(self.handler, self.model),
-            GAMEWAIT: gamewait.GameWait(self.handler, self.model),
-            GAME:     game.Game(self.handler, self.model)
+            State.START:    start.Start(self.handler, self.model),
+            State.LOGIN:    login.Login(self.handler, self.model),
+            State.LOBBY:    lobby.Lobby(self.handler, self.model),
+            State.GAMEWAIT: gamewait.GameWait(self.handler, self.model),
+            State.GAME:     game.Game(self.handler, self.model)
         }
 
         # set current state
-        self.state = START
+        self.state = State.START
         self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
-        if self.state == START:
+        if self.state == State.START:
             if isinstance(event, events.MouseClick):
-                self.change_state(LOGIN)
-        if self.state == LOGIN:
+                self.change_state(State.LOGIN)
+        if self.state == State.LOGIN:
             if isinstance(event, events.UserLoggedIn):
-                self.change_state(LOBBY)
-        elif self.state == LOBBY:
+                self.change_state(State.LOBBY)
+        elif self.state == State.LOBBY:
             if isinstance(event, events.UserLoggedOut):
                 self.model.setup()
-                self.change_state(LOGIN)
+                self.change_state(State.LOGIN)
             elif isinstance(event, events.UserJoinedGame):
-                self.change_state(GAMEWAIT)
-        elif self.state == GAMEWAIT:
+                self.change_state(State.GAMEWAIT)
+        elif self.state == State.GAMEWAIT:
             if isinstance(event, events.LeaveGame):
-                self.change_state(LOBBY)
+                self.change_state(State.LOBBY)
             elif isinstance(event, events.StartGame):
-                self.change_state(GAME)
-        elif self.state == GAME:
+                self.change_state(State.GAME)
+        elif self.state == State.GAME:
             if isinstance(event, events.EndGame):
-                self.change_state(LOBBY)
+                self.change_state(State.LOBBY)
 
     def change_state(self, new_state):
         current_module = self.modules[self.state]
@@ -94,9 +93,9 @@ class Program(base.Listener):
 
 
 def main():
-    handler = events.EventManager()
-    userinput.Input(handler)
-    Program(handler)
+    handler  = events.EventManager()
+    user_inp = userinput.Input(handler)
+    program  = Program(handler)
     clock.Clock(handler).run()
 
 if __name__ == '__main__':
