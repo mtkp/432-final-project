@@ -39,6 +39,3 @@ class GameWait(base.Module):
                 self.handler.post_event(events.LeaveGame())
         elif isinstance(event, events.ModelUpdated):
             self.label.text = str(self.model.current_game[2]) + " / 4"
-
-    def update(self):
-        self.draw()

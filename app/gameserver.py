@@ -48,6 +48,11 @@ class Game(object):
             self.users.remove(user)
             user.game = None
 
+    def remove_all_users(self):
+        for user in self.users:
+            user.game = None
+        self.users = []
+
     def usernames(self):
         return [user.name for user in self.users]
 
@@ -230,12 +235,8 @@ class GameServer(object):
                         "player_won",
                         "{} wins!".format(winner.name)
                         ))
-        elif cmd == "exit_game":
-            # remove user from game's users and notify others
-            pass
-        elif cmd == "end_game":
-            # trigger state change to lobby for all game users
-            user.send(("end_game", None))
+                game.remove_all_users()
+                self.games_changed = True
 
 
     def users(self):

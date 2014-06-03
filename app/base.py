@@ -30,6 +30,8 @@ class Module(object):
         self.font = pygame.font.SysFont("monospace", 20)
         self.draw_set = []
 
+    def reload(self):
+        pass
 
     def notify(self, event):
         """EventManager calls this function to notify this listener.

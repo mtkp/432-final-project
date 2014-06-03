@@ -140,7 +140,7 @@ class Lobby(base.Module):
                 if game:
                     self.handler.post_event(events.TryJoinGame(game.game_id))
         elif isinstance(event, events.ModelUpdated):
-            self.reload_model()
+            self.reload()
         elif isinstance(event, events.KeyPress):
             if event.key == Lobby.RETURN_KEY \
                 and self.chat_input.active \
@@ -158,13 +158,12 @@ class Lobby(base.Module):
             print "posting create game"
             self.handler.post_event(events.TryCreateGame(game_name))
 
-    def reload_model(self):
+    def reload(self):
         print "reloading the program model"
         self.hello.text     = Lobby.GREETING.format(self.model.username)
         self.games_box.list = [LobbyGame(g) for g in self.model.all_games]
         self.users_box.list = self.model.all_users
         self.chat_log.list  = self.model.chat_log
+        self.create_game_input.clear()
 
-    def update(self):
-        self.draw()
 

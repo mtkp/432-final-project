@@ -63,9 +63,6 @@ class OtherJoinedWait(Event):
 class GameStarted(Event):
     pass
 
-class UserGameEnded(Event):
-    pass
-
 class ModelUpdated(Event):
     pass
 

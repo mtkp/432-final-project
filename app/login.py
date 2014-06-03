@@ -96,6 +96,6 @@ class Login(base.Module):
                 )
             )
 
-    def update(self):
-        self.draw()
+    def reload(self):
+        self.name_input.active = True
 
