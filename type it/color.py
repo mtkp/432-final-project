@@ -1,16 +1,17 @@
-# File:         color.py
+
+#
+
+# File:         .py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-
+      
 # Assignment:   Final Project
 
 # Description:
-# Provides some named colors.
 
-# label   =   R,   G,   B
 Black     =   0,   0,   0
 White     = 255, 255, 255
 Red       = 255,   0,   0

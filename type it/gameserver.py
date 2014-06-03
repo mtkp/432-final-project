@@ -1,10 +1,14 @@
-# File:         gameserver.py
+#!/usr/bin/python2.7
+
+#
+
+# File:         .py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-
+      
 # Assignment:   Final Project
 
 # Description:
@@ -106,29 +110,20 @@ class User(object):
 
 class GameServer(object):
     def __init__(self):
-        # set up a TCP socket
+        # set up non-blocking server socket with reuse option
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        # as non-blocking
         self.server_socket.setblocking(0)
-
-        # with reuse options (so we can quickly reboot server)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-        # with no Neagle's - so we can quickly write messages
         self.server_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
-        # bind to the "type it" port
         self.server_socket.bind(('',PORT))
-
-        # set up the listen queue
         self.server_socket.listen(LISTEN_QUEUE)
 
         # map socket fds to User objects
         self.user_sockets = {}
 
-        # keep a collection of current games and states
+        # keep a collection of current games
         self.games = []
+
         self.users_changed = False
         self.games_changed = False
 
@@ -201,26 +196,24 @@ class GameServer(object):
                     if len(game.users) < game.limit:
                         game.add_user(user)
                         user.send(("joined", game.compact()))
-
                         # tell other waiting users to update player count
                         for usr in (u for u in game.users if u != user):
                             usr.send(("wait_update", game.compact()))
 
-                        # start game if enough players
+                        # start game if enough players, also pass words/usernames
                         if len(game.users) == game.limit:
-                            # game is ready to play!
                             for usr in game.users:
-                                usr.send(("start_game", None))
+                                usr.send(("start_game", None)) # trigger state change first
                                 usr.send((
                                     "game_initialize",
                                     game.initialize()
                                     ))
-                            game.waiting = False
+                            game.waiting = False # game is ready to play!
                         self.games_changed = True
                     break
         elif cmd == "chat":
-            # prepend with username
-            chat_msg = "{}: {}".format(user.name[:19], msg[1])
+
+            chat_msg = "{}: {}".format(user.name[:19], msg[1]) # append who said it
             print "{} said {}".format(user.name, msg[1])
             for u in self.users():
                 u.send(("chat", chat_msg))
@@ -236,9 +229,14 @@ class GameServer(object):
 
 
     def in_game(self, user, msg):
+        # will pass messages between users when updates occur
+        # will end when one user finishes all words in wordlist
+        # when ends, state for all users in game becomes lobby and game
+        # should be destroyed
         cmd = msg[0]
         game = user.game
         if cmd == "game_update_out":
+             # ("game_update_out", username)
             user_index = game.get_index(user)
             game.level_list[user_index] += 1
             for usr in game.users:

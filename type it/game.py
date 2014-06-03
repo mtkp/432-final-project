@@ -1,10 +1,14 @@
-# File:         game.py
+#!/usr/bin/python2.7
+
+#
+
+# File:         .py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-
+      
 # Assignment:   Final Project
 
 # Description:
@@ -141,7 +145,6 @@ class Game(base.Module):
         self.cur_word_box.set_box_color(color.Gray)
         self.cur_word_box.set_box_color(color.LightGray)
 
-        # represent the target to the user
         finish_line = util.Box(
             self.background,
             (400, 75),
