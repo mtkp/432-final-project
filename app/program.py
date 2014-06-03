@@ -70,7 +70,7 @@ class Program(base.Listener):
         elif self.state == GAMEWAIT:
             if isinstance(event, events.LeaveGame):
                 self.change_state(LOBBY)
-            elif isinstance(event, events.UserGameStarted):
+            elif isinstance(event, events.GameStarted):
                 self.change_state(GAME)
         elif self.state == GAME:
             if isinstance(event, events.UserGameEnded):

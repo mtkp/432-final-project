@@ -50,6 +50,11 @@ class Game(object):
     def usernames(self):
         return [user.name for user in self.users]
 
+    def getuserindex(self, user_name):
+        for i, user in enumerate(self.users):
+            if user_name == user.name:
+                return i
+
     # check if any of the players won the game
     def check_winner(self):
         for i in level_list:
@@ -178,10 +183,7 @@ class GameServer(object):
                         # start gameif enough players, also pass words/usernames
                         if len(game.users) == game.limit:
                             for usr in game.users:
-                                usr.send((
-                                    "user_game_started",
-                                    game.initialize()
-                                    ))
+                                usr.send(("start_game", None)) # trigger state change first
                         #----------------------------------------------------
                         self.games_changed = True
                     break
@@ -194,7 +196,6 @@ class GameServer(object):
     def in_game_waiting(self, user, msg):
         game = user.game
         cmd = msg[0]
-        # this will trigger the
         if cmd == "exit_game":
             game.remove_user(user)
             for usr in game.users:
@@ -217,25 +218,33 @@ class GameServer(object):
         # should be destroyed
         cmd = msg[0]
         game = user.game
-        # gameupdate: ("gameupdate, game_id, user_idx, [1, 2, 3, 4]")
-        if cmd == "game_update_out":
-            # increment the list at index user_idx
-            game.level_list[user_idx] += 1
-            # check if anyone won
-            winner = game.check_winner()
+        # gameupdate: ("gameupdate", "username", [1, 2, 3, 4]")
+        if cmd == "game_started":
             user.send((
-                "game_update_in",
-                msg[1],
-                game.level_list
+                "game_initialize", 
+                self.initialize()
                 ))
-            if winner:
-                user.send((
-                    "player_won",
-                    msg[1], winner
+        elif cmd == "game_update_out":
+            # increment the list at index user_idx
+            user_index = self.getuserindex(msg[1])
+            game.level_list[user_index] += 1
+            for usr in user.game.users:
+                usr.send((
+                    "game_update_in",
+                    game.level_list
                     ))
+            #if winner:   
+            #    user.send((
+            #        "player_won",
+            #        msg[1], winner
+            #        ))
+        if cmd == "exit_game":
+            # remove user from game's users and notify others
+
+            pass
         elif cmd == "end_game":
-            # how can itrigger state change in program
-            user.send(("end_game", game_id))
+            # trigger state change to lobby for all game users
+            user.send(("end_game", None))
 
 
     def users(self):

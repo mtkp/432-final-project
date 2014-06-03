@@ -59,11 +59,9 @@ class OtherJoinedWait(Event):
     def __init__(self, num_players):
         self.num_players = num_players
 
-# trigger state change to the game state
-class UserGameStarted(Event):
-    def __init__(self, words, user_names):
-        self.words = words
-        self.user_names = user_names
+# trigger state change from wait to game 
+class GameStarted(Event):
+    pass        
 
 class UserGameEnded(Event):
     pass
@@ -73,13 +71,14 @@ class ModelUpdated(Event):
 
 # in game state, send the game a copy of word list and user list
 class GameInitialize(Event):
-    def __init__(self, users, words):
+    def __init__(self, words, user_names):
         self.words = words
-        self.users = users
+        self.user_names = user_names
 
-# this is for when a client want to tell everyone
+# game update from client to server
 class GameUpdateOut(Event):
-    def __init__(self, level_list,):
+    def __init__(self, user_name, level_list,):
+        self.user_name = user_name
         self.level_list = level_list
 
 # recieve a game update from the server
@@ -87,17 +86,15 @@ class GameUpdateIn(Event):
     def __init__(self, level_list,):
         self.level_list = level_list
 
+#
 class JoinGame(Event):
     def __init__(self, game_name, game_users):
         self.game_name = game_name
         self.game_users = game_users
 
-# when the server gets enough users for a game (4), it will send out this event
+# state change from wait to to game when user limit is reached
 class StartGame(Event):
-    def __init__(self, game_id, user_names):
-        self.game_id = game_id
-        self.user_names
-        # ("game_start", [ "user1", "user2", ... ])
+    pass
 
 class EndGame(Event):
     pass
