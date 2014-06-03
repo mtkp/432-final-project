@@ -45,12 +45,11 @@ class NetManager(base.Listener):
             self.model.current_game = payload
             self.handler.post_event(events.ModelUpdated())
         elif header == "game_update_in":
-            self.handler.post_event(event.GameUpdateIn(
-                payload[0],
-                payload[1]
-                ))
-        elif header == "user_game_started":
-            self.handler.post_event(events.UserGameStarted(
+            self.handler.post_event(event.GameUpdateIn(payload[0]))
+        elif header == "start_game":
+            self.handler.post_event(events.StartGame())
+        elif header == "game_initialize":
+            self.handler.post_event(events.GameInitialize(
                 payload[0],
                 payload[1]
                 ))
@@ -71,8 +70,10 @@ class NetManager(base.Listener):
             self.unregister()
         elif isinstance(event, events.LeaveGame):
             self.exit_game()
+        elif isinstance(event, events.GameStarted):
+            self.get_initialized()
         elif isinstance(event, events.GameUpdateOut):
-            self.send_gameupdate_to_server(event.level_list)
+            self.send_game_update(event.user_name, event.level_list)
 
     # on each tick check for network events
     def tick(self):
@@ -101,9 +102,9 @@ class NetManager(base.Listener):
         self.handler.post_event(events.UserLoggedOut())
 
     # clients tell server about update
-    def send_gameupdate_to_server(self, level_list):
+    def send_game_update(self, username, level_list):
         print "netmgrlow: sending gameupdate to server"
-        self.net_conn.send( ( "update_levels", level_list ) )
+        self.net_conn.send( ( "update_levels", username, level_list ) )
 
     def create_game(self, game_name):
         """Create a game on the server.
@@ -121,6 +122,9 @@ class NetManager(base.Listener):
         """Join a game using the game id (provided in the tuple).
         """
         self.net_conn.send(("join", game_id))
+
+    def get_initialized(self):
+        self.net_conn.send(("game_initialize", None))
 
     def exit_game(self):
         """Exit the game that the user is currently in.

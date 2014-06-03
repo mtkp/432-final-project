@@ -21,22 +21,16 @@ class Game(base.Module):
         self.background_color = color.Blue
         self.font = pygame.font.SysFont("monospace", 15)
 
-        self.won = False
+        #self.handler.post_event(events.GameStarted())
+
         self.box_list = [None, None, None, None]
+        self.level_list = [0, 0, 0, 0]
 
         self.user_names = []
-        self.level_list = [0, 0, 0, 0]
-        self.word_list = [
-            "cat",
-            "dog",
-            "rabbit",
-            "mouse",
-            "bird",
-            "horse",
-            "cow",
-            "chicken",
-            "tuna",
-            "zebra"]
+        for i in range(self.model.current_game[3]):
+            self.user_names.append("")
+
+        self.word_list = [""]
 
         # text input box for user to type into
         self.word_input = util.InputBox(
@@ -56,8 +50,6 @@ class Game(base.Module):
             self.font,
             self.get_word()
             )
-        
-        #
         self.make_boxes()
 
     # only display boxes for users in the current game (maybe someone left)
@@ -68,8 +60,7 @@ class Game(base.Module):
                 ( 60 + i * 110, 500),
                 (100, 100),
                 self.font,
-                "default"
-                # user_names[i]
+                self.user_names[i]
                 )
             self.box_list[i] = temp_box
         
@@ -103,9 +94,10 @@ class Game(base.Module):
     def notify(self, event):
         if isinstance(event, events.StartGame):
             self.user_list = event.user_names
+            self.words = event.user_names
+            
         elif isinstance(event, events.ModelUpdated):
             # take out users who quit?
-            self.model
             pass
         elif isinstance(event, events.GameUpdateIn):
                 print "game: got gameupdatein"
@@ -121,11 +113,14 @@ class Game(base.Module):
             if event.key == RETURN_KEY:
                 print "game: pressed enter"
                 self.handler.post_event(events.GameUpdateOut(
-                    self.level_list))
+                    self.model.username,
+                    self.level_list
+                    ))
             elif self.word_input.active:
                 self.word_input.input(event.key)
                 if self.word_input.text == self.cur_word_box.text:
                     self.handler.post_event(events.GameUpdateOut(
+                        self.model.username,
                         self.level_list
                         ))
                     # eventuall take this out once connected to server----
@@ -134,15 +129,17 @@ class Game(base.Module):
                     #self.handler.post_event(events.GameUpdateIn(
                     #    new_levels
                     #    ))
+                    self.refresh_text()
 
-                    #-----------------------------------------------------
-                    self.word_input.clear()
-                    next_word = self.get_word()
-                    if next_word != None:
-                        self.cur_word_box.text = next_word
-                    else:
-                        print "ran out of words"
-                        # at this point, wait and see who won?
+    def refresh_text(self):
+        self.word_input.clear()
+        next_word = self.get_word()
+        if next_word != None:
+            self.cur_word_box.text = next_word
+        else:
+            print "ran out of words"
+            # at this point, wait and see who won?
+
 
 
 
