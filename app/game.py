@@ -92,9 +92,10 @@ class Game(base.Module):
     # listen for update event
     # another success, user listens for this and sends to server
     def notify(self, event):
-        if isinstance(event, events.StartGame):
+        if isinstance(event, events.GameInitialize):
             self.user_list = event.user_names
             self.words = event.user_names
+            self.make_boxes()
             
         elif isinstance(event, events.ModelUpdated):
             # take out users who quit?

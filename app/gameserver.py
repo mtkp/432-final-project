@@ -184,6 +184,10 @@ class GameServer(object):
                         if len(game.users) == game.limit:
                             for usr in game.users:
                                 usr.send(("start_game", None)) # trigger state change first
+                                usr.send((
+                                    "game_initialize",
+                                    game.initialize()
+                                    ))
                         #----------------------------------------------------
                         self.games_changed = True
                     break
@@ -219,12 +223,12 @@ class GameServer(object):
         cmd = msg[0]
         game = user.game
         # gameupdate: ("gameupdate", "username", [1, 2, 3, 4]")
-        if cmd == "game_started":
-            user.send((
-                "game_initialize", 
-                self.initialize()
-                ))
-        elif cmd == "game_update_out":
+        #if cmd == "game_started":
+        #    user.send((
+        #        "game_initialize", 
+        #        self.initialize()
+        #        ))
+        if cmd == "game_update_out":
             # increment the list at index user_idx
             user_index = self.getuserindex(msg[1])
             game.level_list[user_index] += 1
