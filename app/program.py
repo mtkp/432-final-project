@@ -73,7 +73,7 @@ class Program(base.Listener):
             elif isinstance(event, events.StartGame):
                 self.change_state(GAME)
         elif self.state == GAME:
-            if isinstance(event, events.UserGameEnded):
+            if isinstance(event, events.EndGame):
                 self.change_state(LOBBY)
 
     def change_state(self, new_state):
@@ -82,19 +82,20 @@ class Program(base.Listener):
         self.state = new_state
         new_module = self.modules[self.state]
         self.handler.register_for_events(new_module)
+        new_module.reload()
 
     def tick(self):
-        self.modules[self.state].update()
+        self.modules[self.state].draw()
         pygame.display.flip()
 
 
 def main():
     handler = events.EventManager()
     inputs  = userinput.Input(handler)
+
     program = Program(handler)
 
     clock.Clock(handler).run()
-
 
 if __name__ == '__main__':
     main()

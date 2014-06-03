@@ -1,8 +1,6 @@
 #!/usr/bin/python2.7
 
 import pygame
-import os
-import copy
 
 import base
 import color
@@ -20,7 +18,96 @@ class Game(base.Module):
         base.Module.__init__(self, handler, model)
         self.background_color = color.Blue
         self.font = pygame.font.SysFont("monospace", 20)
+        self.reload()
 
+    # listen for update event
+    # another success, user listens for this and sends to server
+    def notify(self, event):
+        if self.state == GAMEOVER:
+            if isinstance(event, events.MouseClick):
+                self.handler.post_event(events.EndGame())
+        else:
+            if isinstance(event, events.GameInitialize):
+                self.users = event.user_names
+                self.words = event.words
+                self.refresh_user_names()
+                self.refresh_game_input()
+            elif isinstance(event, events.ModelUpdated):
+                # take out users who quit?
+                pass
+            elif isinstance(event, events.PlayerWon):
+                self.state = GAMEOVER
+                self.make_ending(event.msg)
+            elif isinstance(event, events.GameUpdateIn):
+                self.level_list = event.level_list
+                self.move_user_boxes()
+            elif isinstance(event, events.OpponentWon):
+                # maybe print which opponent won text and return to lobby
+                self.handler.post_event(events.EndGame)
+            elif isinstance(event, events.KeyPress):
+                self.word_input.input(event.key)
+                if self.word_input.text == self.cur_word_box.text:
+                    self.handler.post_event(events.GameUpdateOut(
+                        self.model.username
+                        ))
+                    self.refresh_game_input()
+
+    # only display boxes for users in the current game (maybe someone left)
+    def make_user_boxes(self):
+        for i in xrange(4):
+            temp_box = util.TextBox(
+                self.background,
+                (100 + i * 200, 400),
+                (175, 50),
+                pygame.font.SysFont("monospace", 16),
+                ""
+                )
+            temp_box.set_text_color(color.White)
+            temp_box.set_box_color(color.DarkRed)
+            self.box_list[i] = temp_box
+
+        self.draw_set.extend(self.box_list)
+
+    def refresh_user_names(self):
+        for box, username in zip(self.box_list, self.users):
+            box.text = username[:15]
+            if username == self.model.username:
+                box.set_box_color(color.DarkGreen)
+
+    def refresh_game_input(self):
+        self.word_input.clear()
+        try:
+            self.cur_word_box.text = self.words.pop()
+        except IndexError:
+            print "ran out of words"
+
+    # give each box a new height dimension
+    def move_user_boxes(self):
+        for box, level in zip(self.box_list, self.level_list):
+            box.top = 75 + (30 * (10 - level))
+
+    def make_ending(self, msg):
+        self.draw_set.append(
+            util.TextBox(
+                self.background,
+                (400, 300),
+                (600, 200),
+                pygame.font.SysFont("monospace", 24),
+                msg
+                )
+            )
+        self.draw_set.append(
+            util.TextBox(
+                self.background,
+                (400, 500),
+                (350, 150),
+                pygame.font.SysFont("monospace", 18),
+                "click anywhere to continue..."
+                )
+            )
+
+    def reload(self):
+        self.draw_set = []
         self.state = PLAYING
 
         self.box_list = [None, None, None, None]
@@ -63,99 +150,6 @@ class Game(base.Module):
             self.cur_word_box
             ])
         self.make_user_boxes()
-
-    # only display boxes for users in the current game (maybe someone left)
-    def make_user_boxes(self):
-        for i in xrange(4):
-            temp_box = util.TextBox(
-                self.background,
-                (100 + i * 200, 400),
-                (175, 50),
-                pygame.font.SysFont("monospace", 16),
-                ""
-                )
-            temp_box.set_text_color(color.White)
-            temp_box.set_box_color(color.DarkRed)
-            self.box_list[i] = temp_box
-
-        self.draw_set.extend(self.box_list)
-
-    def refresh_user_names(self):
-        for box, username in zip(self.box_list, self.users):
-            box.text = username[:15]
-            if username == self.model.username:
-                box.set_box_color(color.DarkGreen)
-
-    def refresh_game_input(self):
-        self.word_input.clear()
-        try:
-            self.cur_word_box.text = self.words.pop()
-        except IndexError:
-            print "ran out of words"
-
-    # give each box a new height dimension
-    def move_user_boxes(self):
-        for box, level in zip(self.box_list, self.level_list):
-            box.top = 75 + (30 * (10 - level))
-
-    def do_ending(self):
-        pass
-        # make a new label
-        # add it to the games draw set
-
-    def update(self):
-        self.draw()
-
-
-    # listen for update event
-    # another success, user listens for this and sends to server
-    def notify(self, event):
-        if self.state == GAMEOVER:
-            if isinstance(event, events.MouseClick):
-                print "returning to lobby..."
-        else:
-            if isinstance(event, events.GameInitialize):
-                self.users = event.user_names
-                self.words = event.words
-                self.refresh_user_names()
-                self.refresh_game_input()
-            elif isinstance(event, events.ModelUpdated):
-                # take out users who quit?
-                pass
-            elif isinstance(event, events.PlayerWon):
-                self.state = GAMEOVER
-                self.draw_set.append(
-                    util.TextBox(
-                        self.background,
-                        (400, 300),
-                        (600, 200),
-                        pygame.font.SysFont("monospace", 24),
-                        event.msg
-                        )
-                    )
-                self.draw_set.append(
-                    util.TextBox(
-                        self.background,
-                        (400, 500),
-                        (350, 150),
-                        pygame.font.SysFont("monospace", 18),
-                        "click anywhere to continue..."
-                        )
-                    )
-            elif isinstance(event, events.GameUpdateIn):
-                self.level_list = event.level_list
-                self.move_user_boxes()
-            elif isinstance(event, events.OpponentWon):
-                # maybe print which opponent won text and return to lobby
-                self.handler.post_event(events.EndGame)
-            elif isinstance(event, events.KeyPress):
-                self.word_input.input(event.key)
-                if self.word_input.text == self.cur_word_box.text:
-                    self.handler.post_event(events.GameUpdateOut(
-                        self.model.username
-                        ))
-                    self.refresh_game_input()
-
 
 
 

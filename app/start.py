@@ -28,7 +28,3 @@ class Start(base.Module):
             label,
             help_label
             ])
-
-    def update(self):
-        self.draw()
-
