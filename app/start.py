@@ -10,7 +10,7 @@ class Start(base.Module):
     def __init__(self, handler, model):
         base.Module.__init__(self, handler, model)
         self.background_color = color.GameBackground
-        self.font = pygame.font.SysFont("monospace", 50)
+        self.font = pygame.font.SysFont("monospace", 60)
 
         label = util.Label(
             self.background,

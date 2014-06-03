@@ -9,7 +9,7 @@ import util
 class GameWait(base.Module):
     def __init__(self, handler, model):
         base.Module.__init__(self, handler, model)
-        self.font = pygame.font.SysFont("monospace", 60)
+        self.font = pygame.font.SysFont("monospace", 72)
         self.background_color = color.GameBackground
 
         self.label = util.Label(
