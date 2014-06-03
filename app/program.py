@@ -91,10 +91,8 @@ class Program(base.Listener):
 
 def main():
     handler = events.EventManager()
-    inputs  = userinput.Input(handler)
-
-    program = Program(handler)
-
+    userinput.Input(handler)
+    Program(handler)
     clock.Clock(handler).run()
 
 if __name__ == '__main__':

@@ -12,8 +12,8 @@ import messenger
 
 LISTEN_QUEUE    = 5
 PORT            = 7307
-WORDS_FILE      = "text/words"
-GAME_WORD_COUNT = 10
+WORDS_FILE      = "text/min_8"
+GAME_WORD_COUNT = 15
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
@@ -198,7 +198,8 @@ class GameServer(object):
                         self.games_changed = True
                     break
         elif cmd == "chat":
-            chat_msg = "{}: {}".format(user.name, msg[1]) # append who said it
+
+            chat_msg = "{}: {}".format(user.name[:19], msg[1]) # append who said it
             print "{} said {}".format(user.name, msg[1])
             for u in self.users():
                 u.send(("chat", chat_msg))
