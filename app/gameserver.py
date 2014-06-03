@@ -5,14 +5,15 @@ import collections
 import select
 import socket
 import random
-import os
 
 # our libs
 import messenger
 
+
 LISTEN_QUEUE = 5
 PORT         = 7307
 WORDS_FILE   = "text/words"
+
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
@@ -50,14 +51,14 @@ class Game(object):
     def usernames(self):
         return [user.name for user in self.users]
 
-    def getuserindex(self, user_name):
-        for i, user in enumerate(self.users):
-            if user_name == user.name:
+    def get_index(self, user):
+        for i, u in enumerate(self.users):
+            if u == user:
                 return i
 
     # check if any of the players won the game
     def check_winner(self):
-        for i in level_list:
+        for i in self.level_list:
             if i == 10:
                 return i
         return None
@@ -188,6 +189,7 @@ class GameServer(object):
                                     "game_initialize",
                                     game.initialize()
                                     ))
+                            game.waiting = False
                         #----------------------------------------------------
                         self.games_changed = True
                     break
@@ -203,16 +205,8 @@ class GameServer(object):
         if cmd == "exit_game":
             game.remove_user(user)
             for usr in game.users:
-                usr.send(("wait_update", len(game.users)))
+                usr.send(("wait_update", game.compact()))
             self.games_changed = True
-
-
-        # will update users on current number of joined users
-        # will end when sending a start game message to all users
-        #
-        # send a start message as: ("start_game", ["username1", "username2", ...])
-        #
-        # also need to send the word list to all players at game start..
 
 
     def in_game(self, user, msg):
@@ -222,9 +216,9 @@ class GameServer(object):
         # should be destroyed
         cmd = msg[0]
         game = user.game
-        if cmd == "game_update_out":  # ("game_update_out", username)
-            print "got update event"# increment the list at index user_idx
-            user_index = game.getuserindex(msg)
+        if cmd == "game_update_out":
+             # ("game_update_out", username)
+            user_index = game.get_index(user)
             print  "found user index: " + str(user_index)
             game.level_list[user_index] += 1
             for usr in game.users:
@@ -232,12 +226,12 @@ class GameServer(object):
                     "game_update_in",
                     game.level_list
                     ))
-            #if winner:   
+            #if winner:
             #    user.send((
             #        "player_won",
             #        msg[1], winner
             #        ))
-        if cmd == "exit_game":
+        elif cmd == "exit_game":
             # remove user from game's users and notify others
             pass
         elif cmd == "end_game":
@@ -250,8 +244,8 @@ class GameServer(object):
 
     def update(self):
         """Actually send and receive to and from any server_socket sockets,
-using select.
-"""
+        using select.
+        """
         recv_list = [u.conn for u in self.users()]
         recv_list.append(self.server_socket)
         send_list = [u.conn for u in self.users() if len(u.outbox) > 0]

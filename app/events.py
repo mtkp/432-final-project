@@ -59,9 +59,9 @@ class OtherJoinedWait(Event):
     def __init__(self, num_players):
         self.num_players = num_players
 
-# trigger state change from wait to game 
+# trigger state change from wait to game
 class GameStarted(Event):
-    pass        
+    pass
 
 class UserGameEnded(Event):
     pass
@@ -82,7 +82,7 @@ class GameUpdateOut(Event):
 
 # recieve a game update from the server
 class GameUpdateIn(Event):
-    def __init__(self, level_list,):
+    def __init__(self, level_list):
         self.level_list = level_list
 
 #
