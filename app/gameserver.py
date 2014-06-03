@@ -223,9 +223,9 @@ class GameServer(object):
         cmd = msg[0]
         game = user.game
         if cmd == "game_update_out":  # ("game_update_out", username)
-            # increment the list at index user_idx
-            user_index = self.getuserindex(msg)
-            print user_index
+            print "got update event"# increment the list at index user_idx
+            user_index = game.getuserindex(msg)
+            print  "found user index: " + str(user_index)
             game.level_list[user_index] += 1
             for usr in game.users:
                 usr.send((
