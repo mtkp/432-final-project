@@ -1,3 +1,17 @@
+#
+
+# File:         .py
+
+# Authors:      Matt Kipps, Greg Parker
+# Date:         June 2nd, 2014
+# Class:        CSS 432 A
+# Professor:    Brent Lagesse
+      
+# Assignment:   Final Project
+
+# Description:
+
+
 # netio.py
 
 # handle the actual input and output to and from the network
