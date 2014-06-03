@@ -2,7 +2,7 @@
 
 import random
 
-WORDS_FILE      = "min_8"
+WORDS_FILE = "min_8"
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
