@@ -308,9 +308,15 @@ class TextBox(object):
             return return_val
         return aligner
 
-    def __init__(self, background, center, size, font, text):
+    def __init__(self, background, center, size, font, text=""):
         self.label = Label(background, center, font, text)
         self.box = BorderBox(background, center, size, White)
+
+    def set_text_color(self, color):
+        self.label.color = color
+
+    def set_box_color(self, color):
+        self.box.set_color(color)
 
     def draw(self):
         self.box.draw()
@@ -392,7 +398,7 @@ class TextBox(object):
 
     @property
     def height(self):
-        return self.box.height    
+        return self.box.height
 
     @height.setter
     @align

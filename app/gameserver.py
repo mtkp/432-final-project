@@ -10,17 +10,17 @@ import random
 import messenger
 
 
-LISTEN_QUEUE = 5
-PORT         = 7307
-WORDS_FILE   = "text/words"
-
+LISTEN_QUEUE    = 5
+PORT            = 7307
+WORDS_FILE      = "text/words"
+GAME_WORD_COUNT = 10
 
 # returns list of ten words chosen randomly form larger list
 def get_random_words(all_words):
     real_word_list = []
     range_max = len(all_words) - 1
-    for _ in range(10):
-        real_word_list.append(all_words[ random.randint(0, range_max) ])
+    for _ in xrange(GAME_WORD_COUNT):
+        real_word_list.append(all_words[random.randint(0, range_max)])
     return real_word_list
 
 # opens text file and rturns a small list of the words
@@ -58,9 +58,9 @@ class Game(object):
 
     # check if any of the players won the game
     def check_winner(self):
-        for i in self.level_list:
-            if i == 10:
-                return i
+        for i, level in enumerate(self.level_list):
+            if level == GAME_WORD_COUNT:
+                return self.users[i]
         return None
 
     def compact(self):
@@ -176,12 +176,11 @@ class GameServer(object):
                     if len(game.users) < game.limit:
                         game.add_user(user)
                         user.send(("joined", game.compact()))
-                        #-----------------------------------------------------
                         # tell other waiting users to update player count
                         for usr in (u for u in game.users if u != user):
                             usr.send(("wait_update", game.compact()))
 
-                        # start gameif enough players, also pass words/usernames
+                        # start game if enough players, also pass words/usernames
                         if len(game.users) == game.limit:
                             for usr in game.users:
                                 usr.send(("start_game", None)) # trigger state change first
@@ -189,8 +188,7 @@ class GameServer(object):
                                     "game_initialize",
                                     game.initialize()
                                     ))
-                            game.waiting = False
-                        #----------------------------------------------------
+                            game.waiting = False # game is ready to play!
                         self.games_changed = True
                     break
         elif cmd == "chat":
@@ -219,18 +217,19 @@ class GameServer(object):
         if cmd == "game_update_out":
              # ("game_update_out", username)
             user_index = game.get_index(user)
-            print  "found user index: " + str(user_index)
             game.level_list[user_index] += 1
             for usr in game.users:
                 usr.send((
                     "game_update_in",
                     game.level_list
                     ))
-            #if winner:
-            #    user.send((
-            #        "player_won",
-            #        msg[1], winner
-            #        ))
+            winner = game.check_winner()
+            if winner is not None:
+                for usr in game.users:
+                    usr.send((
+                        "player_won",
+                        "{} wins!".format(winner.name)
+                        ))
         elif cmd == "exit_game":
             # remove user from game's users and notify others
             pass

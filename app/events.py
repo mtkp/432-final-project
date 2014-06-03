@@ -100,8 +100,8 @@ class EndGame(Event):
 
 # player won the game, from server
 class PlayerWon(Event):
-    pass
-
+    def __init__(self, msg):
+        self.msg = msg
 
 # Opponent wins the game
 class OpponentWon(Event):

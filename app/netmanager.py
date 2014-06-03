@@ -53,6 +53,8 @@ class NetManager(base.Listener):
                 payload[0],
                 payload[1]
                 ))
+        elif header == "player_won":
+            self.handler.post_event(events.PlayerWon(payload))
         elif header == "end_game":
             self.handler.post_event(event.EndGame(payload[0]))
 
