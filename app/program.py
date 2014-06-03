@@ -1,9 +1,6 @@
 #!/usr/bin/python2.7
 
-
-#
-
-# File:         .py
+# File:         program.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
@@ -13,11 +10,19 @@
 # Assignment:   Final Project
 
 # Description:
+# Operates the client side of the overall program, which uses the MVC model.
+# Uses an event manager, keyboard/mouse input controller, and a clock. The 
+# program transitions between different states, triggered by events from the
+# event handler. Model maintains the state(data) across different states of 
+# the program.  input controls input from devices like the keyboard and the 
+# #mouse. clock contains the program's main game loop and controls framerate. 
+# the program is operating on top of pygame, and game library for python.
 
 import pygame
 
 import base
 import clock
+import eventmanager
 import events
 import game
 import lobby
@@ -107,7 +112,7 @@ class Program(base.Listener):
 
 
 def main():
-    handler  = events.EventManager()
+    handler  = eventmanager.EventManager()
     user_inp = userinput.Input(handler)
     program  = Program(handler)
     clock.Clock(handler).run()

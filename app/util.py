@@ -1,7 +1,6 @@
+#!/usr/bin/python2.7
 
-#
-
-# File:         .py
+# File:         util.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
@@ -11,7 +10,13 @@
 # Assignment:   Final Project
 
 # Description:
-
+# Contains objects that are used to by pygame to display items on screen.  Box
+# is a base object that the other classes inherit from.  Classes include 
+# ListBox, which lists text items; TextBox, which is a Box that displays one 
+# text item; InputBox, which takes user input, displays it and passes it too 
+# the program; BorderBox which is a TextBox with a visible border; Label, which
+# displays text whitout a visible box; and Button, which takes a mouseclick 
+# event and triggers an event in the program.
 
 import itertools
 

@@ -1,7 +1,6 @@
+#!/usr/bin/python2.7
 
-#
-
-# File:         .py
+# File:         userinput.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
@@ -11,6 +10,11 @@
 # Assignment:   Final Project
 
 # Description:
+# A class that the event manager uses to control keyboard input. this class
+# will take keyboard input events from pygame, and process the events before
+# sending events to the event manager. It listens for input like exiting the
+# program, mouse input, and alpha keys. The event manager maintains a reference
+# to an instance of this class.
 
 
 import pygame

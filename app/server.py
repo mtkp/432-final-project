@@ -1,8 +1,6 @@
 #!/usr/bin/python2.7
 
-#
-
-# File:         .py
+# File:         server.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
@@ -12,7 +10,7 @@
 # Assignment:   Final Project
 
 # Description:
-
+# Launches the gamesrver program which is the server that the program uses.
 
 import gameserver
 

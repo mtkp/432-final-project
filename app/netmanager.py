@@ -1,6 +1,6 @@
-#
+#!/usr/bin/python2.7
 
-# File:         .py
+# File:         netmanager.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
@@ -10,6 +10,13 @@
 # Assignment:   Final Project
 
 # Description:
+# Netmanager provides functionality that can be used to communicate over the
+# underlying network. It recieves events from the event manager on the client 
+# side, and makes use of the netio class to send information corresponding to 
+# those events to the server. When the netmanager recieves a message from
+# the server, it posts a corresponding event to the local event manager which 
+# relays those messages to the rest of the program.  The netmanager checks for 
+# messages upon each tick of the clock.
 
 
 # netmanager.py

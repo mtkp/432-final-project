@@ -1,6 +1,6 @@
-#
+#!/usr/bin/python2.7
 
-# File:         .py
+# File:         netio.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
@@ -10,9 +10,14 @@
 # Assignment:   Final Project
 
 # Description:
-
-
-# netio.py
+# netio performs the actual low level comminucation on the client side. it is 
+# used by the higher level netmanager to get and send messages from the 
+# network. Maintains a set of deques, one of which is used to buffer input 
+# messages and the other which is used to buffer output messages. netio uses 
+# the "select" method to check if sockets are ready to be read from and written
+# to. for each socket that is ready, a message is taken from the deques and 
+# communicated over the socket.
+#
 
 # handle the actual input and output to and from the network
 
