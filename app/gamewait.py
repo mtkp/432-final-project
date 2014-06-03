@@ -28,10 +28,28 @@ class GameWait(base.Module):
             "leave game"
             )
 
+        self.pending_dot = util.Box(
+            self.background,
+            (350, 450),
+            (20, 20),
+            color.Blue
+            )
+        self.dot_ticks = 0
+
         self.draw_set.extend([
             self.label,
-            self.exit_button
+            self.exit_button,
+            self.pending_dot
             ])
+
+    def draw(self):
+        self.dot_ticks += 1
+        if self.dot_ticks == 15:
+            self.dot_ticks = 0
+            self.pending_dot.centerx += 25
+            if self.pending_dot.centerx == 475:
+                self.pending_dot.centerx = 350
+        base.Module.draw(self)
 
     def notify(self, event):
         if isinstance(event, events.MouseClick):

@@ -23,8 +23,11 @@ GAME     = 4
 
 class Model(object):
     def __init__(self):
+        self.setup()
+
+    def setup(self):
         self.username     = None
-        self.current_game = ("game name", id, 3, 4)
+        self.current_game = (0, 0, 0, 0)
         self.all_users    = []
         self.all_games    = []
         self.chat_log     = []
@@ -64,6 +67,7 @@ class Program(base.Listener):
                 self.change_state(LOBBY)
         elif self.state == LOBBY:
             if isinstance(event, events.UserLoggedOut):
+                self.model.setup()
                 self.change_state(LOGIN)
             elif isinstance(event, events.UserJoinedGame):
                 self.change_state(GAMEWAIT)
