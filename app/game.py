@@ -39,6 +39,13 @@ class Game(base.Module):
             30
             )
         self.word_input.active = True
+
+        self.finish_line = util.Box(
+            self.background,
+            (223, 100),  # centerx, centery
+            (420, 10),   # width, height
+            color.DarkGray
+            )
         
         # box to display the current word user should type
         self.cur_word_box = util.TextBox(
@@ -66,7 +73,11 @@ class Game(base.Module):
         
         # take box of user who left out of draw_set
         del self.draw_set[0:len(self.draw_set)] 
-        self.draw_set.extend([self.word_input, self.cur_word_box])
+        self.draw_set.extend([
+            self.word_input,
+            self.cur_word_box,
+            self.finish_line
+            ])
         self.draw_set.extend(self.box_list)
     
     def refresh_user_text(self):
@@ -125,6 +136,8 @@ class Game(base.Module):
                 self.handler.post_event(events.GameUpdateOut(
                     self.model.username
                     ))
+            elif event.key == TAB_KEY:
+                self.handler.post_event()
             elif self.word_input.active:
                 self.word_input.input(event.key)
                 if self.word_input.text == self.cur_word_box.text:
