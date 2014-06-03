@@ -100,6 +100,7 @@ class GameServer(object):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setblocking(0)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.server_socket.bind(('',PORT))
         self.server_socket.listen(LISTEN_QUEUE)
 
@@ -251,7 +252,7 @@ class GameServer(object):
         send_list = [u.conn for u in self.users() if len(u.outbox) > 0]
 
         recv_list, send_list, exception_list = \
-            select.select(recv_list, send_list, recv_list)
+            select.select(recv_list, send_list, recv_list, 0)
         for conn in recv_list:
             self._recv(conn)
         for conn in send_list:

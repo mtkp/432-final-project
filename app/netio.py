@@ -38,7 +38,7 @@ class NetIO(object):
         Send the next message in the outbox if it is not empty.
         """
         recv_list, send_list, error_list = \
-            select.select([self.conn], [self.conn], [self.conn])
+            select.select([self.conn], [self.conn], [self.conn], 0)
 
         # for each of those port we want to send out on, send
         for i in send_list:
@@ -59,12 +59,13 @@ class NetIO(object):
 
     def connect(self, server):
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         try:
             self.conn.connect((server, gameserver.PORT))
             # switch to nonblocking after connecting so we can do DNS lookup
             self.conn.setblocking(0)
         except (socket.gaierror, socket.error):
-            self.conn = None
+            self.close()
             raise ServerNotFound
 
     def close(self):
