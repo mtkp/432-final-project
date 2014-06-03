@@ -25,12 +25,10 @@ class Game(base.Module):
 
         self.box_list = [None, None, None, None]
         self.level_list = [0, 0, 0, 0]
-
+        self.words = [""]
         self.users = []
         for i in range(self.model.current_game[3]):
             self.users.append("")
-
-        self.words = [""]
 
         # text input box for user to type into
         self.word_input = util.InputBox(
@@ -50,10 +48,10 @@ class Game(base.Module):
             self.font,
             self.get_word()
             )
-        self.make_boxes()
+        self.make_user_boxes()
 
     # only display boxes for users in the current game (maybe someone left)
-    def make_boxes(self):
+    def make_user_boxes(self):
         num_boxes = self.model.current_game[3]
         print "game: num_boxes = " + str(num_boxes)
         for i in range(self.model.current_game[3]):
@@ -70,7 +68,20 @@ class Game(base.Module):
         del self.draw_set[0:len(self.draw_set)] 
         self.draw_set.extend([self.word_input, self.cur_word_box])
         self.draw_set.extend(self.box_list)
-
+    
+    def refresh_user_text(self):
+        for i, user in enumerate(self.users):
+            self.box_list[i].text = user
+            self.cur_word_box.text = self.get_word()
+    
+    def refresh_other_text(self):
+        self.word_input.clear()
+        next_word = self.get_word()
+        if next_word != None:
+            self.cur_word_box.text = next_word
+        else:
+            print "ran out of words"
+            # at this point, wait and see who won?
 
     # give each box a new height dimension
     def grow_boxes(self):
@@ -96,26 +107,15 @@ class Game(base.Module):
     def notify(self, event):
         if isinstance(event, events.GameInitialize):
             self.users = event.user_names
-            self.words = event.user_names
-            for i, user in enumerate(self.users):
-                self.box_list[i].text = user
-            self.cur_word_box.text = self.get_word()
-
-            
+            self.words = event.words
+            self.refresh_user_text()
         elif isinstance(event, events.ModelUpdated):
             # take out users who quit?
             pass
         elif isinstance(event, events.GameUpdateIn):
                 print "game: got gameupdatein"
                 self.level_list = event.level_list
-                self.grow_boxes()
-       # elif isinstance(event, events.GameInitialize):
-           
-            # set the name of each box to the respective name of players
-        #    for i, user in enumerate(self.users):
-        #        self.box_list[i].text = user
-        #    self.cur_word_box = self.get_word()
-            
+                self.grow_boxes()            
         elif isinstance(event, events.OpponentWon):
             # maybe print which opponent won text and return to lobby
             self.handler.post_event(events.EndGame)
@@ -133,16 +133,8 @@ class Game(base.Module):
                         self.model.username,
                         self.level_list
                         ))
-                    self.refresh_text()
+                    self.refresh_other_text()
 
-    def refresh_text(self):
-        self.word_input.clear()
-        next_word = self.get_word()
-        if next_word != None:
-            self.cur_word_box.text = next_word
-        else:
-            print "ran out of words"
-            # at this point, wait and see who won?
 
 # was used to simulate gamupdatein event from server
 # eventuall take this out once connected to server----
