@@ -13,8 +13,10 @@
 # click the screen.  once the user clicks the screen, it sends an event to the
 # event manager to transition the program state to the login screen.
 
+# third party modules
 import pygame
 
+# our modules
 import base
 import color
 import util

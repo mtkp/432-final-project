@@ -14,9 +14,10 @@
 # program, mouse input, and alpha keys. The event manager maintains a reference
 # to an instance of this class.
 
-
+# third party modules
 import pygame
 
+# our modules
 import base
 import events
 

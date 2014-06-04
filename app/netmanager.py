@@ -23,6 +23,7 @@
 # - network events on each tick, "network_notify"
 # - program events through "notify"
 
+# our modules
 import base
 import events
 import netio

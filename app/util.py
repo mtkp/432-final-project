@@ -16,13 +16,14 @@
 # displays text whitout a visible box; and Button, which takes a mouseclick
 # event and triggers an event in the program.
 
+# python modules
 import itertools
 
+# third party modules
 import pygame
 
-
+# our modules
 from color import *
-
 
 class Box(object):
     def __init__(self, background, center, size, color):
