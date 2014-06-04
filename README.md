@@ -19,5 +19,3 @@ Game server port: `7307`
 - [Game Programming Patterns](http://gameprogrammingpatterns.com/)
 - [Writing Games - sjbrown](http://ezide.com/games/writing-games.html)
 - [Python sockets HOWTO](https://docs.python.org/2/howto/sockets.html#socket-howto)
-- select example()
-
