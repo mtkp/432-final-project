@@ -1,5 +1,3 @@
-#!/usr/bin/python2.7
-
 # File:         netmanager.py
 
 # Authors:      Matt Kipps, Greg Parker

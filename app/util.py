@@ -1,5 +1,3 @@
-#!/usr/bin/python2.7
-
 # File:         util.py
 
 # Authors:      Matt Kipps, Greg Parker
