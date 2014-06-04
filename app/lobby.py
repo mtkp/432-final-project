@@ -1,7 +1,4 @@
-
-#
-
-# File:         .py
+# File:         lobby.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
@@ -12,11 +9,13 @@
 
 # Description:
 
-
+# python modules
 import random
 
+# 3rd party modules
 import pygame
 
+# our modules
 import base
 import color
 import events

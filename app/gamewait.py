@@ -1,19 +1,19 @@
-#
-
-# File:         .py
+# File:         gamewait.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-      
+
 # Assignment:   Final Project
 
 # Description:
 
 
+# 3rd party modules
 import pygame
 
+# our modules
 import base
 import color
 import events

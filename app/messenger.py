@@ -1,32 +1,28 @@
-#
-
-# File:         .py
+# File:         messenger.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-      
+
 # Assignment:   Final Project
 
 # Description:
 
 
-# some code taken from https://docs.python.org/2/howto/sockets.html#socket-howto
-
+# python modules
 import cPickle as pickle
 
 
-# maximum message length
 header_size = 4
 max_msg_len = (10 ** header_size) - 1
 packet      = "{{0:0{}d}}{{1}}".format(header_size)
 
 
 class MessageTooLarge(Exception):
-    """This exception is raised if the message exceeds the maximum allowed
+    '''This exception is raised if the message exceeds the maximum allowed
     by the header size.
-    """
+    '''
     def __init__(self, size):
         self.size = size
     def __str__(self):
@@ -34,13 +30,15 @@ class MessageTooLarge(Exception):
 
 
 class ClosedConnection(Exception):
-    """This exception is thrown if trying to read from a socket when the
+    '''This exception is thrown if trying to read from a socket when the
     connection has been closed.
-    """
+    '''
     pass
 
-# send a message over the connection
+
 def send(conn, data):
+    '''Send a message over the given connection.
+    '''
     msg = pickle.dumps(data)
     msg_len = len(msg)
     if msg_len > max_msg_len:
@@ -55,16 +53,16 @@ def send(conn, data):
             raise RuntimeError("socket connection broken")
         totalsent = totalsent + sent
 
-
-# receive a message from the connection
 def recv(conn):
+    '''Receive a message on the given connection.
+    '''
     length = int(_recv_str(conn, header_size))
     msg = _recv_str(conn, length)
     return pickle.loads(msg)
 
-
-# receive a string of specified length
 def _recv_str(conn, length):
+    '''Receive a specific number of bytes on a connection.
+    '''
     msg = conn.recv(length)
     if msg:
         while len(msg) < length:
