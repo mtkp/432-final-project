@@ -25,6 +25,7 @@ import pygame
 # our modules
 from color import *
 
+
 class Box(object):
     def __init__(self, background, center, size, color):
         self.background = background

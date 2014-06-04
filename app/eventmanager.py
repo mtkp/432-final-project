@@ -18,10 +18,12 @@
 # The EM itself is registered for ticks. At each tick, the EM actually
 # flushes the event queue to all event listeners.
 
+# python modules
+import collections
+
 
 class EventManager(object):
     def __init__(self):
-        import collections
         self.event_listeners = []
         self.tick_listeners = []
         self.event_queue = collections.deque()

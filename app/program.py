@@ -6,16 +6,16 @@
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-      
+
 # Assignment:   Final Project
 
 # Description:
 # Operates the client side of the overall program, which uses the MVC model.
-# Uses an event manager, keyboard/mouse input controller, and a clock. The 
+# Uses an event manager, keyboard/mouse input controller, and a clock. The
 # program transitions between different states, triggered by events from the
-# event handler. Model maintains the state(data) across different states of 
-# the program.  input controls input from devices like the keyboard and the 
-# #mouse. clock contains the program's main game loop and controls framerate. 
+# event handler. Model maintains the state(data) across different states of
+# the program.  input controls input from devices like the keyboard and the
+# #mouse. clock contains the program's main game loop and controls framerate.
 # the program is operating on top of pygame, and game library for python.
 
 # third party modules
@@ -34,12 +34,14 @@ import start
 import userinput
 import gamewait
 
+
 class State:
     START    = 0
     LOGIN    = 1
     LOBBY    = 2
     GAMEWAIT = 3
     GAME     = 4
+
 
 class Model(object):
     def __init__(self):

@@ -17,12 +17,12 @@
 # communicated over the socket.
 
 
-# python libs
+# python modules
 import socket
 import select
 import collections
 
-# our libs
+# our modules
 import gameserver
 import messenger
 

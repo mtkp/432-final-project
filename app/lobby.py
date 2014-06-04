@@ -22,9 +22,10 @@ import events
 import util
 
 
-# used for representing the game tuple in the lobby
-# this class is NOT actually the game
 class LobbyGame(object):
+    '''Class for representing the game object, which was passed by the
+    server, in a way that is useful for the lobby.
+    '''
     def __init__(self, game_tuple):
         self.name, self.game_id, self.size, self.limit = game_tuple
 

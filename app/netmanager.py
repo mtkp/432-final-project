@@ -10,18 +10,12 @@
 # Description:
 # NetManager provides functionality that can be used to communicate over the
 # underlying network. It recieves events from the event manager on the client
-# side, and makes use of the netio class to send information corresponding to
+# side, and makes use of the NetIO class to send information corresponding to
 # those events to the server. When the netmanager recieves a message from
 # the server, it posts a corresponding event to the local event manager which
 # relays those messages to the rest of the program.  The netmanager checks for
-# messages upon each tick of the clock.
+# network messages upon each tick of the clock.
 
-
-# netmanager.py
-
-# netmanager provides an interface between the network IO and the program
-# - network events on each tick, "network_notify"
-# - program events through "notify"
 
 # our modules
 import base

@@ -9,19 +9,23 @@
 
 # Description:
 
-
+# third party modules
 import pygame
 
+# our modules
 import base
 import color
 import events
 import util
 
+
 GAME_WORD_COUNT = 15
+
 
 class State:
     PLAYING  = 0
     GAMEOVER = 1
+
 
 class Game(base.Module):
     def __init__(self, handler, model):

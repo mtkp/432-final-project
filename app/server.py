@@ -15,6 +15,7 @@
 # our modules
 import gameserver
 
+
 if __name__ == "__main__":
     server = gameserver.GameServer()
     print "<starting gameserver>"
