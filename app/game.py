@@ -8,6 +8,17 @@
 # Assignment:   Final Project
 
 # Description:
+# Game is another program view module, which is displayed after the program
+# changes to the GAME state. Game handles user input and displays server
+# messages in the form of vertical positioning of username blocks. These
+# blocks correspond to the user's current position in the game.
+# The Game also reads the input box and whenever the input string matches
+# the current word, a success message is sent though the network manager to
+# the server.
+# Upon receiving a player-won message from the server (by way of the network
+# manager), the game stops and displays the game ending message. At this
+# point the game is over, and the user can return to the lobby.
+
 
 # third party modules
 import pygame

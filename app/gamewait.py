@@ -8,6 +8,9 @@
 # Assignment:   Final Project
 
 # Description:
+# GameWait is a view module that displays while the users are waiting for
+# other users to join the game. It simply shows the current number of joined
+# users, and a button that allows the user to leave the game before it begins.
 
 
 # 3rd party modules

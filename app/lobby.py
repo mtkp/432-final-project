@@ -8,6 +8,12 @@
 # Assignment:   Final Project
 
 # Description:
+# Lobby is a program view module.
+# The lobby shows all server information - users, and games, the chat view
+# and a button for unregistering. The lobby view sends user input through the
+# event manager to the network manager to be handled - in most cases, sent out
+# to the server.
+
 
 # python modules
 import random
