@@ -38,7 +38,7 @@ import messenger
 
 LISTEN_QUEUE    = 5
 PORT            = 7307
-WORDS_FILE      = "text/demo_words"
+WORDS_FILE      = "text/min_8"
 GAME_WORD_COUNT = 15
 
 
