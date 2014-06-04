@@ -6,11 +6,11 @@
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-      
+
 # Assignment:   Final Project
 
 # Description:
-# Launches the gamesrver program which is the server that the program uses.
+# Simple driver program - creates and runs an instance of the GameServer class.
 
 # our modules
 import gameserver

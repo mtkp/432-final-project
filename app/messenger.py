@@ -8,10 +8,26 @@
 # Assignment:   Final Project
 
 # Description:
-# Messenger provides a simple interface to sending objects through a socket.
+# Messenger provides a simple interface for sending and receiving
+# objects through a socket.
+#
+# - Send:
 # Messenger uses the pickle module (actually, cPickle, for speed), and gets
 # a string (byte) representation of that object. Messenger then prepends
 # the serialization with the number of bytes.
+#
+# - Recv:
+# When recv is called, messenger uses the predetermined header size
+# (4 bytes) to know it should read at least this many bytes from the socket.
+# The bytes contain the size of the rest of the message, so then messenger
+# reads this many bytes from the socket. The remaining bytes of the message
+# are then deserialized with pickle, and the resulting object is
+# returned to the caller.
+#
+# To support "select", Messenger throws the ClosedConnection exception if it
+# reads from a socket and gets 0 bytes, which is what select uses to indicate
+# that a ready read socket is actually being closed by the other end.
+
 
 # python modules
 import cPickle as pickle
@@ -24,7 +40,11 @@ packet      = "{{0:0{}d}}{{1}}".format(header_size)
 
 class MessageTooLarge(Exception):
     '''This exception is raised if the message exceeds the maximum allowed
-    by the header size.
+    by the header size. It is used as an error checking exception to indicate
+    otherwise unnoticed message truncation.
+
+    Header size is variable so this exception is only thrown if the message
+    size exceeds max_msg_len (for 4, this is 9999 bytes).
     '''
     def __init__(self, size):
         self.size = size

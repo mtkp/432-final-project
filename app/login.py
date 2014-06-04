@@ -8,6 +8,9 @@
 # Assignment:   Final Project
 
 # Description:
+# Login is a view module that operates during the login/registration sequence.
+# Displays the input boxes for username and server. Prints any error messages
+# that occur during the registration sequence on screen.
 
 
 # 3rd party modules
