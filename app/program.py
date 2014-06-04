@@ -10,6 +10,8 @@
 # Assignment:   Final Project
 
 # Description:
+# Program runs the "type it" game.
+#
 # Operates the client side of the overall program, which uses the MVC model.
 # Uses an event manager, keyboard/mouse input controller, and a clock. The
 # program transitions between different states, triggered by events from the
