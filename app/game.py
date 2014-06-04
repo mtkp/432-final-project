@@ -75,7 +75,7 @@ class Game(base.Module):
         for box, username in zip(self.box_list, self.users):
             box.text = username[:16]
             if username == self.model.username:
-                box.set_box_color(color.Green)
+                box.set_box_color(color.DarkGreen)
 
     def refresh_game_input(self):
         self.word_input.clear()
