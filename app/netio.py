@@ -1,25 +1,20 @@
-#!/usr/bin/python2.7
-
 # File:         netio.py
 
 # Authors:      Matt Kipps, Greg Parker
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-      
+
 # Assignment:   Final Project
 
 # Description:
-# netio performs the actual low level comminucation on the client side. it is 
-# used by the higher level netmanager to get and send messages from the 
-# network. Maintains a set of deques, one of which is used to buffer input 
-# messages and the other which is used to buffer output messages. netio uses 
+# netio performs the actual low level comminucation on the client side. it is
+# used by the higher level netmanager to get and send messages from the
+# network. Maintains a set of deques, one of which is used to buffer input
+# messages and the other which is used to buffer output messages. netio uses
 # the "select" method to check if sockets are ready to be read from and written
-# to. for each socket that is ready, a message is taken from the deques and 
+# to. for each socket that is ready, a message is taken from the deques and
 # communicated over the socket.
-#
-
-# handle the actual input and output to and from the network
 
 # python libs
 import socket
@@ -59,11 +54,14 @@ class NetIO(object):
         recv_list, send_list, error_list = \
             select.select([self.conn], [self.conn], [self.conn], 0)
 
-        # for each of those port we want to send out on, send
+        # if my socket is ready to send out on, send the next thing
+        # in the outbox.
         for i in send_list:
             if len(self.outbox) > 0:
                 messenger.send(i, self.outbox.popleft())
-        # for each port we want to receive on, print data received
+
+        # if my socket is ready to read from, read in the data and add it to
+        # the inbox.
         for i in recv_list:
             try:
                 msg = messenger.recv(i)
@@ -81,7 +79,7 @@ class NetIO(object):
         self.conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         try:
             self.conn.connect((server, gameserver.PORT))
-            # switch to nonblocking after connecting so we can do DNS lookup
+            # switch to nonblocking *after* connecting so we can do DNS lookup
             self.conn.setblocking(0)
         except (socket.gaierror, socket.error):
             self.close()
