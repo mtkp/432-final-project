@@ -60,17 +60,20 @@ def read_words(words_file=WORDS_FILE):
 
 class Game(object):
     def __init__(self, maker, name, limit=4):
-        self.users = []
-        self.words = read_words()
+        '''Game objects contain all information relevent to the server
+        for a currently active game.
+        '''
+        self.name       = name
+        self.limit      = limit
+        self.users      = []
+        self.words      = read_words()
         self.level_list = [0, 0, 0, 0]
-        self.name = name
-        self.limit = limit
-        self.waiting = True # don't start the game yet
-        self.add_user(maker)
+        self.waiting    = True # don't start the game yet
+        self.add_user(maker)   # add the game maker to the game
 
     def add_user(self, user):
-        user.game = self # update user's game
-        self.users.append(user) # add user to this game
+        user.game = self         # update user's game
+        self.users.append(user)  # add user to this game
 
     def remove_user(self, user):
         if user in self.users:
@@ -202,6 +205,9 @@ class GameServer(object):
     # - in_game
 
     def register(self, user, msg):
+        '''Users in registration state can only login.
+        When a user updates, broadcast an updated username list to all users.
+        '''
         cmd, name = msg
         usernames = [u.name for u in self.users() if u.name]
         if cmd == "login" and name not in usernames:
@@ -213,6 +219,11 @@ class GameServer(object):
             user.send(("login_result", False))
 
     def in_lobby(self, user, msg):
+        '''Users in lobby state can create, and join games, and can also
+        send chat messages.
+        If a game is created or joined, broadcast an updated games list to
+        all users.
+        '''
         cmd = msg[0]
         if cmd == "create":
             game_name = msg[1]
@@ -251,6 +262,9 @@ class GameServer(object):
                 u.send(("chat", chat_msg))
 
     def in_game_waiting(self, user, msg):
+        '''Users in game-waiting state are waiting for a game to begin.
+        The only available action is exiting the game.
+        '''
         game = user.game
         cmd = msg[0]
         if cmd == "exit_game":
@@ -261,6 +275,11 @@ class GameServer(object):
 
 
     def in_game(self, user, msg):
+        '''Users in the game state send game updates to the server. This is
+        the only available action in this state. Upon receiving a game update
+        message, the server increments the level for that user and broadcasts
+        the updated level_list to all other users.
+        '''
         cmd = msg[0]
         game = user.game
         if cmd == "game_update_out":
@@ -286,7 +305,7 @@ class GameServer(object):
         return self.user_sockets.itervalues()
 
     def update(self):
-        """Actually send and receive to and from any server_socket sockets,
+        """*Actually* send and receive to and from any server_socket sockets,
         using select.
         """
         recv_list = [u.conn for u in self.users()]
@@ -306,9 +325,17 @@ class GameServer(object):
     # -- private --
 
     def _recv(self, conn):
+        '''Read in any messages using Messenger, and add them to the user's
+        inbox.
+        '''
         if conn is self.server_socket:
+            # add new connections to the server's client list
             new_conn, addr = self.server_socket.accept()
+
+            # set socket to non-blocking
             new_conn.setblocking(0)
+
+            # use TCP_NODELAY
             new_conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             self.user_sockets[new_conn] = User(new_conn)
         else:
@@ -320,11 +347,16 @@ class GameServer(object):
                 self._close(conn)
 
     def _send(self, conn):
+        '''Send any messages that are in the outbox.
+        '''
         msg = self.user_sockets[conn].outbox.popleft()
         print "<sending '{}'>".format(msg)
         messenger.send(conn, msg)
 
     def _close(self, conn):
+        '''When a connection is closed, close the socket, delete the user,
+        and broadcast the updated user list to all remaining users.
+        '''
         print "<closing connection>"
         user = self.user_sockets[conn]
         if user.game:

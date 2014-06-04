@@ -24,4 +24,5 @@ Blue      =   0,   0, 255
 DarkBlue  =  10,  10, 245
 LimeGreen = 153, 255, 51
 
+# set the background across the program
 GameBackground = LimeGreen

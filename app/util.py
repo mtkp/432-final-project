@@ -27,6 +27,8 @@ from color import *
 
 
 class Box(object):
+    '''Encapsulate pygame surface & rect into a simplified box concept.
+    '''
     def __init__(self, background, center, size, color):
         self.background = background
         self.surface = pygame.Surface(size)
@@ -129,6 +131,8 @@ class Box(object):
 
 
 class BorderBox(object):
+    '''Compose two "Box" objects in the form of a single bordered box.
+    '''
     def __init__(self, background, center, size, color, border_color=Black):
         self.border = Box(background, center, size, border_color)
         h, w = size
@@ -278,9 +282,9 @@ class Button(object):
 
 
 class InputBox(object):
-    ascii_nums  = xrange(48, 58)
-    ascii_chars = xrange(97, 123)
-    ascii_misc  = [32, 45, 46] # space, dash, dot
+    ascii_nums  = xrange(48, 58)  # 0 - 9
+    ascii_chars = xrange(97, 123) # lower case chars
+    ascii_misc  = [32, 45, 46]    # space, dash, dot
     ascii_codes = itertools.chain(ascii_nums, ascii_chars, ascii_misc)
     allowed_input_keys = set(ascii_codes)
 

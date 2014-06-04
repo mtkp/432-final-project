@@ -81,6 +81,8 @@ class Program(base.Listener):
         self.handler.register_for_events(self.modules[self.state])
 
     def notify(self, event):
+        '''Move through the program states based on high-level program events.
+        '''
         if self.state == State.START:
             if isinstance(event, events.MouseClick):
                 self.change_state(State.LOGIN)
@@ -111,6 +113,8 @@ class Program(base.Listener):
         new_module.reload()
 
     def tick(self):
+        '''Draw the current module view and flip the pygame display.
+        '''
         self.modules[self.state].draw()
         pygame.display.flip()
 
