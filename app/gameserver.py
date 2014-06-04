@@ -228,7 +228,6 @@ class GameServer(object):
         elif cmd == "chat":
             # prepend with username
             chat_msg = "{}: {}".format(user.name[:19], msg[1])
-            print "{} said {}".format(user.name, msg[1])
             for u in self.users():
                 u.send(("chat", chat_msg))
 

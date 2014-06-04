@@ -7,7 +7,7 @@
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-      
+
 # Assignment:   Final Project
 
 # Description:
@@ -169,11 +169,9 @@ class Lobby(base.Module):
     def send_create_game_request(self):
         game_name = self.create_game_input.text
         if len(game_name) > 0:
-            print "posting create game"
             self.handler.post_event(events.TryCreateGame(game_name))
 
     def reload(self):
-        print "reloading the program model"
         self.hello.text     = Lobby.GREETING.format(self.model.username)
         self.games_box.list = [LobbyGame(g) for g in self.model.all_games]
         self.users_box.list = self.model.all_users

@@ -6,16 +6,16 @@
 # Date:         June 2nd, 2014
 # Class:        CSS 432 A
 # Professor:    Brent Lagesse
-      
+
 # Assignment:   Final Project
 
 # Description:
 # Contains objects that are used to by pygame to display items on screen.  Box
-# is a base object that the other classes inherit from.  Classes include 
-# ListBox, which lists text items; TextBox, which is a Box that displays one 
-# text item; InputBox, which takes user input, displays it and passes it too 
+# is a base object that the other classes inherit from.  Classes include
+# ListBox, which lists text items; TextBox, which is a Box that displays one
+# text item; InputBox, which takes user input, displays it and passes it too
 # the program; BorderBox which is a TextBox with a visible border; Label, which
-# displays text whitout a visible box; and Button, which takes a mouseclick 
+# displays text whitout a visible box; and Button, which takes a mouseclick
 # event and triggers an event in the program.
 
 import itertools
@@ -462,7 +462,6 @@ class ListBox(object):
         top = self.box.top
         centerx = self.box.centerx
         for i, item in enumerate(self._list):
-            print "adding in {}".format(item)
             label = Label(
                 self.background,
                 (centerx, (top + 12) + (i * 24)),

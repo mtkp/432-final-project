@@ -8,7 +8,7 @@
 # Assignment:   Final Project
 
 # Description:
-# netio performs the actual low level comminucation on the client side. it is
+# NetIO performs the actual low level comminucation on the client side. it is
 # used by the higher level netmanager to get and send messages from the
 # network. Maintains a set of deques, one of which is used to buffer input
 # messages and the other which is used to buffer output messages. netio uses

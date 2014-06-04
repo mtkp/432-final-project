@@ -82,7 +82,7 @@ class Game(base.Module):
         try:
             self.cur_word_box.text = self.words.pop()
         except IndexError:
-            print "ran out of words"
+            pass
 
     # give each box a new height dimension
     def move_user_boxes(self):
