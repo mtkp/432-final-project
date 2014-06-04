@@ -8,6 +8,13 @@
 # Assignment:   Final Project
 
 # Description:
+# GameServer is a smart, centralized server implementation supporting the
+# "type it" game.
+#
+# GameServer is implemented using raw TCP sockets, and python's "select"
+# function, which provides an OS-agnostic way to poll system sockets.
+#
+#
 
 
 # python libs
@@ -221,7 +228,6 @@ class GameServer(object):
         elif cmd == "chat":
             # prepend with username
             chat_msg = "{}: {}".format(user.name[:19], msg[1])
-            print "{} said {}".format(user.name, msg[1])
             for u in self.users():
                 u.send(("chat", chat_msg))
 
@@ -284,6 +290,7 @@ class GameServer(object):
         if conn is self.server_socket:
             new_conn, addr = self.server_socket.accept()
             new_conn.setblocking(0)
+            new_conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             self.user_sockets[new_conn] = User(new_conn)
         else:
             try:
