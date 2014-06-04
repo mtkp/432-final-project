@@ -8,7 +8,10 @@
 # Assignment:   Final Project
 
 # Description:
-
+# Messenger provides a simple interface to sending objects through a socket.
+# Messenger uses the pickle module (actually, cPickle, for speed), and gets
+# a string (byte) representation of that object. Messenger then prepends
+# the serialization with the number of bytes.
 
 # python modules
 import cPickle as pickle

@@ -14,7 +14,16 @@
 # GameServer is implemented using raw TCP sockets, and python's "select"
 # function, which provides an OS-agnostic way to poll system sockets.
 #
+# Sockets are non-blocking, with TCP_NODELAY to move messages as quickly as
+# possible.
 #
+# For each user, the game server reads in any incoming messages, and handles
+# that message using a state machine for that user. This greatly simplifies
+# exceptional conditions and enables the user to ignore messages that do not
+# fit the known state of the user according to the server.
+#
+# Certain events trigger server-initiated messages, such as changes to chat,
+# user list, games list, and in-game events.
 
 
 # python libs
@@ -32,16 +41,19 @@ PORT            = 7307
 WORDS_FILE      = "text/demo_words"
 GAME_WORD_COUNT = 15
 
-# returns list of ten words chosen randomly form larger list
+
 def get_random_words(all_words):
+    '''Get random words from a list of words.
+    '''
     real_word_list = []
     range_max = len(all_words) - 1
     for _ in xrange(GAME_WORD_COUNT):
         real_word_list.append(all_words[random.randint(0, range_max)])
     return real_word_list
 
-# opens text file and rturns a small list of the words
 def read_words(words_file=WORDS_FILE):
+    '''Provides a random list of words from a given text file.
+    '''
     all_words = [word for line in open(words_file, 'r') for word in line.split()]
     return get_random_words(all_words)
 
@@ -78,18 +90,25 @@ class Game(object):
             if u == user:
                 return i
 
-    # check if any of the players won the game
     def check_winner(self):
+        '''Check and get the winning player, if any players have won the game.
+        '''
         for i, level in enumerate(self.level_list):
             if level == GAME_WORD_COUNT:
                 return self.users[i]
         return None
 
     def compact(self):
+        '''Package the game into a simple tuple representation to send to
+        clients for displaying in the lobby view.
+        '''
         return (self.name, id(self), len(self.users), self.limit)
 
     # wraps up the game's users names and word list to be sent out
     def initialize(self):
+        '''Package the game into a simple tuple representaiton to send to
+        clients who are about to start the game.
+        '''
         return (self.words, self.usernames())
 
 
